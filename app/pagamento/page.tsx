@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Copy, Check, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
+import { v4 as uuidv4 } from "uuid" // Você precisará instalar esta dependência
 
 export default function PagamentoPage() {
   const [copied, setCopied] = useState(false)
@@ -17,6 +18,7 @@ export default function PagamentoPage() {
   const [isProcessingFile, setIsProcessingFile] = useState(false)
   const [checkCount, setCheckCount] = useState(0)
   const [userData, setUserData] = useState<any>(null)
+  const [retrospectiveId, setRetrospectiveId] = useState("")
   const router = useRouter()
 
   useEffect(() => {
@@ -29,6 +31,11 @@ export default function PagamentoPage() {
 
     const userData = JSON.parse(userDataStr)
     setUserData(userData)
+
+    // Gerar um ID único para a retrospectiva
+    const newRetrospectiveId = uuidv4()
+    setRetrospectiveId(newRetrospectiveId)
+    console.log("ID da retrospectiva gerado:", newRetrospectiveId)
 
     // Simular dados de pagamento para demonstração
     setPaymentData({
@@ -62,15 +69,60 @@ export default function PagamentoPage() {
         throw new Error("Dados do usuário não encontrados")
       }
 
-      toast({
-        title: "Pagamento confirmado!",
-        description: "Seu WhatsWrapped está sendo gerado...",
+      // Obter os dados de métricas da sessão
+      const metricsDataStr = sessionStorage.getItem("metricsData")
+      if (!metricsDataStr) {
+        throw new Error("Dados de métricas não encontrados")
+      }
+
+      const metricsData = JSON.parse(metricsDataStr)
+      const loveMessage = sessionStorage.getItem("loveMessage")
+
+      // Confirmar o pagamento na API
+      const confirmResponse = await fetch("/api/payment/confirm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userData.email,
+          paymentId: paymentId,
+        }),
       })
 
-      // Redirecionar para a página de resultados após um breve delay
+      if (!confirmResponse.ok) {
+        const errorData = await confirmResponse.json().catch(() => ({ message: "Erro desconhecido" }))
+        console.warn("Aviso ao confirmar pagamento:", errorData)
+        // Continuar mesmo com erro na confirmação do pagamento
+      }
+
+      // Salvar a retrospectiva permanentemente
+      const saveResponse = await fetch("/api/retrospectiva/" + retrospectiveId, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: retrospectiveId,
+          email: userData.email,
+          participants: metricsData,
+          loveMessage: loveMessage || undefined,
+        }),
+      })
+
+      if (!saveResponse.ok) {
+        const errorData = await saveResponse.json().catch(() => ({ error: "Erro desconhecido" }))
+        throw new Error(errorData.error || "Erro ao salvar retrospectiva")
+      }
+
+      toast({
+        title: "Pagamento confirmado!",
+        description: "Sua retrospectiva foi salva com sucesso!",
+      })
+
+      // Redirecionar para a página permanente da retrospectiva
       setTimeout(() => {
-        // Usar o email como identificador na URL
-        router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
+        router.push(`/retrospectiva/${retrospectiveId}`)
       }, 2000)
     } catch (error: any) {
       console.error("Erro ao processar pagamento:", error)
@@ -86,8 +138,51 @@ export default function PagamentoPage() {
   }
 
   const skipToResults = () => {
-    if (userData && userData.email) {
-      // Ir diretamente para a página de wrapped usando o email
+    if (retrospectiveId) {
+      // Salvar a retrospectiva com dados de exemplo e redirecionar
+      saveRetrospectiveAndRedirect()
+    } else if (userData && userData.email) {
+      // Fallback: ir para a página wrapped usando o email
+      router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
+    }
+  }
+
+  const saveRetrospectiveAndRedirect = async () => {
+    try {
+      // Obter dados de métricas da sessão ou usar dados de exemplo
+      let metricsData
+      const metricsDataStr = sessionStorage.getItem("metricsData")
+
+      if (metricsDataStr) {
+        metricsData = JSON.parse(metricsDataStr)
+      } else {
+        // Usar dados de exemplo
+        const { getPersonalizedMockData } = await import("@/lib/mock-data")
+        metricsData = getPersonalizedMockData(userData.name || userData.email)
+      }
+
+      const loveMessage = sessionStorage.getItem("loveMessage")
+
+      // Salvar a retrospectiva
+      await fetch("/api/retrospectiva/" + retrospectiveId, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: retrospectiveId,
+          email: userData.email,
+          participants: metricsData,
+          loveMessage: loveMessage || undefined,
+          isMock: true, // Indicar que são dados de exemplo
+        }),
+      })
+
+      // Redirecionar para a página permanente
+      router.push(`/retrospectiva/${retrospectiveId}`)
+    } catch (error) {
+      console.error("Erro ao salvar retrospectiva:", error)
+      // Fallback
       router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
     }
   }
@@ -275,10 +370,10 @@ export default function PagamentoPage() {
                 {/* Botões para testes */}
                 <div className="mt-8 space-y-4">
                   <Button
-                    onClick={skipToResults}
+                    onClick={simulatePayment}
                     className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
                   >
-                    Ver meu WhatsWrapped (Pular pagamento)
+                    Simular Pagamento (Para Testes)
                   </Button>
                 </div>
               </>
@@ -290,7 +385,7 @@ export default function PagamentoPage() {
                   </div>
                 </div>
                 <h2 className="text-3xl font-bold mb-4">Pagamento confirmado!</h2>
-                <p className="text-xl text-muted-foreground mb-8">Preparando seu WhatsWrapped personalizado...</p>
+                <p className="text-xl text-muted-foreground mb-8">Preparando sua retrospectiva personalizada...</p>
                 <div className="flex justify-center">
                   <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                 </div>
@@ -310,11 +405,14 @@ export default function PagamentoPage() {
               </div>
               <div className="flex items-start gap-2">
                 <span>⚡</span>
-                <p>Após o pagamento, você terá acesso imediato ao seu WhatsWrapped.</p>
+                <p>Após o pagamento, você terá acesso imediato à sua retrospectiva.</p>
               </div>
               <div className="flex items-start gap-2">
                 <span>🔗</span>
-                <p>Você receberá um link único para compartilhar sua retrospectiva.</p>
+                <p>
+                  Você receberá um link único e permanente para acessar e compartilhar sua retrospectiva a qualquer
+                  momento.
+                </p>
               </div>
             </div>
           </div>

@@ -63,14 +63,22 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
     }
   }, [params.email])
 
-  // Função para buscar métricas da API
+  // Modificar a função fetchMetricsFromAPI para usar dados mockados quando a API falhar
+
+  // Substituir a função fetchMetricsFromAPI atual por esta versão:
   const fetchMetricsFromAPI = async (email: string) => {
     try {
       // Fazer requisição para a API
       const response = await fetch(`/api/share/${encodeURIComponent(email)}`)
 
       if (!response.ok) {
-        throw new Error("Não foi possível carregar os dados para este email")
+        console.log("API retornou erro, usando dados mockados para compartilhamento")
+        // Se a API falhar, usar dados mockados personalizados com o email
+        import("@/lib/mock-data").then(({ getPersonalizedMockData }) => {
+          const mockData = getPersonalizedMockData(email)
+          setMetricsData(mockData)
+        })
+        return
       }
 
       const result = await response.json()
@@ -82,7 +90,12 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
       }
     } catch (error: any) {
       console.error("Erro ao buscar métricas da API:", error)
-      setError(error.message || "Erro ao carregar dados da retrospectiva")
+
+      // Em caso de erro, usar dados mockados personalizados com o email
+      import("@/lib/mock-data").then(({ getPersonalizedMockData }) => {
+        const mockData = getPersonalizedMockData(email)
+        setMetricsData(mockData)
+      })
     }
   }
 

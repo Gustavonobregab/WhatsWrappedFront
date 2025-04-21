@@ -15,19 +15,21 @@ type MetricsData = {
 
 interface StoriesCarouselProps {
   metricsData?: MetricsData[]
-  showOnlyDataStories?: boolean // Nova propriedade para controlar quais stories são exibidos
+  showOnlyDataStories?: boolean
+  loveMessage?: string | null
 }
 
 export function StoriesCarousel({
   metricsData = MOCK_METRICS_DATA,
   showOnlyDataStories = false,
+  loveMessage = null,
 }: StoriesCarouselProps) {
   const [currentStory, setCurrentStory] = React.useState(0)
   const [isPaused, setIsPaused] = React.useState(false)
-  const [loveMessage, setLoveMessage] = React.useState<string | null>(null)
   const [senderName, setSenderName] = React.useState<string>("Pedro")
+  const [messageLove, setMessageLove] = React.useState<string | null>(null)
 
-  // Adicione este useEffect para carregar a mensagem de amor da sessão
+  // Adicione este useEffect para carregar a mensagem de amor
   React.useEffect(() => {
     console.log("Dados recebidos no StoriesCarousel:", metricsData)
 
@@ -36,12 +38,19 @@ export function StoriesCarousel({
       setSenderName(metricsData[0].sender)
     }
 
-    // Tentar obter a mensagem de amor da sessão
-    const storedLoveMessage = sessionStorage.getItem("loveMessage")
-    if (storedLoveMessage) {
-      setLoveMessage(storedLoveMessage)
+    // Usar a mensagem de amor fornecida como prop ou tentar obter da sessão
+    if (loveMessage) {
+      setMessageLove(loveMessage)
+    } else {
+      // Tentar obter a mensagem de amor da sessão
+      const storedLoveMessage = sessionStorage.getItem("loveMessage")
+      if (storedLoveMessage) {
+        setMessageLove(storedLoveMessage)
+      }
     }
-  }, [metricsData])
+  }, [metricsData, loveMessage])
+
+  // Resto do código permanece o mesmo, apenas substitua a variável loveMessage por messageLove
 
   // Usar dados fornecidos ou dados mockados
   const user1 = metricsData && metricsData.length > 0 ? metricsData[0] : MOCK_METRICS_DATA[0]
@@ -512,7 +521,7 @@ export function StoriesCarousel({
               <div className="absolute -top-3 -left-3 text-3xl">❝</div>
               <div className="absolute -bottom-3 -right-3 text-3xl">❞</div>
               <p className="text-xl md:text-2xl italic leading-relaxed text-center">
-                {loveMessage ||
+                {messageLove ||
                   "Obrigado por compartilhar essa jornada comigo. Cada mensagem é especial e cada momento que passamos juntos é um tesouro que guardo no coração."}
               </p>
             </div>
@@ -548,6 +557,18 @@ export function StoriesCarousel({
             <span className="text-4xl md:text-5xl">🔥</span>
             <span className="text-4xl md:text-5xl">📱</span>
           </div>
+
+          {/* Adicionar esta seção para mostrar quando são dados de demonstração */}
+          {window.location.href.includes("/wrapped/") && (
+            <div className="mt-8 bg-white/20 backdrop-blur-sm rounded-lg p-4 max-w-xs mx-auto">
+              <p className="text-sm text-center">
+                Crie sua própria retrospectiva em{" "}
+                <a href="/" className="underline font-bold">
+                  whats-wrapped.vercel.app
+                </a>
+              </p>
+            </div>
+          )}
         </div>
       ),
     },
