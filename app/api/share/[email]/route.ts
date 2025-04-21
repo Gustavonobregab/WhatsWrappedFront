@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
-import { getPersonalizedMockData } from "@/lib/mock-data"
 
+// Esta API agora retorna um erro indicando que os dados não estão disponíveis
+// para usuários que não fizeram upload do arquivo
 export async function GET(request: Request, { params }: { params: { email: string } }) {
   try {
     const email = params.email
@@ -12,15 +13,14 @@ export async function GET(request: Request, { params }: { params: { email: strin
     // Decodificar o email
     const decodedEmail = decodeURIComponent(email)
 
-    // Obter dados personalizados com base no email
-    const personalizedData = getPersonalizedMockData(decodedEmail)
-
-    // Retornar os dados personalizados
-    return NextResponse.json({
-      success: true,
-      data: personalizedData,
-      shareUrl: `/wrapped/${email}`,
-    })
+    // Retornar erro indicando que os dados não estão disponíveis
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Dados não disponíveis. Apenas o proprietário pode ver esta retrospectiva após fazer upload do arquivo.",
+      },
+      { status: 404 },
+    )
   } catch (error) {
     console.error("Erro ao obter dados compartilhados:", error)
     return NextResponse.json({ success: false, error: "Erro interno ao obter dados" }, { status: 500 })

@@ -3,28 +3,19 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Loader2, Copy, Check } from "lucide-react"
+import { ArrowLeft, Loader2 } from "lucide-react"
 import { StoriesCarousel } from "@/components/stories-carousel"
 import { useRouter } from "next/navigation"
-import { toast } from "@/components/ui/use-toast"
-// Importar a função getPersonalizedMockData
-import { MOCK_METRICS_DATA, getPersonalizedMockData } from "@/lib/mock-data"
-// Adicionar o componente ShareButton
 import { ShareButton } from "@/components/share-button"
 
 export default function UserWrappedPage({ params }: { params: { email: string } }) {
   const [isLoading, setIsLoading] = useState(true)
   const [metricsData, setMetricsData] = useState<any[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [shareId, setShareId] = useState<string | null>(null)
   const [shareUrl, setShareUrl] = useState<string>("")
-  const [copied, setCopied] = useState(false)
   const router = useRouter()
   const email = decodeURIComponent(params.email)
 
-  // Manter a maior parte do código, mas ajustar a lógica para usar o email como identificador único
-
-  // Modificar a função useEffect para usar o email como identificador
   useEffect(() => {
     try {
       setIsLoading(true)
@@ -51,40 +42,19 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
           setMetricsData(parsedData)
           console.log("Métricas definidas no estado:", parsedData)
         } else {
-          console.warn("Dados inválidos na sessão, usando dados mockados")
-          setMetricsData(MOCK_METRICS_DATA)
+          setError("Dados de métricas inválidos. Por favor, tente fazer o upload novamente.")
         }
       } else {
         // Se não for o usuário atual ou não houver dados na sessão,
-        // usar dados mockados mas personalizar com o email
-        console.warn("Usando dados mockados personalizados para o email:", decodedEmail)
-
-        // Substituir a parte onde personalizamos os dados mockados
-        // Substituir:
-        // Criar uma cópia dos dados mockados e personalizar com o email
-        // const customData = [...MOCK_METRICS_DATA];
-
-        // // Extrair o nome do usuário do email (parte antes do @)
-        // const userName = decodedEmail.split('@')[0];
-        // // Capitalizar a primeira letra
-        // const capitalizedName = userName.charAt(0).toUpperCase() + userName.slice(1);
-
-        // // Personalizar o primeiro usuário com o nome extraído do email
-        // if (customData.length > 0) {
-        //   customData[0].sender = capitalizedName;
-        // }
-
-        // Por:
-        const customData = getPersonalizedMockData(decodedEmail)
-
-        setMetricsData(customData)
+        // tentar buscar da API
+        fetchMetricsFromAPI(decodedEmail)
       }
 
       // Definir a URL de compartilhamento como a URL atual
       setShareUrl(window.location.href)
     } catch (error) {
       console.error("Erro ao carregar dados de métricas:", error)
-      setMetricsData(MOCK_METRICS_DATA)
+      setError("Erro ao carregar dados. Por favor, tente novamente.")
     } finally {
       // Simular um tempo de carregamento para melhor UX
       setTimeout(() => {
@@ -93,57 +63,27 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
     }
   }, [params.email])
 
-  const handleShare = async () => {
-    // Se temos um ID de compartilhamento, usar a URL de compartilhamento
-    const url = shareId ? shareUrl : window.location.href
-    const title = `WhatsWrapped de ${metricsData.map((data) => data.sender).join(" e ")}`
-    const text = "Confira nossa retrospectiva de conversas no WhatsApp!"
+  // Função para buscar métricas da API
+  const fetchMetricsFromAPI = async (email: string) => {
+    try {
+      // Fazer requisição para a API
+      const response = await fetch(`/api/share/${encodeURIComponent(email)}`)
 
-    // Verificar se a API Web Share está disponível
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title,
-          text,
-          url,
-        })
-
-        toast({
-          title: "Compartilhado!",
-          description: "O link do seu WhatsWrapped foi compartilhado com sucesso",
-        })
-      } catch (error) {
-        console.error("Erro ao compartilhar:", error)
-        // Fallback para copiar para a área de transferência
-        copyToClipboard(url)
+      if (!response.ok) {
+        throw new Error("Não foi possível carregar os dados para este email")
       }
-    } else {
-      // Fallback para navegadores que não suportam a API Web Share
-      copyToClipboard(url)
+
+      const result = await response.json()
+
+      if (result.success && result.data) {
+        setMetricsData(result.data)
+      } else {
+        throw new Error(result.error || "Dados não encontrados")
+      }
+    } catch (error: any) {
+      console.error("Erro ao buscar métricas da API:", error)
+      setError(error.message || "Erro ao carregar dados da retrospectiva")
     }
-  }
-
-  // Função auxiliar para copiar para a área de transferência
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        setCopied(true)
-        setTimeout(() => setCopied(false), 3000)
-
-        toast({
-          title: "Link copiado!",
-          description: "O link do seu WhatsWrapped foi copiado para a área de transferência",
-        })
-      })
-      .catch((err) => {
-        console.error("Erro ao copiar link:", err)
-        toast({
-          title: "Erro",
-          description: "Não foi possível copiar o link",
-          variant: "destructive",
-        })
-      })
   }
 
   if (error) {
@@ -182,7 +122,6 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
             </Button>
             <h1 className="text-2xl font-bold">{getPageTitle()}</h1>
           </div>
-          {/* Substituir o botão de compartilhamento pelo componente ShareButton */}
           <ShareButton
             url={window.location.href}
             title={`WhatsWrapped de ${metricsData.map((data) => data.sender).join(" e ")}`}
@@ -204,27 +143,11 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
             </div>
           )}
 
-          {shareId && (
-            <div className="mt-6 bg-white p-4 rounded-lg shadow-sm">
-              <h3 className="font-medium mb-2">Link para compartilhar:</h3>
-              <div className="flex items-center gap-2">
-                <input type="text" value={shareUrl} readOnly className="flex-1 p-2 text-sm border rounded-md" />
-                <Button variant="outline" size="sm" onClick={() => copyToClipboard(shareUrl)}>
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Este link permite que qualquer pessoa veja sua retrospectiva sem precisar fazer login.
-              </p>
-            </div>
-          )}
-
           <div className="mt-8 text-center">
             <p className="text-xl text-muted-foreground mb-6">
               Gostou do seu WhatsWrapped? Compartilhe com seus amigos!
             </p>
             <div className="flex justify-center gap-4">
-              {/* E também substituir o botão de compartilhamento na parte inferior */}
               <ShareButton
                 url={window.location.href}
                 title={`WhatsWrapped de ${metricsData.map((data) => data.sender).join(" e ")}`}

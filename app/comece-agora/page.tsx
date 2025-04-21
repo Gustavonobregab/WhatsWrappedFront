@@ -11,9 +11,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-// Importar a função getPersonalizedMockData
-import { getPersonalizedMockData } from "@/lib/mock-data"
-
 export default function ComecePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -118,7 +115,6 @@ export default function ComecePage() {
     return valid
   }
 
-  // Modificar a função handleSubmit para usar o email como identificador
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -154,9 +150,20 @@ export default function ComecePage() {
         file: selectedFile ? `${selectedFile.name} (${selectedFile.size} bytes)` : "AUSENTE",
       })
 
-      // Simular processamento do arquivo
-      // Em vez de fazer uma chamada API real, vamos apenas simular um atraso
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      // Enviar para a API
+      const response = await fetch("/api/v1/metrics/upload", {
+        method: "POST",
+        body: formDataToSend,
+      })
+
+      const responseData = await response.json()
+
+      if (!response.ok) {
+        console.error("Erro na resposta:", responseData)
+        throw new Error(responseData.message || "Erro ao processar o arquivo")
+      }
+
+      console.log("Resposta da API:", responseData)
 
       // Salvar dados na sessão
       sessionStorage.setItem(
@@ -172,10 +179,15 @@ export default function ComecePage() {
         sessionStorage.setItem("loveMessage", formData.text)
       }
 
-      // Salvar métricas mockadas na sessão, mas personalizar com o nome do usuário
-      const customData = getPersonalizedMockData(formData.name.split(" ")[0])
+      // Salvar métricas na sessão
+      if (responseData.metrics && responseData.metrics.participants) {
+        sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants))
 
-      sessionStorage.setItem("metricsData", JSON.stringify(customData))
+        // Salvar ID único para uso posterior
+        if (responseData.metrics.id) {
+          sessionStorage.setItem("metricsId", responseData.metrics.id)
+        }
+      }
 
       toast({
         title: "Arquivo processado com sucesso!",
