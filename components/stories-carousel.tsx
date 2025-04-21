@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { MOCK_METRICS_DATA } from "@/lib/mock-data"
 
 type MetricsData = {
   sender: string
@@ -17,55 +18,36 @@ interface StoriesCarouselProps {
   showOnlyDataStories?: boolean // Nova propriedade para controlar quais stories são exibidos
 }
 
-export function StoriesCarousel({ metricsData = [], showOnlyDataStories = false }: StoriesCarouselProps) {
+export function StoriesCarousel({
+  metricsData = MOCK_METRICS_DATA,
+  showOnlyDataStories = false,
+}: StoriesCarouselProps) {
   const [currentStory, setCurrentStory] = React.useState(0)
   const [isPaused, setIsPaused] = React.useState(false)
   const [loveMessage, setLoveMessage] = React.useState<string | null>(null)
-  const [senderName, setSenderName] = React.useState<string>("Alguém")
+  const [senderName, setSenderName] = React.useState<string>("Pedro")
 
-  // Carregar a mensagem de amor e o nome do remetente do sessionStorage
+  // Adicione este useEffect para carregar a mensagem de amor da sessão
   React.useEffect(() => {
-    const storedMessage = sessionStorage.getItem("loveMessage")
-    if (storedMessage) {
-      setLoveMessage(storedMessage)
+    console.log("Dados recebidos no StoriesCarousel:", metricsData)
+
+    // Definir o nome do remetente para a mensagem de amor
+    if (metricsData && metricsData.length > 0) {
+      setSenderName(metricsData[0].sender)
     }
 
-    // Recuperar o nome do usuário do sessionStorage
-    const userDataStr = sessionStorage.getItem("userData")
-    if (userDataStr) {
-      try {
-        const userData = JSON.parse(userDataStr)
-        if (userData.name) {
-          // Pegar apenas o primeiro nome
-          const firstName = userData.name.split(" ")[0]
-          setSenderName(firstName)
-        }
-      } catch (error) {
-        console.error("Erro ao processar dados do usuário:", error)
-      }
+    // Tentar obter a mensagem de amor da sessão
+    const storedLoveMessage = sessionStorage.getItem("loveMessage")
+    if (storedLoveMessage) {
+      setLoveMessage(storedLoveMessage)
     }
-  }, [])
+  }, [metricsData])
 
-  // Usar dados reais se disponíveis, caso contrário usar dados de exemplo
-  const user1 = metricsData[0] || {
-    sender: "Pedro",
-    totalMessages: 12543,
-    loveMessages: 204,
-    apologyMessages: 562,
-    firstMessageDate: "2024-04-19",
-    messageStreak: 351,
-    daysStartedConversation: 162,
-  }
+  // Usar dados fornecidos ou dados mockados
+  const user1 = metricsData && metricsData.length > 0 ? metricsData[0] : MOCK_METRICS_DATA[0]
+  const user2 = metricsData && metricsData.length > 1 ? metricsData[1] : MOCK_METRICS_DATA[1]
 
-  const user2 = metricsData[1] || {
-    sender: "Beatriz",
-    totalMessages: 10000,
-    loveMessages: 362,
-    apologyMessages: 438,
-    firstMessageDate: "2024-04-19",
-    messageStreak: 351,
-    daysStartedConversation: 200,
-  }
+  console.log("Usando dados de usuários:", { user1, user2 })
 
   // Calcular a data de início da conversa
   const firstDate = new Date(user1.firstMessageDate)

@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
@@ -11,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
 import { Textarea } from "@/components/ui/textarea"
+import { registerUser, type RegisterRequest } from "@/lib/api"
 
 export default function DadosPessoaisPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -19,7 +19,7 @@ export default function DadosPessoaisPage() {
     email: "",
     cellphone: "",
     cpf: "",
-    loveMessage: "", // Nova propriedade para a mensagem de amor
+    loveMessage: "",
   })
   const [errors, setErrors] = useState({
     name: "",
@@ -28,23 +28,8 @@ export default function DadosPessoaisPage() {
     cpf: "",
     loveMessage: "",
   })
-  const [loveMessageLength, setLoveMessageLength] = useState(0) // Contador de caracteres
+  const [loveMessageLength, setLoveMessageLength] = useState(0)
   const router = useRouter()
-
-  // Verificar se o arquivo foi selecionado
-  useEffect(() => {
-    const fileSelected = sessionStorage.getItem("fileSelected")
-
-    if (!fileSelected) {
-      toast({
-        title: "Arquivo não selecionado",
-        description: "Por favor, selecione um arquivo de conversa do WhatsApp.",
-        variant: "destructive",
-      })
-      router.push("/comece-agora")
-      return
-    }
-  }, [router])
 
   const validateForm = () => {
     let valid = true
@@ -66,6 +51,12 @@ export default function DadosPessoaisPage() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!formData.email.trim() || !emailRegex.test(formData.email)) {
       newErrors.email = "Email inválido"
+      valid = false
+    }
+
+    // Validação do telefone
+    if (!formData.cellphone.trim()) {
+      newErrors.cellphone = "Telefone é obrigatório"
       valid = false
     }
 
@@ -120,93 +111,69 @@ export default function DadosPessoaisPage() {
     setIsLoading(true)
 
     try {
+      // Preparar dados para registro
+      const registerData: RegisterRequest = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.cellphone.replace(/\D/g, ""), // Remover formatação do telefone
+        cpf: formData.cpf.replace(/\D/g, ""), // Remover formatação do CPF
+      }
+
+      // Registrar usuário na API
+      const registerResponse = await registerUser(registerData)
+      console.log("Usuário registrado com sucesso:", registerResponse)
+
+      // Salvar dados do usuário e token na sessão
+      sessionStorage.setItem(
+        "userData",
+        JSON.stringify({
+          ...formData,
+          id: registerResponse.user.id,
+          token: registerResponse.token,
+        }),
+      )
+
       // Salvar a mensagem de amor no sessionStorage
       if (formData.loveMessage) {
         sessionStorage.setItem("loveMessage", formData.loveMessage)
       }
 
-      // 1. Registrar o usuário
-      // Formatando o CPF para remover pontos e traços
-      const cpfFormatted = formData.cpf.replace(/\D/g, "")
-
-      const registerData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.cellphone.replace(/\D/g, ""), // Remover formatação do telefone
-        cpf: cpfFormatted,
-      }
-
-      console.log("Enviando dados de registro:", registerData)
-
-      try {
-        const registerResponse = await fetch("/api/v1/auth/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(registerData),
-        })
-
-        if (!registerResponse.ok) {
-          const registerResult = await registerResponse.json()
-          console.error("Erro no registro:", registerResult)
-
-          // Se for um erro de usuário já existente, podemos continuar
-          if (registerResponse.status !== 409) {
-            throw new Error(registerResult.error || "Erro ao registrar usuário")
-          }
-        }
-      } catch (error) {
-        console.error("Erro na requisição de registro:", error)
-        // Não lançar erro aqui para permitir continuar com o pagamento
-      }
-
-      // 2. Gerar o pagamento PIX
-      const paymentData = {
-        name: formData.name,
-        email: formData.email,
-        cellphone: formData.cellphone,
-        cpf: formData.cpf,
-      }
-
-      try {
-        const paymentResponse = await fetch("/api/v1/payment/pix/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(paymentData),
-        })
-
-        if (!paymentResponse.ok) {
-          const paymentError = await paymentResponse.text()
-          throw new Error(`Erro ao gerar pagamento: ${paymentError}`)
-        }
-
-        const paymentResult = await paymentResponse.json()
-
-        if (!paymentResult.success || !paymentResult.data) {
-          throw new Error("Resposta inválida da API de pagamento")
-        }
-
-        sessionStorage.setItem("paymentData", JSON.stringify(paymentResult))
-      } catch (error) {
-        console.error("Erro ao gerar pagamento:", error)
-        throw error
-      }
-
-      // Armazenar os dados do usuário
-      sessionStorage.setItem("userData", JSON.stringify(formData))
-
       // Redirecionar para a página de pagamento
       router.push("/pagamento")
     } catch (error: any) {
-      console.error("Erro ao processar:", error)
-      toast({
-        title: "Erro",
-        description: error.message || "Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.",
-        variant: "destructive",
-      })
+      console.error("Erro ao registrar usuário:", error)
+
+      // Verificar se é um erro de usuário já existente
+      if (
+        error.message &&
+        (error.message.includes("já cadastrado") ||
+          error.message.includes("already exists") ||
+          error.message.includes("Email já cadastrado") ||
+          error.message.includes("CPF já cadastrado"))
+      ) {
+        // Se o usuário já existe, podemos continuar com o pagamento
+        toast({
+          title: "Usuário já registrado",
+          description: "Você já possui um cadastro. Continuando para o pagamento.",
+        })
+
+        // Salvar dados do usuário na sessão
+        sessionStorage.setItem("userData", JSON.stringify(formData))
+
+        // Salvar a mensagem de amor no sessionStorage
+        if (formData.loveMessage) {
+          sessionStorage.setItem("loveMessage", formData.loveMessage)
+        }
+
+        // Redirecionar para a página de pagamento
+        router.push("/pagamento")
+      } else {
+        toast({
+          title: "Erro ao registrar",
+          description: error.message || "Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.",
+          variant: "destructive",
+        })
+      }
     } finally {
       setIsLoading(false)
     }
@@ -290,8 +257,9 @@ export default function DadosPessoaisPage() {
                   placeholder="(99) 99999-9999"
                   value={formData.cellphone}
                   onChange={handleInputChange}
-                  className="text-lg py-6"
+                  className={`text-lg py-6 ${errors.cellphone ? "border-red-500" : ""}`}
                 />
+                {errors.cellphone && <p className="text-xs text-red-500">{errors.cellphone}</p>}
               </div>
 
               <div className="space-y-2">

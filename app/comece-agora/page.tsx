@@ -7,12 +7,15 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Upload, Loader2, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
+import { uploadFileAndGetMetrics } from "@/lib/api"
+import { MOCK_METRICS_DATA } from "@/lib/mock-data"
 
 export default function ComecePage() {
   const [step, setStep] = useState(1)
   const [isUploading, setIsUploading] = useState(false)
   const [isUploaded, setIsUploaded] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [metricsData, setMetricsData] = useState<any[] | null>(null)
   const router = useRouter()
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,22 +50,72 @@ export default function ComecePage() {
     // Armazenar o arquivo selecionado para uso posterior
     setSelectedFile(file)
 
+    try {
+      // Vamos melhorar o log para depuração
+      try {
+        // Fazer upload do arquivo e obter métricas
+        const metrics = await uploadFileAndGetMetrics(file)
+        console.log("Métricas obtidas da API:", metrics)
+
+        // Armazenar as métricas na sessão - garantir que estamos salvando corretamente
+        if (metrics && Array.isArray(metrics)) {
+          sessionStorage.setItem("metricsData", JSON.stringify(metrics))
+          setMetricsData(metrics)
+
+          // Adicionar log para confirmar o que foi salvo
+          console.log("Métricas salvas na sessão:", JSON.parse(sessionStorage.getItem("metricsData") || "[]"))
+
+          // Marcar como carregado com sucesso
+          setIsUploaded(true)
+
+          toast({
+            title: "Arquivo processado com sucesso!",
+            description: `Suas métricas foram extraídas. Participantes: ${metrics.map((m) => m.sender).join(" e ")}`,
+          })
+        } else {
+          throw new Error("Formato de resposta inválido da API")
+        }
+      } catch (error: any) {
+        console.error("Erro ao processar arquivo:", error)
+
+        toast({
+          title: "Erro ao processar arquivo",
+          description: error.message || "Ocorreu um erro ao processar seu arquivo. Usando dados de exemplo.",
+          variant: "destructive",
+        })
+
+        // Em caso de erro, usar dados mockados
+        sessionStorage.setItem("metricsData", JSON.stringify(MOCK_METRICS_DATA))
+        setMetricsData(MOCK_METRICS_DATA)
+        setIsUploaded(true)
+      }
+    } catch (error: any) {
+      console.error("Erro ao processar arquivo:", error)
+
+      toast({
+        title: "Erro ao processar arquivo",
+        description: error.message || "Ocorreu um erro ao processar seu arquivo. Usando dados de exemplo.",
+        variant: "destructive",
+      })
+
+      // Em caso de erro, usar dados mockados
+      sessionStorage.setItem("metricsData", JSON.stringify(MOCK_METRICS_DATA))
+      setMetricsData(MOCK_METRICS_DATA)
+      setIsUploaded(true)
+    } finally {
+      setIsUploading(false)
+    }
+
+    // Armazenar informações do arquivo na sessão
+    sessionStorage.setItem("fileSelected", "true")
+    sessionStorage.setItem("whatsappFile", file.name)
+
     // Criar uma URL para o arquivo
     const fileURL = URL.createObjectURL(file)
-
-    // Armazenar a URL do arquivo no sessionStorage
     sessionStorage.setItem("whatsappFileBlob", fileURL)
-    sessionStorage.setItem("whatsappFile", file.name)
-    sessionStorage.setItem("fileSelected", "true")
 
-    // Marcar o arquivo como validado automaticamente
+    // Marcar o arquivo como validado
     sessionStorage.setItem("fileValidated", "true")
-
-    // Simular o upload do arquivo
-    setTimeout(() => {
-      setIsUploading(false)
-      setIsUploaded(true)
-    }, 1500)
   }
 
   const handleContinue = () => {
@@ -256,6 +309,26 @@ export default function ComecePage() {
                         : `${((selectedFile?.size || 0) / 1024 / 1024).toFixed(2)} MB`}
                       )
                     </p>
+
+                    {metricsData && (
+                      <div className="mt-4 p-4 bg-gray-50 rounded-lg text-left">
+                        <h4 className="font-medium mb-2">Métricas extraídas:</h4>
+                        <ul className="space-y-1 text-sm">
+                          <li>
+                            <span className="font-medium">Participantes:</span>{" "}
+                            {metricsData.map((user) => user.sender).join(", ")}
+                          </li>
+                          <li>
+                            <span className="font-medium">Total de mensagens:</span>{" "}
+                            {metricsData.reduce((sum, user) => sum + user.totalMessages, 0)}
+                          </li>
+                          <li>
+                            <span className="font-medium">Mensagens de amor:</span>{" "}
+                            {metricsData.reduce((sum, user) => sum + user.loveMessages, 0)}
+                          </li>
+                        </ul>
+                      </div>
+                    )}
 
                     <div className="relative mt-4">
                       <input

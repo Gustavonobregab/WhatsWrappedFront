@@ -7,6 +7,7 @@ import { ArrowLeft, Share2, Loader2 } from "lucide-react"
 import { StoriesCarousel } from "@/components/stories-carousel"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
+import { MOCK_METRICS_DATA } from "@/lib/mock-data"
 
 export default function UserWrappedPage({ params }: { params: { email: string } }) {
   const [isLoading, setIsLoading] = useState(true)
@@ -15,109 +16,41 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
   const router = useRouter()
   const email = decodeURIComponent(params.email)
 
+  // Carregar dados de métricas da sessão
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setIsLoading(true)
+    try {
+      setIsLoading(true)
 
-        // Tentar obter os dados da sessão
-        const sessionData = sessionStorage.getItem("metricsData")
-        if (sessionData) {
-          try {
-            const parsedData = JSON.parse(sessionData)
-            if (Array.isArray(parsedData) && parsedData.length > 0) {
-              console.log("Usando dados da sessão:", parsedData)
-              setMetricsData(parsedData)
-              setIsLoading(false)
-              return
-            }
-          } catch (e) {
-            console.error("Erro ao analisar dados da sessão:", e)
-          }
+      // Tentar obter dados da sessão
+      const metricsDataStr = sessionStorage.getItem("metricsData")
+      console.log("Dados brutos da sessão:", metricsDataStr)
+
+      if (metricsDataStr) {
+        const parsedData = JSON.parse(metricsDataStr)
+        console.log("Dados parseados da sessão:", parsedData)
+
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+          setMetricsData(parsedData)
+          console.log("Métricas definidas no estado:", parsedData)
+        } else {
+          console.warn("Dados inválidos na sessão, usando dados mockados")
+          setMetricsData(MOCK_METRICS_DATA)
         }
-
-        // Se não conseguiu obter dados válidos da sessão, tentar da API
-        try {
-          console.log("Buscando dados da API para o email:", email)
-          const response = await fetch(`/api/v1/metrics/${encodeURIComponent(email)}`)
-
-          if (response.ok) {
-            const data = await response.json()
-            console.log("Resposta da API:", data)
-
-            if (data.success && data.data && Array.isArray(data.data) && data.data.length > 0) {
-              setMetricsData(data.data)
-              sessionStorage.setItem("metricsData", JSON.stringify(data.data))
-              setIsLoading(false)
-              return
-            }
-          }
-        } catch (apiError) {
-          console.error("Erro ao buscar dados da API:", apiError)
-        }
-
-        // Se chegou aqui, não conseguiu obter dados válidos nem da sessão nem da API
-        // Usar dados de exemplo como último recurso
-        const EXAMPLE_DATA = [
-          {
-            sender: "Usuário",
-            totalMessages: 3542,
-            loveMessages: 21,
-            apologyMessages: 6,
-            firstMessageDate: "2024-04-19",
-            messageStreak: 31,
-            daysStartedConversation: 155,
-          },
-          {
-            sender: "Contato",
-            totalMessages: 4380,
-            loveMessages: 40,
-            apologyMessages: 1,
-            firstMessageDate: "2024-04-19",
-            messageStreak: 31,
-            daysStartedConversation: 153,
-          },
-        ]
-
-        console.log("Usando dados de exemplo como último recurso")
-        setMetricsData(EXAMPLE_DATA)
-        sessionStorage.setItem("metricsData", JSON.stringify(EXAMPLE_DATA))
-        setIsLoading(false)
-      } catch (error: any) {
-        console.error("Erro ao carregar dados:", error)
-        setError(error.message || "Erro ao carregar dados do WhatsWrapped")
-
-        // Mesmo com erro, tentar usar dados de exemplo
-        const EXAMPLE_DATA = [
-          {
-            sender: "Usuário",
-            totalMessages: 3542,
-            loveMessages: 21,
-            apologyMessages: 6,
-            firstMessageDate: "2024-04-19",
-            messageStreak: 31,
-            daysStartedConversation: 155,
-          },
-          {
-            sender: "Contato",
-            totalMessages: 4380,
-            loveMessages: 40,
-            apologyMessages: 1,
-            firstMessageDate: "2024-04-19",
-            messageStreak: 31,
-            daysStartedConversation: 153,
-          },
-        ]
-
-        setMetricsData(EXAMPLE_DATA)
-        sessionStorage.setItem("metricsData", JSON.stringify(EXAMPLE_DATA))
-        setError(null) // Limpar o erro já que temos dados de exemplo
-        setIsLoading(false)
+      } else {
+        // Se não houver dados na sessão, usar dados mockados
+        console.warn("Dados de métricas não encontrados na sessão, usando dados mockados")
+        setMetricsData(MOCK_METRICS_DATA)
       }
+    } catch (error) {
+      console.error("Erro ao carregar dados de métricas:", error)
+      setMetricsData(MOCK_METRICS_DATA)
+    } finally {
+      // Simular um tempo de carregamento para melhor UX
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 1000)
     }
-
-    fetchUserData()
-  }, [email])
+  }, [])
 
   const handleShare = async () => {
     const url = window.location.href

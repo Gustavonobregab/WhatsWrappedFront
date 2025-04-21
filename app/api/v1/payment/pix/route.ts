@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { API_ENDPOINTS, type PaymentRequest, type PaymentResponse } from "@/lib/api-config"
+import { API_ENDPOINTS, type PaymentRequest } from "@/lib/api"
 
 export async function POST(request: Request) {
   try {
@@ -19,7 +19,21 @@ export async function POST(request: Request) {
       body: JSON.stringify(body),
     })
 
-    const data: PaymentResponse = await response.json()
+    // Obter o texto da resposta
+    const responseText = await response.text()
+    console.log("Resposta da API de pagamento (texto):", responseText)
+
+    // Tentar converter para JSON
+    let data
+    try {
+      data = JSON.parse(responseText)
+    } catch (e) {
+      console.error("Erro ao parsear resposta de pagamento:", e)
+      return NextResponse.json(
+        { success: false, error: "Erro ao processar resposta da API de pagamento", rawResponse: responseText },
+        { status: 500 },
+      )
+    }
 
     // Se a resposta não for bem-sucedida, retornar o erro
     if (!response.ok) {

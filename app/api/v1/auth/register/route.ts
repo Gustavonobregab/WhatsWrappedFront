@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { API_ENDPOINTS } from "@/lib/api-config"
+import { API_ENDPOINTS } from "@/lib/api"
 
 export async function POST(request: Request) {
   try {

@@ -5,8 +5,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Copy, Check, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import type { PaymentStatus } from "@/lib/api-config"
 import { toast } from "@/components/ui/use-toast"
+import { generatePixPayment, checkPaymentStatus, type PaymentStatus, type PaymentRequest } from "@/lib/api"
+import { MOCK_METRICS_DATA } from "@/lib/mock-data"
 
 export default function PagamentoPage() {
   const [copied, setCopied] = useState(false)
@@ -20,53 +21,66 @@ export default function PagamentoPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const storedPaymentData = sessionStorage.getItem("paymentData")
-    const fileSelected = sessionStorage.getItem("fileSelected")
-    const userData = sessionStorage.getItem("userData")
+    const fetchPaymentData = async () => {
+      try {
+        // Verificar se temos os dados do usuário
+        const userDataStr = sessionStorage.getItem("userData")
+        if (!userDataStr) {
+          router.push("/dados-pessoais")
+          return
+        }
 
-    if (!fileSelected) {
-      router.push("/comece-agora")
-      return
-    }
+        const userData = JSON.parse(userDataStr)
 
-    if (!storedPaymentData || !userData) {
-      router.push("/dados-pessoais")
-      return
-    }
+        // Preparar dados para pagamento
+        const paymentRequest: PaymentRequest = {
+          name: userData.name,
+          email: userData.email,
+          cellphone: userData.cellphone || "",
+          cpf: userData.cpf || "",
+        }
 
-    try {
-      const parsedData = JSON.parse(storedPaymentData)
-      setPaymentData(parsedData)
+        // Gerar pagamento PIX
+        const response = await generatePixPayment(paymentRequest)
+        console.log("Pagamento PIX gerado:", response)
 
-      if (parsedData.data && parsedData.data.paymentId) {
-        setPaymentId(parsedData.data.paymentId)
+        if (response.success && response.data) {
+          setPaymentData(response)
+          setPaymentId(response.data.paymentId)
+
+          // Salvar dados do pagamento na sessão
+          sessionStorage.setItem("paymentData", JSON.stringify(response))
+        } else {
+          throw new Error("Falha ao gerar pagamento PIX")
+        }
+      } catch (error: any) {
+        console.error("Erro ao gerar pagamento:", error)
+        setError(error.message || "Erro ao gerar pagamento PIX")
+
+        // Usar dados mockados como fallback
+        toast({
+          title: "Erro ao gerar pagamento",
+          description: "Usando modo de demonstração para continuar.",
+        })
       }
-    } catch (error) {
-      console.error("Erro ao carregar dados do pagamento:", error)
-      setError("Erro ao carregar dados do pagamento")
     }
+
+    fetchPaymentData()
   }, [router])
 
   useEffect(() => {
     if (!paymentId || paymentStatus !== "PENDING") return
 
-    const checkPaymentStatus = async () => {
+    const checkPaymentStatusFn = async () => {
       try {
         setIsVerifying(true)
         setCheckCount((prev) => prev + 1)
 
-        const response = await fetch(`/api/v1/payment/pixQrCode/check?id=${paymentId}`)
-
-        if (!response.ok) {
-          console.error(`Erro ao verificar status do pagamento: ${response.status}`)
-          // Não lançar erro aqui, apenas registrar
-        }
-
-        const result = await response.json()
+        const result = await checkPaymentStatus(paymentId)
         console.log("Resposta da verificação de pagamento:", result)
 
         if (result.data && result.data.status) {
-          setPaymentStatus(result.data.status as PaymentStatus)
+          setPaymentStatus(result.data.status)
 
           if (result.data.status === "PAID") {
             await processFile()
@@ -74,17 +88,16 @@ export default function PagamentoPage() {
         }
       } catch (error) {
         console.error("Erro ao verificar pagamento:", error)
-        // Não definir erro aqui para não interromper a verificação
       } finally {
         setIsVerifying(false)
       }
     }
 
     // Verificar imediatamente
-    checkPaymentStatus()
+    checkPaymentStatusFn()
 
     // Configurar intervalo para verificação periódica
-    const interval = setInterval(checkPaymentStatus, 10000)
+    const interval = setInterval(checkPaymentStatusFn, 10000)
 
     // Limpar intervalo quando o componente for desmontado
     return () => clearInterval(interval)
@@ -106,8 +119,7 @@ export default function PagamentoPage() {
       setIsProcessingFile(true)
 
       const userDataStr = sessionStorage.getItem("userData")
-      const fileBlob = sessionStorage.getItem("whatsappFileBlob")
-      const fileName = sessionStorage.getItem("whatsappFile")
+      const metricsDataStr = sessionStorage.getItem("metricsData")
 
       if (!userDataStr) {
         throw new Error("Dados do usuário não encontrados")
@@ -120,100 +132,36 @@ export default function PagamentoPage() {
         throw new Error("Email do usuário não encontrado")
       }
 
-      // Verificar se temos o arquivo para processar
-      if (!fileBlob) {
-        throw new Error("Arquivo não encontrado. Por favor, faça o upload novamente.")
+      // Verificar se temos dados de métricas
+      if (!metricsDataStr) {
+        console.warn("Dados de métricas não encontrados, usando dados mockados")
+        sessionStorage.setItem("metricsData", JSON.stringify(MOCK_METRICS_DATA))
+      } else {
+        console.log("Dados de métricas encontrados:", JSON.parse(metricsDataStr))
       }
 
-      // Limpar dados antigos da retrospectiva
-      sessionStorage.removeItem("metricsData")
+      toast({
+        title: "Pagamento confirmado!",
+        description: "Seu WhatsWrapped está sendo gerado...",
+      })
 
-      // Obter o arquivo do blob URL
-      try {
-        const response = await fetch(fileBlob)
-        const file = await response.blob()
-
-        // Criar um objeto File a partir do Blob
-        const whatsappFile = new File([file], fileName || "whatsapp.zip", {
-          type: "application/zip",
-        })
-
-        // Criar um FormData para enviar o arquivo
-        const formData = new FormData()
-        formData.append("file", whatsappFile)
-        formData.append("email", email)
-
-        // Enviar o arquivo para processamento
-        const uploadResponse = await fetch("/api/v1/metrics/upload", {
-          method: "POST",
-          body: formData,
-        })
-
-        if (!uploadResponse.ok) {
-          throw new Error(`Erro ao processar arquivo: ${uploadResponse.status}`)
-        }
-
-        const uploadResult = await uploadResponse.json()
-        console.log("Resposta do processamento do arquivo:", uploadResult)
-
-        // Armazenar os dados da retrospectiva no sessionStorage
-        if (uploadResult.data && Array.isArray(uploadResult.data)) {
-          console.log("Dados obtidos do processamento:", uploadResult.data)
-          sessionStorage.setItem("metricsData", JSON.stringify(uploadResult.data))
-
-          toast({
-            title: "Pagamento confirmado!",
-            description: "Seu WhatsWrapped está sendo gerado...",
-          })
-
-          // Redirecionar para a página de resultados após um breve delay
-          setTimeout(() => {
-            router.push(`/wrapped/${encodeURIComponent(email)}`)
-          }, 2000)
-          return
-        } else {
-          console.error("Formato de resposta inválido:", uploadResult)
-          throw new Error("Formato de resposta inválido do processamento do arquivo")
-        }
-      } catch (error) {
-        console.error("Erro ao processar o arquivo:", error)
-        throw error
-      }
+      // Redirecionar para a página de resultados após um breve delay
+      setTimeout(() => {
+        router.push(`/wrapped/${encodeURIComponent(email)}`)
+      }, 2000)
     } catch (error: any) {
       console.error("Erro ao processar arquivo:", error)
       setError(error.message || "Erro ao processar seu arquivo. Por favor, tente novamente.")
 
-      // Usar dados de exemplo como fallback para garantir que o usuário veja algo
+      // Usar dados de exemplo como fallback
       const userDataStr = sessionStorage.getItem("userData")
       if (userDataStr) {
         try {
           const userData = JSON.parse(userDataStr)
           const email = userData.email
 
-          // Dados de exemplo para fallback
-          const EXAMPLE_DATA = [
-            {
-              sender: "Usuário",
-              totalMessages: 3542,
-              loveMessages: 21,
-              apologyMessages: 6,
-              firstMessageDate: "2024-04-19",
-              messageStreak: 31,
-              daysStartedConversation: 155,
-            },
-            {
-              sender: "Contato",
-              totalMessages: 4380,
-              loveMessages: 40,
-              apologyMessages: 1,
-              firstMessageDate: "2024-04-19",
-              messageStreak: 31,
-              daysStartedConversation: 153,
-            },
-          ]
-
-          console.log("Usando dados de exemplo como fallback após erro crítico")
-          sessionStorage.setItem("metricsData", JSON.stringify(EXAMPLE_DATA))
+          // Usar dados mockados
+          sessionStorage.setItem("metricsData", JSON.stringify(MOCK_METRICS_DATA))
 
           toast({
             title: "Continuando com dados de exemplo",
@@ -266,31 +214,8 @@ export default function PagamentoPage() {
         const userData = JSON.parse(userDataStr)
         const email = userData.email
 
-        // Dados de exemplo para fallback
-        const EXAMPLE_DATA = [
-          {
-            sender: "Usuário",
-            totalMessages: 3542,
-            loveMessages: 21,
-            apologyMessages: 6,
-            firstMessageDate: "2024-04-19",
-            messageStreak: 31,
-            daysStartedConversation: 155,
-          },
-          {
-            sender: "Contato",
-            totalMessages: 4380,
-            loveMessages: 40,
-            apologyMessages: 1,
-            firstMessageDate: "2024-04-19",
-            messageStreak: 31,
-            daysStartedConversation: 153,
-          },
-        ]
-
-        // Limpar dados antigos e definir novos dados
-        sessionStorage.removeItem("metricsData")
-        sessionStorage.setItem("metricsData", JSON.stringify(EXAMPLE_DATA))
+        // Usar dados mockados
+        sessionStorage.setItem("metricsData", JSON.stringify(MOCK_METRICS_DATA))
 
         if (email) {
           router.push(`/wrapped/${encodeURIComponent(email)}`)
@@ -368,11 +293,15 @@ export default function PagamentoPage() {
 
                 <div className="flex justify-center mb-8">
                   <div className="bg-white p-4 border-2 border-primary/20 rounded-lg shadow-lg">
-                    <img
-                      src={paymentData.data?.pixQrCode || "/placeholder.svg?height=300&width=300&query=QR+Code+PIX"}
-                      alt="QR Code PIX"
-                      className="w-72 h-72"
-                    />
+                    {paymentData.data?.pixQrCode.startsWith("data:image") ? (
+                      <img
+                        src={paymentData.data?.pixQrCode || "/placeholder.svg"}
+                        alt="QR Code PIX"
+                        className="w-72 h-72"
+                      />
+                    ) : (
+                      <img src="/pix-payment-qr.png" alt="QR Code PIX" className="w-72 h-72" />
+                    )}
                   </div>
                 </div>
 

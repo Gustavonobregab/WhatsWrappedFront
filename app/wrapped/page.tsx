@@ -9,17 +9,15 @@ export default function WrappedRedirectPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Recuperar os dados do usuário do sessionStorage
+    // Tentar obter o email do usuário da sessão
     const userDataStr = sessionStorage.getItem("userData")
 
     if (userDataStr) {
       try {
         const userData = JSON.parse(userDataStr)
-        const email = userData.email
-
-        if (email) {
-          // Redirecionar para a página personalizada do usuário
-          router.push(`/wrapped/${encodeURIComponent(email)}`)
+        if (userData.email) {
+          // Redirecionar para a página personalizada
+          router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
           return
         }
       } catch (error) {
@@ -27,7 +25,7 @@ export default function WrappedRedirectPage() {
       }
     }
 
-    // Se não encontrar o email ou ocorrer um erro, redirecionar para a página inicial
+    // Se não encontrar o email, redirecionar para a página inicial
     router.push("/")
   }, [router])
 
