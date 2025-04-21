@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server"
 
-// Esta API agora retorna um erro indicando que os dados não estão disponíveis
-// para usuários que não fizeram upload do arquivo
 export async function GET(request: Request, { params }: { params: { email: string } }) {
   try {
     const email = params.email

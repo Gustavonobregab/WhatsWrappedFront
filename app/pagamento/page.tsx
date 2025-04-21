@@ -6,19 +6,17 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Copy, Check, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
-import { generatePixPayment, checkPaymentStatus, type PaymentStatus, type PaymentRequest } from "@/lib/api"
 
 export default function PagamentoPage() {
   const [copied, setCopied] = useState(false)
   const [isVerifying, setIsVerifying] = useState(false)
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("PENDING")
+  const [paymentStatus, setPaymentStatus] = useState("PENDING")
   const [paymentData, setPaymentData] = useState<any>(null)
   const [paymentId, setPaymentId] = useState("")
   const [error, setError] = useState("")
   const [isProcessingFile, setIsProcessingFile] = useState(false)
   const [checkCount, setCheckCount] = useState(0)
   const [userData, setUserData] = useState<any>(null)
-  const [metricsId, setMetricsId] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -32,92 +30,18 @@ export default function PagamentoPage() {
     const userData = JSON.parse(userDataStr)
     setUserData(userData)
 
-    // Carregar ID das métricas
-    const metricsId = sessionStorage.getItem("metricsId")
-    if (metricsId) {
-      setMetricsId(metricsId)
-    }
-
-    const fetchPaymentData = async () => {
-      try {
-        // Preparar dados para pagamento
-        const paymentRequest: PaymentRequest = {
-          name: userData.name,
-          email: userData.email,
-          cpf: userData.cpf || "",
-        }
-
-        // Gerar pagamento PIX
-        const response = await generatePixPayment(paymentRequest)
-        console.log("Pagamento PIX gerado:", response)
-
-        if (response.success && response.data) {
-          setPaymentData(response)
-          setPaymentId(response.data.paymentId)
-
-          // Salvar dados do pagamento na sessão
-          sessionStorage.setItem("paymentData", JSON.stringify(response))
-        } else {
-          throw new Error("Falha ao gerar pagamento PIX")
-        }
-      } catch (error: any) {
-        console.error("Erro ao gerar pagamento:", error)
-        setError(error.message || "Erro ao gerar pagamento PIX")
-
-        // Usar dados mockados como fallback
-        toast({
-          title: "Erro ao gerar pagamento",
-          description: "Usando modo de demonstração para continuar.",
-        })
-      }
-    }
-
-    fetchPaymentData()
+    // Simular dados de pagamento para demonstração
+    setPaymentData({
+      data: {
+        pixCode:
+          "00020101021226890014br.gov.bcb.pix2567pix.example.com/v2/9d36b84f-c70b-478f-b95c-12345678901552040000530398654041.005802BR5925EMPRESA EXEMPLO PAGAMENTO6009SAO PAULO62070503***63044D11",
+        pixQrCode: "/pix-payment-qr.png",
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        paymentId: "mock-payment-id-12345",
+      },
+    })
+    setPaymentId("mock-payment-id-12345")
   }, [router])
-
-  useEffect(() => {
-    if (!paymentId || paymentStatus !== "PENDING") return
-
-    const checkPaymentStatusFn = async () => {
-      try {
-        setIsVerifying(true)
-        setCheckCount((prev) => prev + 1)
-
-        console.log("Verificando status do pagamento para ID:", paymentId)
-
-        // Usar a rota correta para verificar o status do pagamento
-        const result = await checkPaymentStatus(paymentId)
-        console.log("Resposta da verificação de pagamento:", result)
-
-        if (result.data && result.data.status) {
-          const newStatus = result.data.status
-          setPaymentStatus(newStatus)
-          console.log("Status do pagamento atualizado para:", newStatus)
-
-          // Só processar o pagamento se o status for "PAID"
-          if (newStatus === "PAID") {
-            console.log("Pagamento confirmado! Processando...")
-            await processPayment()
-          } else {
-            console.log("Pagamento ainda não confirmado. Status atual:", newStatus)
-          }
-        }
-      } catch (error) {
-        console.error("Erro ao verificar pagamento:", error)
-      } finally {
-        setIsVerifying(false)
-      }
-    }
-
-    // Verificar imediatamente
-    checkPaymentStatusFn()
-
-    // Configurar intervalo para verificação periódica (a cada 5 segundos)
-    const interval = setInterval(checkPaymentStatusFn, 5000)
-
-    // Limpar intervalo quando o componente for desmontado
-    return () => clearInterval(interval)
-  }, [paymentId, paymentStatus])
 
   // Efeito para simular pagamento após muitas verificações
   useEffect(() => {
@@ -130,7 +54,6 @@ export default function PagamentoPage() {
     }
   }, [checkCount, paymentStatus])
 
-  // Modificar a função processPayment para usar o email como identificador
   const processPayment = async () => {
     try {
       setIsProcessingFile(true)
@@ -162,7 +85,6 @@ export default function PagamentoPage() {
     }
   }
 
-  // Modificar a função skipToResults para usar o email como identificador
   const skipToResults = () => {
     if (userData && userData.email) {
       // Ir diretamente para a página de wrapped usando o email
@@ -214,35 +136,35 @@ export default function PagamentoPage() {
     })
 
     try {
-      const result = await checkPaymentStatus(paymentId)
-      console.log("Verificação manual do pagamento:", result)
+      // Simular verificação de pagamento
+      setCheckCount((prev) => prev + 1)
 
-      if (result.data && result.data.status) {
-        const newStatus = result.data.status
-        setPaymentStatus(newStatus)
+      setTimeout(() => {
+        setIsVerifying(false)
 
-        if (newStatus === "PAID") {
+        // Após 3 verificações, simular pagamento confirmado
+        if (checkCount >= 2) {
+          setPaymentStatus("PAID")
           toast({
             title: "Pagamento confirmado!",
             description: "Seu pagamento foi confirmado com sucesso.",
           })
-          await processPayment()
+          processPayment()
         } else {
           toast({
             title: "Pagamento pendente",
-            description: `Status atual: ${newStatus}. Por favor, complete o pagamento.`,
+            description: "Por favor, complete o pagamento.",
           })
         }
-      }
+      }, 2000)
     } catch (error) {
       console.error("Erro ao verificar pagamento manualmente:", error)
+      setIsVerifying(false)
       toast({
         title: "Erro",
         description: "Não foi possível verificar o status do pagamento",
         variant: "destructive",
       })
-    } finally {
-      setIsVerifying(false)
     }
   }
 
@@ -316,15 +238,7 @@ export default function PagamentoPage() {
 
                 <div className="flex justify-center mb-8">
                   <div className="bg-white p-4 border-2 border-primary/20 rounded-lg shadow-lg">
-                    {paymentData.data?.pixQrCode.startsWith("data:image") ? (
-                      <img
-                        src={paymentData.data?.pixQrCode || "/placeholder.svg"}
-                        alt="QR Code PIX"
-                        className="w-72 h-72"
-                      />
-                    ) : (
-                      <img src="/pix-payment-qr.png" alt="QR Code PIX" className="w-72 h-72" />
-                    )}
+                    <img src="/pix-payment-qr.png" alt="QR Code PIX" className="w-72 h-72" />
                   </div>
                 </div>
 

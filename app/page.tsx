@@ -27,9 +27,6 @@ export default function Home() {
             <Link href="#pricing" className="text-sm font-medium hover:text-primary">
               Preço
             </Link>
-            <Link href="#beneficios" className="text-sm font-medium hover:text-primary">
-              Benefícios
-            </Link>
           </nav>
           <Button asChild>
             <Link href="/comece-agora">Comece Agora</Link>
@@ -41,8 +38,6 @@ export default function Home() {
         <MetricsSection />
         <HowItWorksSection />
         <PricingSection />
-        {/*  <TestimonialsSection /> */}
-        {/* <BenefitsSection /> */}
         <CtaSection />
       </main>
       <Footer />
