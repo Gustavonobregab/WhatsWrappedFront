@@ -27,11 +27,29 @@ export default function DadosPessoaisPage() {
   })
   const router = useRouter()
 
-  // Verificar se o arquivo foi selecionado
+  // Verificar se o arquivo foi selecionado e validado
   useEffect(() => {
     const fileSelected = sessionStorage.getItem("fileSelected")
+    const fileValidated = sessionStorage.getItem("fileValidated")
+
     if (!fileSelected) {
+      toast({
+        title: "Arquivo não selecionado",
+        description: "Por favor, selecione um arquivo de conversa do WhatsApp.",
+        variant: "destructive",
+      })
       router.push("/comece-agora")
+      return
+    }
+
+    if (!fileValidated) {
+      toast({
+        title: "Arquivo não validado",
+        description: "Por favor, selecione um arquivo de conversa do WhatsApp válido.",
+        variant: "destructive",
+      })
+      router.push("/comece-agora")
+      return
     }
   }, [router])
 
@@ -103,6 +121,54 @@ export default function DadosPessoaisPage() {
     setIsLoading(true)
 
     try {
+      // Primeiro, processar o arquivo para garantir que os dados sejam válidos
+      const fileBlob = sessionStorage.getItem("whatsappFileBlob")
+      const fileName = sessionStorage.getItem("whatsappFile")
+
+      if (!fileBlob || !fileName) {
+        throw new Error("Arquivo não encontrado. Por favor, faça o upload novamente.")
+      }
+
+      // Processar o arquivo antes de prosseguir com o pagamento
+      try {
+        const response = await fetch(fileBlob)
+        const blob = await response.blob()
+        const file = new File([blob], fileName, { type: "application/zip" })
+
+        const formData = new FormData()
+        formData.append("file", file)
+        formData.append("email", formData.email)
+
+        toast({
+          title: "Processando arquivo",
+          description: "Estamos validando seu arquivo antes de prosseguir...",
+        })
+
+        const uploadResponse = await fetch("/api/v1/metrics/upload", {
+          method: "POST",
+          body: formData,
+        })
+
+        if (!uploadResponse.ok) {
+          throw new Error("Não foi possível processar o arquivo. Por favor, tente novamente.")
+        }
+
+        const metricsData = await uploadResponse.json()
+
+        // Verificar se os dados foram processados corretamente
+        if (!metricsData.success || !metricsData.data || metricsData.data.length === 0) {
+          throw new Error(
+            "Não foi possível extrair dados do arquivo. Por favor, verifique se é um arquivo de conversa do WhatsApp válido.",
+          )
+        }
+
+        // Armazenar os dados processados
+        sessionStorage.setItem("metricsData", JSON.stringify(metricsData.data))
+      } catch (error) {
+        console.error("Erro ao processar arquivo:", error)
+        throw new Error("Erro ao processar o arquivo. Por favor, tente novamente.")
+      }
+
       // 1. Registrar o usuário
       // Formatando o CPF para remover pontos e traços
       const cpfFormatted = formData.cpf.replace(/\D/g, "")
@@ -137,6 +203,7 @@ export default function DadosPessoaisPage() {
           // Verificar se é um erro de usuário já existente
           if (
             registerResponse.status === 409 ||
+            registerResponse.status === 400 ||
             (registerResult.error &&
               (registerResult.error.includes("já cadastrado") ||
                 registerResult.error.includes("already exists") ||
