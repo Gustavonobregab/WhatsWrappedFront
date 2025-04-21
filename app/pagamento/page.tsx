@@ -7,7 +7,6 @@ import { ArrowLeft, Copy, Check, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
 import { generatePixPayment, checkPaymentStatus, type PaymentStatus, type PaymentRequest } from "@/lib/api"
-import { MOCK_METRICS_DATA } from "@/lib/mock-data"
 
 export default function PagamentoPage() {
   const [copied, setCopied] = useState(false)
@@ -18,25 +17,33 @@ export default function PagamentoPage() {
   const [error, setError] = useState("")
   const [isProcessingFile, setIsProcessingFile] = useState(false)
   const [checkCount, setCheckCount] = useState(0)
+  const [userData, setUserData] = useState<any>(null)
+  const [metricsId, setMetricsId] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
+    // Carregar dados do usuário da sessão
+    const userDataStr = sessionStorage.getItem("userData")
+    if (!userDataStr) {
+      router.push("/comece-agora")
+      return
+    }
+
+    const userData = JSON.parse(userDataStr)
+    setUserData(userData)
+
+    // Carregar ID das métricas
+    const metricsId = sessionStorage.getItem("metricsId")
+    if (metricsId) {
+      setMetricsId(metricsId)
+    }
+
     const fetchPaymentData = async () => {
       try {
-        // Verificar se temos os dados do usuário
-        const userDataStr = sessionStorage.getItem("userData")
-        if (!userDataStr) {
-          router.push("/dados-pessoais")
-          return
-        }
-
-        const userData = JSON.parse(userDataStr)
-
         // Preparar dados para pagamento
         const paymentRequest: PaymentRequest = {
           name: userData.name,
           email: userData.email,
-          cellphone: userData.cellphone || "",
           cpf: userData.cpf || "",
         }
 
@@ -76,14 +83,23 @@ export default function PagamentoPage() {
         setIsVerifying(true)
         setCheckCount((prev) => prev + 1)
 
+        console.log("Verificando status do pagamento para ID:", paymentId)
+
+        // Usar a rota correta para verificar o status do pagamento
         const result = await checkPaymentStatus(paymentId)
         console.log("Resposta da verificação de pagamento:", result)
 
         if (result.data && result.data.status) {
-          setPaymentStatus(result.data.status)
+          const newStatus = result.data.status
+          setPaymentStatus(newStatus)
+          console.log("Status do pagamento atualizado para:", newStatus)
 
-          if (result.data.status === "PAID") {
-            await processFile()
+          // Só processar o pagamento se o status for "PAID"
+          if (newStatus === "PAID") {
+            console.log("Pagamento confirmado! Processando...")
+            await processPayment()
+          } else {
+            console.log("Pagamento ainda não confirmado. Status atual:", newStatus)
           }
         }
       } catch (error) {
@@ -96,8 +112,8 @@ export default function PagamentoPage() {
     // Verificar imediatamente
     checkPaymentStatusFn()
 
-    // Configurar intervalo para verificação periódica
-    const interval = setInterval(checkPaymentStatusFn, 10000)
+    // Configurar intervalo para verificação periódica (a cada 5 segundos)
+    const interval = setInterval(checkPaymentStatusFn, 5000)
 
     // Limpar intervalo quando o componente for desmontado
     return () => clearInterval(interval)
@@ -114,30 +130,37 @@ export default function PagamentoPage() {
     }
   }, [checkCount, paymentStatus])
 
-  const processFile = async () => {
+  const processPayment = async () => {
     try {
       setIsProcessingFile(true)
 
-      const userDataStr = sessionStorage.getItem("userData")
-      const metricsDataStr = sessionStorage.getItem("metricsData")
-
-      if (!userDataStr) {
+      if (!userData || !userData.email) {
         throw new Error("Dados do usuário não encontrados")
       }
 
-      const userData = JSON.parse(userDataStr)
-      const email = userData.email
+      // Notificar o backend sobre o pagamento confirmado
+      const response = await fetch("/api/v1/payment/confirm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userData.email,
+          metricsId: metricsId,
+        }),
+      })
 
-      if (!email) {
-        throw new Error("Email do usuário não encontrado")
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Erro ao confirmar pagamento")
       }
 
-      // Verificar se temos dados de métricas
-      if (!metricsDataStr) {
-        console.warn("Dados de métricas não encontrados, usando dados mockados")
-        sessionStorage.setItem("metricsData", JSON.stringify(MOCK_METRICS_DATA))
-      } else {
-        console.log("Dados de métricas encontrados:", JSON.parse(metricsDataStr))
+      const result = await response.json()
+      console.log("Confirmação de pagamento:", result)
+
+      // Salvar o permalink na sessão
+      if (result.permalink) {
+        sessionStorage.setItem("permalink", result.permalink)
       }
 
       toast({
@@ -147,34 +170,20 @@ export default function PagamentoPage() {
 
       // Redirecionar para a página de resultados após um breve delay
       setTimeout(() => {
-        router.push(`/wrapped/${encodeURIComponent(email)}`)
+        if (result.permalink) {
+          router.push(result.permalink)
+        } else {
+          router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
+        }
       }, 2000)
     } catch (error: any) {
-      console.error("Erro ao processar arquivo:", error)
-      setError(error.message || "Erro ao processar seu arquivo. Por favor, tente novamente.")
+      console.error("Erro ao processar pagamento:", error)
+      setError(error.message || "Erro ao processar seu pagamento. Por favor, tente novamente.")
 
-      // Usar dados de exemplo como fallback
-      const userDataStr = sessionStorage.getItem("userData")
-      if (userDataStr) {
-        try {
-          const userData = JSON.parse(userDataStr)
-          const email = userData.email
-
-          // Usar dados mockados
-          sessionStorage.setItem("metricsData", JSON.stringify(MOCK_METRICS_DATA))
-
-          toast({
-            title: "Continuando com dados de exemplo",
-            description: "Estamos usando dados de exemplo para mostrar como funciona o WhatsWrapped.",
-          })
-
-          setTimeout(() => {
-            router.push(`/wrapped/${encodeURIComponent(email)}`)
-          }, 2000)
-        } catch (e) {
-          console.error("Erro ao processar dados do usuário:", e)
-        }
-      }
+      // Fallback para redirecionamento simples
+      setTimeout(() => {
+        router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
+      }, 2000)
     } finally {
       setIsProcessingFile(false)
     }
@@ -203,26 +212,64 @@ export default function PagamentoPage() {
     setTimeout(() => {
       setPaymentStatus("PAID")
       setIsVerifying(false)
-      processFile()
+      processPayment()
     }, 2000)
   }
 
   const skipToResults = () => {
-    const userDataStr = sessionStorage.getItem("userData")
-    if (userDataStr) {
-      try {
-        const userData = JSON.parse(userDataStr)
-        const email = userData.email
+    if (userData && userData.email) {
+      // Não fazer chamada à API de confirmação de pagamento
+      // Ir diretamente para a página de wrapped
+      router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
+    }
+  }
 
-        // Usar dados mockados
-        sessionStorage.setItem("metricsData", JSON.stringify(MOCK_METRICS_DATA))
+  const checkPaymentManually = async () => {
+    if (!paymentId) {
+      toast({
+        title: "Erro",
+        description: "ID do pagamento não encontrado",
+        variant: "destructive",
+      })
+      return
+    }
 
-        if (email) {
-          router.push(`/wrapped/${encodeURIComponent(email)}`)
+    setIsVerifying(true)
+    toast({
+      title: "Verificando pagamento",
+      description: "Estamos verificando o status do seu pagamento...",
+    })
+
+    try {
+      const result = await checkPaymentStatus(paymentId)
+      console.log("Verificação manual do pagamento:", result)
+
+      if (result.data && result.data.status) {
+        const newStatus = result.data.status
+        setPaymentStatus(newStatus)
+
+        if (newStatus === "PAID") {
+          toast({
+            title: "Pagamento confirmado!",
+            description: "Seu pagamento foi confirmado com sucesso.",
+          })
+          await processPayment()
+        } else {
+          toast({
+            title: "Pagamento pendente",
+            description: `Status atual: ${newStatus}. Por favor, complete o pagamento.`,
+          })
         }
-      } catch (e) {
-        console.error("Erro ao processar dados do usuário:", e)
       }
+    } catch (error) {
+      console.error("Erro ao verificar pagamento manualmente:", error)
+      toast({
+        title: "Erro",
+        description: "Não foi possível verificar o status do pagamento",
+        variant: "destructive",
+      })
+    } finally {
+      setIsVerifying(false)
     }
   }
 
@@ -258,7 +305,7 @@ export default function PagamentoPage() {
       <div className="container py-8">
         <div className="flex items-center mb-8">
           <Button variant="ghost" size="icon" asChild className="mr-2">
-            <Link href="/dados-pessoais">
+            <Link href="/comece-agora">
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
@@ -269,14 +316,17 @@ export default function PagamentoPage() {
           {/* Barra de progresso */}
           <div className="mb-8">
             <div className="flex justify-between mb-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-20 h-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-500"></div>
+              {[1, 2].map((i) => (
+                <div
+                  key={i}
+                  className={`w-full h-2 rounded-full ${
+                    i <= 2 ? "bg-gradient-to-r from-pink-500 to-purple-500" : "bg-muted"
+                  }`}
+                ></div>
               ))}
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-primary">Exportar</span>
-              <span className="text-primary">Upload</span>
-              <span className="text-primary">Dados</span>
+              <span className="text-primary">Cadastro e Upload</span>
               <span className="text-primary">Pagamento</span>
             </div>
           </div>
@@ -323,26 +373,25 @@ export default function PagamentoPage() {
                     </p>
                   </div>
 
-                  {isVerifying && (
+                  {isVerifying ? (
                     <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Verificando pagamento...
                     </div>
+                  ) : (
+                    <Button onClick={checkPaymentManually} variant="outline" className="w-full">
+                      Já paguei, verificar pagamento
+                    </Button>
                   )}
                 </div>
 
                 {/* Botões para testes */}
                 <div className="mt-8 space-y-4">
                   <Button
-                    onClick={simulatePayment}
+                    onClick={skipToResults}
                     className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
-                    disabled={isVerifying}
                   >
-                    Simular Pagamento (Apenas para testes)
-                  </Button>
-
-                  <Button variant="outline" onClick={skipToResults} className="w-full text-lg py-6">
-                    Pular para resultados (usar dados de exemplo)
+                    Ver meu WhatsWrapped (Pular pagamento)
                   </Button>
                 </div>
               </>
@@ -375,6 +424,10 @@ export default function PagamentoPage() {
               <div className="flex items-start gap-2">
                 <span>⚡</span>
                 <p>Após o pagamento, você terá acesso imediato ao seu WhatsWrapped.</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span>🔗</span>
+                <p>Você receberá um link único para compartilhar sua retrospectiva.</p>
               </div>
             </div>
           </div>

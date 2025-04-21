@@ -45,17 +45,16 @@ export interface PaymentStatusResponse {
 export type PaymentStatus = "PENDING" | "EXPIRED" | "CANCELLED" | "PAID" | "REFUNDED"
 
 // Tipos para as requisições
+export interface PaymentRequest {
+  name: string
+  email: string
+  cpf: string
+}
+
 export interface RegisterRequest {
   name: string
   email: string
   phone: string
-  cpf: string
-}
-
-export interface PaymentRequest {
-  name: string
-  email: string
-  cellphone: string
   cpf: string
 }
 

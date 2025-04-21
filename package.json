@@ -59,8 +59,8 @@
     "vaul": "^0.9.6",
     "zod": "^3.24.1",
     "pg-native": "latest",
-    "@supabase/supabase-js": "latest",
-    "pg": "latest"
+    "pg": "latest",
+    "@supabase/supabase-js": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

@@ -3,71 +3,60 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Share2, Loader2, Copy, Check } from "lucide-react"
+import { ArrowLeft, Share2, Loader2 } from "lucide-react"
 import { StoriesCarousel } from "@/components/stories-carousel"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
 import { MOCK_METRICS_DATA } from "@/lib/mock-data"
 
-export default function UserWrappedPage({ params }: { params: { email: string } }) {
+export default function SharedWrappedPage({ params }: { params: { shareId: string } }) {
   const [isLoading, setIsLoading] = useState(true)
   const [metricsData, setMetricsData] = useState<any[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [shareId, setShareId] = useState<string | null>(null)
-  const [shareUrl, setShareUrl] = useState<string>("")
-  const [copied, setCopied] = useState(false)
   const router = useRouter()
-  const email = decodeURIComponent(params.email)
+  const shareId = params.shareId
 
-  // Carregar dados de métricas da sessão
+  // Carregar dados de métricas pelo ID de compartilhamento
   useEffect(() => {
-    try {
-      setIsLoading(true)
+    async function fetchMetrics() {
+      try {
+        setIsLoading(true)
 
-      // Tentar obter dados da sessão
-      const metricsDataStr = sessionStorage.getItem("metricsData")
-      console.log("Dados brutos da sessão:", metricsDataStr)
+        // Fazer requisição para a API
+        const response = await fetch(`/api/v1/metrics/${shareId}`)
+        const result = await response.json()
 
-      // Tentar obter o ID de compartilhamento da sessão
-      const storedShareId = sessionStorage.getItem("shareId")
-      if (storedShareId) {
-        setShareId(storedShareId)
-        const baseUrl = window.location.origin
-        setShareUrl(`${baseUrl}/share/${storedShareId}`)
-      }
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || "Erro ao carregar dados")
+        }
 
-      if (metricsDataStr) {
-        const parsedData = JSON.parse(metricsDataStr)
-        console.log("Dados parseados da sessão:", parsedData)
+        console.log("Dados carregados:", result.data)
 
-        if (Array.isArray(parsedData) && parsedData.length > 0) {
-          setMetricsData(parsedData)
-          console.log("Métricas definidas no estado:", parsedData)
+        if (Array.isArray(result.data) && result.data.length > 0) {
+          setMetricsData(result.data)
         } else {
-          console.warn("Dados inválidos na sessão, usando dados mockados")
+          console.warn("Formato de dados inválido, usando dados mockados")
           setMetricsData(MOCK_METRICS_DATA)
         }
-      } else {
-        // Se não houver dados na sessão, usar dados mockados
-        console.warn("Dados de métricas não encontrados na sessão, usando dados mockados")
+      } catch (error: any) {
+        console.error("Erro ao carregar métricas:", error)
+        setError(error.message || "Erro ao carregar dados da retrospectiva")
         setMetricsData(MOCK_METRICS_DATA)
+      } finally {
+        // Simular um tempo de carregamento para melhor UX
+        setTimeout(() => {
+          setIsLoading(false)
+        }, 1000)
       }
-    } catch (error) {
-      console.error("Erro ao carregar dados de métricas:", error)
-      setMetricsData(MOCK_METRICS_DATA)
-    } finally {
-      // Simular um tempo de carregamento para melhor UX
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 1000)
     }
-  }, [])
+
+    fetchMetrics()
+  }, [shareId])
 
   const handleShare = async () => {
-    // Se temos um ID de compartilhamento, usar a URL de compartilhamento
-    const url = shareId ? shareUrl : window.location.href
+    const url = window.location.href
     const title = `WhatsWrapped de ${metricsData.map((data) => data.sender).join(" e ")}`
-    const text = "Confira nossa retrospectiva de conversas no WhatsApp!"
+    const text = "Confira esta retrospectiva de conversas no WhatsApp!"
 
     // Verificar se a API Web Share está disponível
     if (navigator.share) {
@@ -80,7 +69,7 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
 
         toast({
           title: "Compartilhado!",
-          description: "O link do seu WhatsWrapped foi compartilhado com sucesso",
+          description: "O link da retrospectiva foi compartilhado com sucesso",
         })
       } catch (error) {
         console.error("Erro ao compartilhar:", error)
@@ -98,12 +87,9 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        setCopied(true)
-        setTimeout(() => setCopied(false), 3000)
-
         toast({
           title: "Link copiado!",
-          description: "O link do seu WhatsWrapped foi copiado para a área de transferência",
+          description: "O link da retrospectiva foi copiado para a área de transferência",
         })
       })
       .catch((err) => {
@@ -162,7 +148,7 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
           {isLoading ? (
             <div className="aspect-[9/16] rounded-xl bg-card flex flex-col items-center justify-center">
               <Loader2 className="w-20 h-20 text-primary animate-spin mb-6" />
-              <p className="text-2xl font-medium">Carregando seu WhatsWrapped...</p>
+              <p className="text-2xl font-medium">Carregando retrospectiva...</p>
             </div>
           ) : (
             <div className="relative aspect-[9/16] rounded-xl overflow-hidden shadow-2xl">
@@ -170,25 +156,8 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
             </div>
           )}
 
-          {shareId && (
-            <div className="mt-6 bg-white p-4 rounded-lg shadow-sm">
-              <h3 className="font-medium mb-2">Link para compartilhar:</h3>
-              <div className="flex items-center gap-2">
-                <input type="text" value={shareUrl} readOnly className="flex-1 p-2 text-sm border rounded-md" />
-                <Button variant="outline" size="sm" onClick={() => copyToClipboard(shareUrl)}>
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Este link permite que qualquer pessoa veja sua retrospectiva sem precisar fazer login.
-              </p>
-            </div>
-          )}
-
           <div className="mt-8 text-center">
-            <p className="text-xl text-muted-foreground mb-6">
-              Gostou do seu WhatsWrapped? Compartilhe com seus amigos!
-            </p>
+            <p className="text-xl text-muted-foreground mb-6">Gostou desta retrospectiva? Crie a sua também!</p>
             <div className="flex justify-center gap-4">
               <Button
                 className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
@@ -198,7 +167,7 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
                 Compartilhar
               </Button>
               <Button variant="outline" asChild className="text-lg py-6 px-8 border-2">
-                <Link href="/">Voltar para o Início</Link>
+                <Link href="/">Criar Minha Retrospectiva</Link>
               </Button>
             </div>
           </div>

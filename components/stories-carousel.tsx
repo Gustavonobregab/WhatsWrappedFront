@@ -501,18 +501,23 @@ export function StoriesCarousel({
       content: (
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
           <div className="text-center max-w-md mx-auto">
-            <div className="mb-8">
+            <div className="mb-8 animate-bounce">
               <span className="text-5xl md:text-6xl">💌</span>
             </div>
-            <h3 className="text-3xl md:text-4xl font-bold mb-8">{senderName} deixou esse recado pra você...</h3>
+            <h3 className="text-3xl md:text-4xl font-bold mb-8 bg-gradient-to-r from-white to-pink-200 text-transparent bg-clip-text">
+              {senderName} deixou esse recado especial para você...
+            </h3>
 
-            <div className="bg-white/20 rounded-xl p-8 backdrop-blur-sm mb-8">
+            <div className="bg-white/20 rounded-xl p-8 backdrop-blur-sm mb-8 relative">
+              <div className="absolute -top-3 -left-3 text-3xl">❝</div>
+              <div className="absolute -bottom-3 -right-3 text-3xl">❞</div>
               <p className="text-xl md:text-2xl italic leading-relaxed text-center">
-                {loveMessage || "Obrigado por compartilhar essa jornada comigo. Cada mensagem é especial."}
+                {loveMessage ||
+                  "Obrigado por compartilhar essa jornada comigo. Cada mensagem é especial e cada momento que passamos juntos é um tesouro que guardo no coração."}
               </p>
             </div>
 
-            <div className="flex justify-center space-x-4">
+            <div className="flex justify-center space-x-4 animate-pulse">
               <span className="text-3xl">❤️</span>
               <span className="text-3xl">✨</span>
               <span className="text-3xl">💕</span>

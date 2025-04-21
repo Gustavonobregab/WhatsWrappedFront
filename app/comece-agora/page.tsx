@@ -1,140 +1,210 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Upload, Loader2, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
-import { uploadFileAndGetMetrics } from "@/lib/api"
-import { MOCK_METRICS_DATA } from "@/lib/mock-data"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 export default function ComecePage() {
-  const [step, setStep] = useState(1)
-  const [isUploading, setIsUploading] = useState(false)
-  const [isUploaded, setIsUploaded] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [metricsData, setMetricsData] = useState<any[] | null>(null)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    cpf: "",
+    text: "Obrigado por compartilhar essa jornada comigo!", // Valor padrão para garantir que nunca esteja vazio
+  })
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    cpf: "",
+    file: "",
+  })
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+
+    // Formatação automática para CPF
+    if (name === "cpf") {
+      let formattedValue = value.replace(/\D/g, "")
+      if (formattedValue.length <= 11) {
+        if (formattedValue.length > 3) {
+          formattedValue = `${formattedValue.slice(0, 3)}.${formattedValue.slice(3)}`
+        }
+        if (formattedValue.length > 7) {
+          formattedValue = `${formattedValue.slice(0, 7)}.${formattedValue.slice(7)}`
+        }
+        if (formattedValue.length > 11) {
+          formattedValue = `${formattedValue.slice(0, 11)}-${formattedValue.slice(11)}`
+        }
+        setFormData({ ...formData, [name]: formattedValue })
+      }
+    } else {
+      setFormData({ ...formData, [name]: value })
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    setIsUploading(true)
-
     // Verificar se é um arquivo ZIP
     if (file.type !== "application/zip" && !file.name.endsWith(".zip")) {
-      toast({
-        title: "Formato inválido",
-        description: "Por favor, selecione um arquivo ZIP exportado do WhatsApp.",
-        variant: "destructive",
-      })
-      setIsUploading(false)
+      setErrors({ ...errors, file: "Por favor, selecione um arquivo ZIP exportado do WhatsApp." })
       return
     }
 
     // Verificar o tamanho do arquivo (limite de 10MB)
     const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB em bytes
     if (file.size > MAX_FILE_SIZE) {
-      toast({
-        title: "Arquivo muito grande",
-        description: "O tamanho máximo permitido é de 10MB. Por favor, selecione um arquivo menor.",
-        variant: "destructive",
+      setErrors({
+        ...errors,
+        file: "O tamanho máximo permitido é de 10MB. Por favor, selecione um arquivo menor.",
       })
-      setIsUploading(false)
       return
     }
 
-    // Armazenar o arquivo selecionado para uso posterior
     setSelectedFile(file)
-
-    try {
-      // Vamos melhorar o log para depuração
-      try {
-        // Fazer upload do arquivo e obter métricas
-        const metrics = await uploadFileAndGetMetrics(file)
-        console.log("Métricas obtidas da API:", metrics)
-
-        // Armazenar as métricas na sessão - garantir que estamos salvando corretamente
-        if (metrics && Array.isArray(metrics)) {
-          sessionStorage.setItem("metricsData", JSON.stringify(metrics))
-          setMetricsData(metrics)
-
-          // Adicionar log para confirmar o que foi salvo
-          console.log("Métricas salvas na sessão:", JSON.parse(sessionStorage.getItem("metricsData") || "[]"))
-
-          // Marcar como carregado com sucesso
-          setIsUploaded(true)
-
-          toast({
-            title: "Arquivo processado com sucesso!",
-            description: `Suas métricas foram extraídas. Participantes: ${metrics.map((m) => m.sender).join(" e ")}`,
-          })
-        } else {
-          throw new Error("Formato de resposta inválido da API")
-        }
-      } catch (error: any) {
-        console.error("Erro ao processar arquivo:", error)
-
-        toast({
-          title: "Erro ao processar arquivo",
-          description: error.message || "Ocorreu um erro ao processar seu arquivo. Usando dados de exemplo.",
-          variant: "destructive",
-        })
-
-        // Em caso de erro, usar dados mockados
-        sessionStorage.setItem("metricsData", JSON.stringify(MOCK_METRICS_DATA))
-        setMetricsData(MOCK_METRICS_DATA)
-        setIsUploaded(true)
-      }
-    } catch (error: any) {
-      console.error("Erro ao processar arquivo:", error)
-
-      toast({
-        title: "Erro ao processar arquivo",
-        description: error.message || "Ocorreu um erro ao processar seu arquivo. Usando dados de exemplo.",
-        variant: "destructive",
-      })
-
-      // Em caso de erro, usar dados mockados
-      sessionStorage.setItem("metricsData", JSON.stringify(MOCK_METRICS_DATA))
-      setMetricsData(MOCK_METRICS_DATA)
-      setIsUploaded(true)
-    } finally {
-      setIsUploading(false)
-    }
-
-    // Armazenar informações do arquivo na sessão
-    sessionStorage.setItem("fileSelected", "true")
-    sessionStorage.setItem("whatsappFile", file.name)
-
-    // Criar uma URL para o arquivo
-    const fileURL = URL.createObjectURL(file)
-    sessionStorage.setItem("whatsappFileBlob", fileURL)
-
-    // Marcar o arquivo como validado
-    sessionStorage.setItem("fileValidated", "true")
+    setErrors({ ...errors, file: "" })
   }
 
-  const handleContinue = () => {
-    if (step === 2) {
-      if (!isUploaded) {
-        toast({
-          title: "Arquivo não selecionado",
-          description: "Por favor, selecione um arquivo antes de continuar.",
-          variant: "destructive",
-        })
-        return
+  const validateForm = () => {
+    let valid = true
+    const newErrors = {
+      name: "",
+      email: "",
+      cpf: "",
+      file: "",
+    }
+
+    // Validação do nome
+    if (!formData.name.trim()) {
+      newErrors.name = "Nome é obrigatório"
+      valid = false
+    }
+
+    // Validação do email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!formData.email.trim() || !emailRegex.test(formData.email)) {
+      newErrors.email = "Email inválido"
+      valid = false
+    }
+
+    // Validação do CPF
+    const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/
+    if (!formData.cpf.trim() || !cpfRegex.test(formData.cpf)) {
+      newErrors.cpf = "CPF inválido (formato: 999.999.999-99)"
+      valid = false
+    }
+
+    // Validação do arquivo
+    if (!selectedFile) {
+      newErrors.file = "Por favor, selecione um arquivo de backup do WhatsApp"
+      valid = false
+    }
+
+    setErrors(newErrors)
+    return valid
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!validateForm()) {
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      // Criar FormData para enviar arquivo e dados do usuário
+      const formDataToSend = new FormData()
+
+      // Adicionar todos os campos obrigatórios
+      formDataToSend.append("name", formData.name)
+      formDataToSend.append("email", formData.email)
+      formDataToSend.append("cpf", formData.cpf.replace(/\D/g, "")) // Remover formatação
+
+      // Garantir que o texto nunca esteja vazio
+      const textToSend = formData.text.trim() || "Obrigado por compartilhar essa jornada comigo!"
+      formDataToSend.append("text", textToSend)
+
+      // Adicionar o arquivo
+      if (selectedFile) {
+        formDataToSend.append("file", selectedFile)
       }
 
-      // Limpar quaisquer dados de pagamento anteriores para evitar problemas
-      sessionStorage.removeItem("paymentData")
+      console.log("Enviando dados:", {
+        name: formData.name,
+        email: formData.email,
+        cpf: formData.cpf.replace(/\D/g, ""),
+        text: textToSend,
+        file: selectedFile ? `${selectedFile.name} (${selectedFile.size} bytes)` : "AUSENTE",
+      })
 
-      router.push("/dados-pessoais")
-    } else {
-      setStep(step + 1)
+      // Enviar para a API
+      const response = await fetch("/api/v1/metrics/upload", {
+        method: "POST",
+        body: formDataToSend,
+      })
+
+      const responseData = await response.json()
+
+      if (!response.ok) {
+        console.error("Erro na resposta:", responseData)
+        throw new Error(responseData.message || "Erro ao processar o arquivo")
+      }
+
+      console.log("Resposta da API:", responseData)
+
+      // Salvar dados na sessão
+      sessionStorage.setItem(
+        "userData",
+        JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          cpf: formData.cpf,
+        }),
+      )
+
+      if (formData.text) {
+        sessionStorage.setItem("loveMessage", formData.text)
+      }
+
+      // Salvar métricas na sessão
+      if (responseData.metrics && responseData.metrics.participants) {
+        sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants))
+
+        // Salvar ID único para uso posterior
+        if (responseData.metrics.id) {
+          sessionStorage.setItem("metricsId", responseData.metrics.id)
+        }
+      }
+
+      toast({
+        title: "Arquivo processado com sucesso!",
+        description: "Suas métricas foram extraídas. Continue para o pagamento.",
+      })
+
+      // Redirecionar para a página de pagamento
+      router.push("/pagamento")
+    } catch (error: any) {
+      console.error("Erro ao processar arquivo:", error)
+      toast({
+        title: "Erro ao processar arquivo",
+        description: error.message || "Ocorreu um erro ao processar seu arquivo.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -154,233 +224,170 @@ export default function ComecePage() {
           {/* Barra de progresso */}
           <div className="mb-8">
             <div className="flex justify-between mb-2">
-              {[1, 2, 3, 4].map((i) => (
+              {[1, 2].map((i) => (
                 <div
                   key={i}
-                  className={`w-20 h-2 rounded-full ${
-                    i <= step ? "bg-gradient-to-r from-pink-500 to-purple-500" : "bg-muted"
+                  className={`w-full h-2 rounded-full ${
+                    i <= 1 ? "bg-gradient-to-r from-pink-500 to-purple-500" : "bg-muted"
                   }`}
                 ></div>
               ))}
             </div>
             <div className="flex justify-between text-sm">
-              <span className={`${step >= 1 ? "text-primary" : "text-muted-foreground"}`}>Exportar</span>
-              <span className={`${step >= 2 ? "text-primary" : "text-muted-foreground"}`}>Upload</span>
-              <span className="text-muted-foreground">Dados</span>
+              <span className="text-primary">Cadastro e Upload</span>
               <span className="text-muted-foreground">Pagamento</span>
             </div>
           </div>
 
-          {step === 1 && (
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <h2 className="text-3xl font-bold text-center mb-10">Como exportar seu chat do WhatsApp 📱</h2>
+          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <h2 className="text-3xl font-bold text-center mb-8">Preencha seus dados e faça upload do arquivo</h2>
 
-              <div className="space-y-12">
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                  <div className="text-center md:text-left">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-2xl font-bold mb-4">
-                      1
-                    </div>
-                    <h3 className="text-2xl font-bold">Clique no seu contato</h3>
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="relative w-full max-w-[300px]">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl transform rotate-6"></div>
-                      <img
-                        src="/whatsapp-chat.png"
-                        alt="Abra o WhatsApp"
-                        className="relative z-10 rounded-3xl border-4 border-background shadow-xl w-full"
-                      />
-                    </div>
-                  </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-lg">
+                    Nome completo
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Seu nome completo"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className={`text-lg py-6 ${errors.name ? "border-red-500" : ""}`}
+                  />
+                  {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                  <div className="text-center md:text-left md:order-2">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-2xl font-bold mb-4">
-                      2
-                    </div>
-                    <h3 className="text-2xl font-bold">Clique em exportar chat</h3>
-                  </div>
-                  <div className="flex justify-center md:order-1">
-                    <div className="relative w-full max-w-[300px]">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl transform rotate-6"></div>
-                      <img
-                        src="/whatsapp-export.png"
-                        alt="Exportar chat"
-                        className="relative z-10 rounded-3xl border-4 border-background shadow-xl w-full"
-                      />
-                    </div>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-lg">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className={`text-lg py-6 ${errors.email ? "border-red-500" : ""}`}
+                  />
+                  {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                  <div className="text-center md:text-left">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-2xl font-bold mb-4">
-                      3
-                    </div>
-                    <h3 className="text-2xl font-bold">Escolha "SEM MÍDIA"</h3>
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="relative w-full max-w-[300px]">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl transform rotate-6"></div>
-                      <img
-                        src="/whatsapp-sem-midia.png"
-                        alt="Escolha SEM MÍDIA"
-                        className="relative z-10 rounded-3xl border-4 border-background shadow-xl w-full"
-                      />
-                    </div>
-                  </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="cpf" className="text-lg">
+                    CPF
+                  </Label>
+                  <Input
+                    id="cpf"
+                    name="cpf"
+                    placeholder="999.999.999-99"
+                    value={formData.cpf}
+                    onChange={handleInputChange}
+                    className={`text-lg py-6 ${errors.cpf ? "border-red-500" : ""}`}
+                  />
+                  {errors.cpf && <p className="text-xs text-red-500">{errors.cpf}</p>}
                 </div>
               </div>
 
-              <div className="mt-10 flex justify-center">
-                <Button
-                  onClick={() => setStep(2)}
-                  className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
-                >
-                  Já exportei! Próximo passo
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+              <div className="space-y-2">
+                <Label htmlFor="text" className="flex items-center gap-2 text-lg">
+                  <span className="bg-gradient-to-r from-pink-500 to-red-500 text-transparent bg-clip-text font-bold text-xl">
+                    ❤️ Mensagem de amor surpresa ❤️
+                  </span>
+                  <span className="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded-full animate-pulse">
+                    Especial!
+                  </span>
+                </Label>
+                <div className="relative">
+                  <Textarea
+                    id="text"
+                    name="text"
+                    placeholder="Querido(a), cada mensagem que trocamos é um pedacinho da nossa história. Obrigado(a) por fazer parte da minha vida e por todos os momentos que compartilhamos através dessas conversas..."
+                    value={formData.text}
+                    onChange={handleInputChange}
+                    className="text-lg min-h-[120px] resize-none border-pink-200 focus-visible:ring-pink-400 bg-gradient-to-br from-pink-50 to-white"
+                    maxLength={200}
+                  />
+                  <div className="absolute bottom-2 right-2 text-sm text-pink-500 font-medium">
+                    {formData.text.length}/200
+                  </div>
+                </div>
+                <div className="bg-pink-50 p-3 rounded-lg border border-pink-100">
+                  <p className="text-sm text-pink-700 flex items-center gap-2">
+                    <span className="text-lg">✨</span>
+                    Esta mensagem especial será exibida como uma surpresa romântica no final do WhatsWrapped, criando um
+                    momento inesquecível para quem receber.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <h2 className="text-xl font-bold text-center mb-4">Faça upload do seu arquivo 🚀</h2>
-              <p className="text-center mb-6 text-sm text-muted-foreground">
-                Seus dados são processados localmente e <span className="font-bold">nunca</span> armazenados. 🔒
-              </p>
 
               <div className="border-2 border-dashed border-primary/30 rounded-lg p-6 text-center">
-                {!isUploaded ? (
-                  <div className="space-y-4">
-                    <div className="flex justify-center">
-                      <Upload className="h-16 w-16 text-primary" />
-                    </div>
-                    <h3 className="text-2xl font-medium">Arraste seu arquivo aqui ou clique para selecionar</h3>
-                    <p className="text-sm text-muted-foreground">Arquivos .zip do WhatsApp (máx. 10MB)</p>
-                    <div className="relative">
-                      <input
-                        type="file"
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        accept=".zip"
-                        onChange={handleFileUpload}
-                        disabled={isUploading}
-                      />
-                      <Button
-                        className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
-                        disabled={isUploading}
-                      >
-                        {isUploading ? (
-                          <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            Processando...
-                          </>
-                        ) : (
-                          <>Selecionar Arquivo</>
-                        )}
-                      </Button>
-                    </div>
+                <div className="space-y-4">
+                  <div className="flex justify-center">
+                    <Upload className="h-16 w-16 text-primary" />
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex justify-center">
-                      <div className="rounded-full bg-green-100 p-5">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-12 w-12 text-green-600"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                    </div>
-
-                    <h3 className="text-2xl font-medium text-green-600">Arquivo carregado com sucesso!</h3>
-
-                    <p className="text-lg">
-                      {selectedFile?.name} (
-                      {(selectedFile?.size || 0) / 1024 / 1024 < 1
-                        ? `${Math.round((selectedFile?.size || 0) / 1024)} KB`
-                        : `${((selectedFile?.size || 0) / 1024 / 1024).toFixed(2)} MB`}
-                      )
+                  <h3 className="text-2xl font-medium">Arraste seu arquivo aqui ou clique para selecionar</h3>
+                  <p className="text-sm text-muted-foreground">Arquivos .zip do WhatsApp (máx. 10MB)</p>
+                  <div className="relative">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      accept=".zip"
+                      onChange={handleFileChange}
+                      disabled={isLoading}
+                    />
+                    <Button
+                      type="button"
+                      className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
+                      disabled={isLoading}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {selectedFile ? "Arquivo selecionado: " + selectedFile.name : "Selecionar Arquivo"}
+                    </Button>
+                  </div>
+                  {errors.file && <p className="text-xs text-red-500">{errors.file}</p>}
+                  {selectedFile && (
+                    <p className="text-sm text-green-600">
+                      Arquivo selecionado: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                     </p>
-
-                    {metricsData && (
-                      <div className="mt-4 p-4 bg-gray-50 rounded-lg text-left">
-                        <h4 className="font-medium mb-2">Métricas extraídas:</h4>
-                        <ul className="space-y-1 text-sm">
-                          <li>
-                            <span className="font-medium">Participantes:</span>{" "}
-                            {metricsData.map((user) => user.sender).join(", ")}
-                          </li>
-                          <li>
-                            <span className="font-medium">Total de mensagens:</span>{" "}
-                            {metricsData.reduce((sum, user) => sum + user.totalMessages, 0)}
-                          </li>
-                          <li>
-                            <span className="font-medium">Mensagens de amor:</span>{" "}
-                            {metricsData.reduce((sum, user) => sum + user.loveMessages, 0)}
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-
-                    <div className="relative mt-4">
-                      <input
-                        type="file"
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        accept=".zip"
-                        onChange={handleFileUpload}
-                      />
-                      <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white">
-                        Selecionar outro arquivo
-                      </Button>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
-              <div className="flex justify-between mt-6">
-                <Button variant="outline" onClick={() => setStep(1)}>
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Voltar
-                </Button>
+              <div className="pt-6">
                 <Button
-                  onClick={handleContinue}
-                  disabled={!isUploaded}
-                  className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
+                  disabled={isLoading}
                 >
-                  Continuar
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    <>
+                      Continuar para pagamento
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </>
+                  )}
                 </Button>
               </div>
-            </div>
-          )}
+            </form>
+          </div>
 
           <div className="bg-white/80 rounded-lg p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">💡</span>
-              <h3 className="text-base font-medium">Dicas Rápidas</h3>
+              <span className="text-xl">🔒</span>
+              <h3 className="text-base font-medium">Seus dados estão seguros</h3>
             </div>
-            <div className="grid gap-2 md:grid-cols-2 text-sm">
-              <div className="flex items-start gap-2">
-                <span>🔒</span>
-                <p>Seus dados pessoais são usados apenas para o pagamento.</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <span>⚡</span>
-                <p>Apenas arquivos .zip do WhatsApp são aceitos.</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <span>📏</span>
-                <p>O tamanho máximo do arquivo é de 10MB.</p>
-              </div>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Seus dados pessoais são utilizados apenas para o processamento do pagamento e emissão de nota fiscal. Não
+              compartilhamos suas informações com terceiros.
+            </p>
           </div>
         </div>
       </div>

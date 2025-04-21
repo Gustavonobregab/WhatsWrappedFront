@@ -10,6 +10,8 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, error: "ID do pagamento não fornecido" }, { status: 400 })
     }
 
+    console.log("Verificando status do pagamento para ID:", id)
+
     // Enviar requisição para a API externa
     const response = await fetch(`${API_ENDPOINTS.PAYMENT_CHECK}?id=${id}`, {
       method: "GET",
@@ -41,6 +43,8 @@ export async function GET(request: Request) {
         { status: response.status },
       )
     }
+
+    console.log("Status do pagamento:", data.data?.status)
 
     // Retornar a resposta de sucesso
     return NextResponse.json(data)

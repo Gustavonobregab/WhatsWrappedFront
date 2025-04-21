@@ -15,11 +15,18 @@ export type MetricsData = {
   data: any
   created_at?: string
   expires_at?: string
+  share_id?: string
 }
 
-// Função para salvar métricas
-export async function saveMetrics(email: string, data: any): Promise<{ success: boolean; error?: string }> {
+// Função para salvar métricas e gerar ID de compartilhamento
+export async function saveMetricsWithShareId(
+  email: string,
+  data: any,
+): Promise<{ success: boolean; shareId?: string; error?: string }> {
   try {
+    // Gerar um ID de compartilhamento único
+    const shareId = generateShareId()
+
     // Calcular data de expiração (30 dias a partir de agora)
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 30)
@@ -27,7 +34,7 @@ export async function saveMetrics(email: string, data: any): Promise<{ success: 
     // Verificar se já existe um registro para este email
     const { data: existingData, error: fetchError } = await supabase
       .from("metrics")
-      .select("id")
+      .select("id, share_id")
       .eq("email", email)
       .single()
 
@@ -45,36 +52,43 @@ export async function saveMetrics(email: string, data: any): Promise<{ success: 
         .update({
           data: data,
           expires_at: expiresAt.toISOString(),
+          share_id: existingData.share_id || shareId, // Manter o share_id existente ou usar o novo
         })
         .eq("id", existingData.id)
+
+      return {
+        success: true,
+        shareId: existingData.share_id || shareId,
+      }
     } else {
       // Inserir novo registro
       result = await supabase.from("metrics").insert({
         email: email,
         data: data,
         expires_at: expiresAt.toISOString(),
+        share_id: shareId,
       })
-    }
 
-    if (result.error) {
-      console.error("Erro ao salvar métricas:", result.error)
-      return { success: false, error: result.error.message }
-    }
+      if (result.error) {
+        console.error("Erro ao salvar métricas:", result.error)
+        return { success: false, error: result.error.message }
+      }
 
-    return { success: true }
+      return { success: true, shareId }
+    }
   } catch (error) {
     console.error("Erro ao salvar métricas:", error)
     return { success: false, error: "Erro interno ao salvar métricas" }
   }
 }
 
-// Função para obter métricas
-export async function getMetrics(email: string): Promise<{ success: boolean; data?: any; error?: string }> {
+// Função para obter métricas por ID de compartilhamento
+export async function getMetricsByShareId(shareId: string): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
-    const { data, error } = await supabase.from("metrics").select("data").eq("email", email).single()
+    const { data, error } = await supabase.from("metrics").select("data").eq("share_id", shareId).single()
 
     if (error) {
-      console.error("Erro ao obter métricas:", error)
+      console.error("Erro ao obter métricas por share_id:", error)
       return { success: false, error: error.message }
     }
 
@@ -84,9 +98,20 @@ export async function getMetrics(email: string): Promise<{ success: boolean; dat
 
     return { success: true, data: data.data }
   } catch (error) {
-    console.error("Erro ao obter métricas:", error)
+    console.error("Erro ao obter métricas por share_id:", error)
     return { success: false, error: "Erro interno ao obter métricas" }
   }
+}
+
+// Função para gerar um ID de compartilhamento único
+function generateShareId(): string {
+  // Gerar um ID aleatório de 10 caracteres
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  let result = ""
+  for (let i = 0; i < 10; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
 }
 
 // Função para excluir métricas
