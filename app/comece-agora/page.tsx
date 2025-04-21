@@ -183,9 +183,10 @@ export default function ComecePage() {
       if (responseData.metrics && responseData.metrics.participants) {
         sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants))
 
-        // Salvar ID único para uso posterior
+        // Salvar ID único retornado pela API para uso posterior
         if (responseData.metrics.id) {
           sessionStorage.setItem("metricsId", responseData.metrics.id)
+          console.log("ID da retrospectiva salvo:", responseData.metrics.id)
         }
       }
 
