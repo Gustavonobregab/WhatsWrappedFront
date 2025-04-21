@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
+import { Textarea } from "@/components/ui/textarea"
 
 export default function DadosPessoaisPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -18,13 +19,16 @@ export default function DadosPessoaisPage() {
     email: "",
     cellphone: "",
     cpf: "",
+    loveMessage: "", // Nova propriedade para a mensagem de amor
   })
   const [errors, setErrors] = useState({
     name: "",
     email: "",
     cellphone: "",
     cpf: "",
+    loveMessage: "",
   })
+  const [loveMessageLength, setLoveMessageLength] = useState(0) // Contador de caracteres
   const router = useRouter()
 
   // Verificar se o arquivo foi selecionado e validado
@@ -60,6 +64,7 @@ export default function DadosPessoaisPage() {
       email: "",
       cellphone: "",
       cpf: "",
+      loveMessage: "",
     }
 
     // Validação do nome
@@ -87,7 +92,7 @@ export default function DadosPessoaisPage() {
   }
 
   // Formatação do CPF
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
 
     // Formatação automática para CPF
@@ -104,6 +109,12 @@ export default function DadosPessoaisPage() {
           formattedValue = `${formattedValue.slice(0, 11)}-${formattedValue.slice(11)}`
         }
         setFormData({ ...formData, [name]: formattedValue })
+      }
+    } else if (name === "loveMessage") {
+      // Limitar a mensagem de amor a 200 caracteres
+      if (value.length <= 200) {
+        setFormData({ ...formData, [name]: value })
+        setLoveMessageLength(value.length)
       }
     } else {
       setFormData({ ...formData, [name]: value })
@@ -233,6 +244,11 @@ export default function DadosPessoaisPage() {
       // Se houve um erro que não é de usuário já existente, lançar o erro
       if (!userRegistered && registerError) {
         throw registerError
+      }
+
+      // Salvar a mensagem de amor no sessionStorage
+      if (formData.loveMessage) {
+        sessionStorage.setItem("loveMessage", formData.loveMessage)
       }
 
       // 2. Gerar o pagamento PIX
@@ -371,6 +387,25 @@ export default function DadosPessoaisPage() {
                   className={`text-lg py-6 ${errors.cpf ? "border-red-500" : ""}`}
                 />
                 {errors.cpf && <p className="text-xs text-red-500">{errors.cpf}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="loveMessage" className="text-lg flex items-center justify-between">
+                  <span>Mensagem de amor (surpresa)</span>
+                  <span className="text-sm text-muted-foreground">{loveMessageLength}/200</span>
+                </Label>
+                <Textarea
+                  id="loveMessage"
+                  name="loveMessage"
+                  placeholder="Digite uma mensagem de amor que será exibida como surpresa no final do WhatsWrapped..."
+                  value={formData.loveMessage}
+                  onChange={handleInputChange}
+                  className="text-lg min-h-[100px] resize-none"
+                  maxLength={200}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Esta mensagem será exibida como uma surpresa no final do WhatsWrapped.
+                </p>
               </div>
 
               <div className="pt-6">

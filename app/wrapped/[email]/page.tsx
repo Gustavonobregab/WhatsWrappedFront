@@ -51,14 +51,32 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
           return
         }
 
-        // Se não houver dados na sessão, usar os dados de exemplo
-        setMetricsData(EXAMPLE_DATA)
+        // Se não houver dados na sessão, tentar buscar da API
+        try {
+          const response = await fetch(`/api/v1/metrics/${encodeURIComponent(email)}`)
+
+          if (!response.ok) {
+            throw new Error("Não foi possível carregar os dados da sua retrospectiva")
+          }
+
+          const data = await response.json()
+
+          if (!data.success || !data.data || data.data.length === 0) {
+            throw new Error("Dados não encontrados ou inválidos")
+          }
+
+          setMetricsData(data.data)
+          sessionStorage.setItem("metricsData", JSON.stringify(data.data))
+        } catch (apiError) {
+          console.error("Erro ao buscar dados da API:", apiError)
+          throw new Error("Não foi possível carregar os dados da sua retrospectiva. Por favor, tente novamente.")
+        }
       } catch (error: any) {
         console.error("Erro ao carregar dados:", error)
         setError(error.message || "Erro ao carregar dados do WhatsWrapped")
         toast({
           title: "Erro",
-          description: "Não foi possível carregar os dados do WhatsWrapped",
+          description: "Não foi possível carregar os dados do WhatsWrapped. Por favor, tente novamente.",
           variant: "destructive",
         })
       } finally {
@@ -124,9 +142,12 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
         <div className="bg-white rounded-xl shadow-md p-8 max-w-md text-center">
           <h2 className="text-xl font-bold mb-4 text-red-600">Erro</h2>
           <p className="mb-6">{error}</p>
-          <Button asChild>
-            <Link href="/">Voltar para o início</Link>
-          </Button>
+          <div className="flex flex-col gap-4">
+            <Button onClick={() => window.location.reload()}>Tentar novamente</Button>
+            <Button variant="outline" asChild>
+              <Link href="/">Voltar para o início</Link>
+            </Button>
+          </div>
         </div>
       </div>
     )

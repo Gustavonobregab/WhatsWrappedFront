@@ -38,18 +38,16 @@ export async function GET(request: Request, { params }: { params: { email: strin
     const metricsData = metricsDataStore[email]
 
     if (!metricsData) {
-      // Se não encontrarmos dados para este email, usamos os dados de exemplo
-      console.log(`Dados não encontrados para o email ${email}, usando dados de exemplo`)
+      // Se não encontrarmos dados para este email, retornamos um erro
+      console.log(`Dados não encontrados para o email ${email}`)
 
-      // Armazenar os dados de exemplo para este email
-      metricsDataStore[email] = exampleData
-
-      return NextResponse.json({
-        success: true,
-        email: email,
-        data: exampleData,
-        note: "Usando dados de exemplo pois não foram encontrados dados processados",
-      })
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Dados não encontrados para este email",
+        },
+        { status: 404 },
+      )
     }
 
     return NextResponse.json({

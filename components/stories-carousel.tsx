@@ -20,6 +20,31 @@ interface StoriesCarouselProps {
 export function StoriesCarousel({ metricsData = [], showOnlyDataStories = false }: StoriesCarouselProps) {
   const [currentStory, setCurrentStory] = React.useState(0)
   const [isPaused, setIsPaused] = React.useState(false)
+  const [loveMessage, setLoveMessage] = React.useState<string | null>(null)
+  const [senderName, setSenderName] = React.useState<string>("Alguém")
+
+  // Carregar a mensagem de amor e o nome do remetente do sessionStorage
+  React.useEffect(() => {
+    const storedMessage = sessionStorage.getItem("loveMessage")
+    if (storedMessage) {
+      setLoveMessage(storedMessage)
+    }
+
+    // Recuperar o nome do usuário do sessionStorage
+    const userDataStr = sessionStorage.getItem("userData")
+    if (userDataStr) {
+      try {
+        const userData = JSON.parse(userDataStr)
+        if (userData.name) {
+          // Pegar apenas o primeiro nome
+          const firstName = userData.name.split(" ")[0]
+          setSenderName(firstName)
+        }
+      } catch (error) {
+        console.error("Erro ao processar dados do usuário:", error)
+      }
+    }
+  }, [])
 
   // Usar dados reais se disponíveis, caso contrário usar dados de exemplo
   const user1 = metricsData[0] || {
@@ -77,9 +102,7 @@ export function StoriesCarousel({ metricsData = [], showOnlyDataStories = false 
           <div className="relative">
             <div className="absolute -top-20 -left-20 w-40 h-40 bg-pink-500/30 rounded-full blur-xl animate-pulse"></div>
             <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-blue-500/30 rounded-full blur-xl animate-pulse"></div>
-            <h1 className="text-5xl font-extrabold mb-6 text-center">
-              Surpreenda <br /> seu amor <br /> 2024
-            </h1>
+            <h1 className="text-5xl font-extrabold mb-6 text-center">Que tal uma retrospectiva da nossa história?</h1>
           </div>
           <p className="text-2xl text-white/90 text-center">Descubra o que suas conversas dizem sobre você</p>
         </div>
@@ -490,6 +513,34 @@ export function StoriesCarousel({ metricsData = [], showOnlyDataStories = false 
       ),
     },
 
+    // Mensagem personalizada (novo slide)
+    {
+      type: "love-message",
+      bgColor: "from-pink-600 via-rose-600 to-red-600",
+      content: (
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
+          <div className="text-center max-w-md mx-auto">
+            <div className="mb-8">
+              <span className="text-5xl md:text-6xl">💌</span>
+            </div>
+            <h3 className="text-3xl md:text-4xl font-bold mb-8">{senderName} deixou esse recado pra você...</h3>
+
+            <div className="bg-white/20 rounded-xl p-8 backdrop-blur-sm mb-8">
+              <p className="text-xl md:text-2xl italic leading-relaxed text-center">
+                {loveMessage || "Obrigado por compartilhar essa jornada comigo. Cada mensagem é especial."}
+              </p>
+            </div>
+
+            <div className="flex justify-center space-x-4">
+              <span className="text-3xl">❤️</span>
+              <span className="text-3xl">✨</span>
+              <span className="text-3xl">💕</span>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+
     // Tela final
     {
       type: "outro",
@@ -500,7 +551,7 @@ export function StoriesCarousel({ metricsData = [], showOnlyDataStories = false 
             <div className="absolute -top-20 -left-20 w-40 h-40 bg-pink-500/30 rounded-full blur-xl animate-pulse"></div>
             <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-red-500/30 rounded-full blur-xl animate-pulse"></div>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-8 text-center">
-              Surpreenda seu amor <br /> 2024
+              Surpreenda seu amor <br /> 2025
             </h1>
           </div>
           <p className="text-2xl md:text-3xl text-white/90 text-center mb-8">
@@ -527,7 +578,7 @@ export function StoriesCarousel({ metricsData = [], showOnlyDataStories = false 
 
     const interval = setInterval(() => {
       setCurrentStory((prev) => (prev === stories.length - 1 ? 0 : prev + 1))
-    }, 5000) // Avança a cada 5 segundos
+    }, 5000)
 
     return () => clearInterval(interval)
   }, [isPaused, stories.length])

@@ -130,7 +130,6 @@ export default function PagamentoPage() {
       const userDataStr = sessionStorage.getItem("userData")
       const fileBlob = sessionStorage.getItem("whatsappFileBlob")
       const fileName = sessionStorage.getItem("whatsappFile")
-      const metricsDataStr = sessionStorage.getItem("metricsData")
 
       if (!userDataStr) {
         throw new Error("Dados do usuário não encontrados")
@@ -139,86 +138,105 @@ export default function PagamentoPage() {
       const userData = JSON.parse(userDataStr)
       const email = userData.email
 
-      // Se já temos os dados processados, não precisamos processar novamente
-      if (metricsDataStr) {
+      // Verificar se temos o arquivo para processar
+      if (!fileBlob) {
+        throw new Error("Arquivo não encontrado. Por favor, faça o upload novamente.")
+      }
+
+      try {
+        const formData = new FormData()
+
+        const response = await fetch(fileBlob)
+        const blob = await response.blob()
+        const file = new File([blob], fileName || "chat.zip", { type: "application/zip" })
+
+        formData.append("file", file)
+        formData.append("email", email)
+
         toast({
-          title: "Pagamento confirmado!",
+          title: "Processando arquivo",
+          description: "Estamos processando seu arquivo. Isso pode levar alguns instantes...",
+        })
+
+        // Fazer até 3 tentativas de processamento
+        let uploadResponse = null
+        let apiData = null
+        let attempts = 0
+        const maxAttempts = 3
+
+        while (attempts < maxAttempts) {
+          attempts++
+          try {
+            uploadResponse = await fetch("/api/v1/metrics/upload", {
+              method: "POST",
+              body: formData,
+            })
+
+            if (!uploadResponse.ok) {
+              console.error(`Tentativa ${attempts}: Erro na API de upload: ${uploadResponse.status}`)
+              if (attempts === maxAttempts) {
+                throw new Error(`Erro ao processar arquivo: ${uploadResponse.statusText}`)
+              }
+              // Esperar antes de tentar novamente
+              await new Promise((resolve) => setTimeout(resolve, 2000))
+              continue
+            }
+
+            apiData = await uploadResponse.json()
+
+            // Verificar se os dados foram processados corretamente
+            if (!apiData.success || !apiData.data || apiData.data.length === 0) {
+              console.error(`Tentativa ${attempts}: Dados inválidos recebidos da API`)
+              if (attempts === maxAttempts) {
+                throw new Error("Não foi possível processar os dados do seu arquivo. Por favor, tente novamente.")
+              }
+              // Esperar antes de tentar novamente
+              await new Promise((resolve) => setTimeout(resolve, 2000))
+              continue
+            }
+
+            // Se chegou aqui, os dados foram processados com sucesso
+            break
+          } catch (e) {
+            console.error(`Tentativa ${attempts}: Erro ao processar arquivo:`, e)
+            if (attempts === maxAttempts) {
+              throw e
+            }
+            // Esperar antes de tentar novamente
+            await new Promise((resolve) => setTimeout(resolve, 2000))
+          }
+        }
+
+        // Se chegou aqui e não temos dados, lançar erro
+        if (!apiData || !apiData.data || apiData.data.length === 0) {
+          throw new Error("Não foi possível processar os dados do seu arquivo após várias tentativas.")
+        }
+
+        // Armazenar os dados processados
+        sessionStorage.setItem("metricsData", JSON.stringify(apiData.data))
+
+        toast({
+          title: "Arquivo processado com sucesso!",
           description: "Seu WhatsWrapped está sendo gerado...",
         })
 
         setTimeout(() => {
           router.push(`/wrapped/${encodeURIComponent(email)}`)
         }, 2000)
-        return
+      } catch (e) {
+        console.error("Erro ao processar arquivo:", e)
+        // Não usar fallback, mostrar erro para o usuário
+        throw new Error("Erro ao processar seu arquivo. Por favor, tente novamente mais tarde.")
       }
-
-      if (fileBlob) {
-        try {
-          const formData = new FormData()
-
-          const response = await fetch(fileBlob)
-          const blob = await response.blob()
-          const file = new File([blob], fileName || "chat.zip", { type: "application/zip" })
-
-          formData.append("file", file)
-          formData.append("email", email)
-
-          toast({
-            title: "Processando arquivo",
-            description: "Estamos processando seu arquivo. Isso pode levar alguns instantes...",
-          })
-
-          const uploadResponse = await fetch("/api/v1/metrics/upload", {
-            method: "POST",
-            body: formData,
-          })
-
-          if (!uploadResponse.ok) {
-            console.error(`Erro na API de upload: ${uploadResponse.status}`)
-            throw new Error(`Erro ao processar arquivo: ${uploadResponse.statusText}`)
-          }
-
-          const apiData = await uploadResponse.json()
-          console.log("Resposta do processamento do arquivo:", apiData)
-
-          // Verificar se os dados foram processados corretamente
-          if (!apiData.success && (!apiData.data || apiData.data.length === 0)) {
-            console.warn("Dados de exemplo serão usados devido a erro no processamento")
-            sessionStorage.setItem("metricsData", JSON.stringify(EXAMPLE_DATA))
-          } else {
-            sessionStorage.setItem("metricsData", JSON.stringify(apiData.data || apiData))
-          }
-
-          toast({
-            title: "Arquivo processado com sucesso!",
-            description: "Seu WhatsWrapped está sendo gerado...",
-          })
-
-          setTimeout(() => {
-            router.push(`/wrapped/${encodeURIComponent(email)}`)
-          }, 2000)
-
-          return
-        } catch (e) {
-          console.error("Erro ao processar arquivo:", e)
-          // Continuar para o fallback
-        }
-      }
-
-      // Fallback para dados de exemplo
-      sessionStorage.setItem("metricsData", JSON.stringify(EXAMPLE_DATA))
-
-      toast({
-        title: "Pagamento confirmado!",
-        description: "Seu WhatsWrapped está sendo gerado...",
-      })
-
-      setTimeout(() => {
-        router.push(`/wrapped/${encodeURIComponent(email)}`)
-      }, 2000)
     } catch (error: any) {
       console.error("Erro ao processar arquivo:", error)
       setError(error.message || "Erro ao processar seu arquivo. Por favor, tente novamente.")
+
+      toast({
+        title: "Erro no processamento",
+        description: "Ocorreu um erro ao processar seu arquivo. Por favor, tente novamente.",
+        variant: "destructive",
+      })
     } finally {
       setIsProcessingFile(false)
     }
@@ -252,17 +270,12 @@ export default function PagamentoPage() {
   }
 
   const skipToResults = () => {
-    const userDataStr = sessionStorage.getItem("userData")
-    if (userDataStr) {
-      const userData = JSON.parse(userDataStr)
-      const email = userData.email
+    toast({
+      title: "Atenção",
+      description: "Para visualizar sua retrospectiva real, é necessário processar seu arquivo de conversa.",
+    })
 
-      sessionStorage.setItem("metricsData", JSON.stringify(EXAMPLE_DATA))
-
-      if (email) {
-        router.push(`/wrapped/${encodeURIComponent(email)}`)
-      }
-    }
+    router.push("/comece-agora")
   }
 
   if (error) {

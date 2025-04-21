@@ -51,6 +51,17 @@ export async function POST(request: Request) {
       // Obter os dados da resposta
       const apiData = await apiResponse.json()
 
+      // Verificar se os dados são válidos
+      if (!apiData.data || apiData.data.length === 0) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "A API retornou dados inválidos ou vazios",
+          },
+          { status: 500 },
+        )
+      }
+
       // Armazenar os dados no armazenamento em memória
       metricsDataStore[email] = apiData.data || apiData
 
@@ -63,38 +74,14 @@ export async function POST(request: Request) {
     } catch (apiError) {
       console.error("Erro ao chamar API externa:", apiError)
 
-      // Como fallback, usamos os dados de exemplo
-      console.log("Usando dados de exemplo como fallback")
-      const metricsData = [
+      // Retornar erro em vez de usar dados de exemplo
+      return NextResponse.json(
         {
-          sender: "Bbkinha",
-          totalMessages: 3542,
-          loveMessages: 21,
-          apologyMessages: 6,
-          firstMessageDate: "2024-04-19",
-          messageStreak: 31,
-          daysStartedConversation: 155,
+          success: false,
+          error: `Erro ao processar o arquivo: ${apiError instanceof Error ? apiError.message : String(apiError)}`,
         },
-        {
-          sender: "Gabriela",
-          totalMessages: 4380,
-          loveMessages: 40,
-          apologyMessages: 1,
-          firstMessageDate: "2024-04-19",
-          messageStreak: 31,
-          daysStartedConversation: 153,
-        },
-      ]
-
-      // Armazenar os dados no armazenamento em memória
-      metricsDataStore[email] = metricsData
-
-      return NextResponse.json({
-        success: true,
-        email: email,
-        data: metricsData,
-        note: "Usando dados de exemplo devido a erro na API externa",
-      })
+        { status: 500 },
+      )
     }
   } catch (error) {
     console.error("Erro ao processar upload:", error)
