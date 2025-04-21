@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { processWhatsAppFile } from "@/lib/process-whatsapp"
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,17 +42,56 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Processar o arquivo do WhatsApp
-    const metricsData = await processWhatsAppFile(file)
+    // Criar um novo FormData para enviar para a API externa
+    const apiFormData = new FormData()
+    apiFormData.append("name", name)
+    apiFormData.append("email", email)
+    apiFormData.append("cpf", cpf)
+    apiFormData.append("text", text)
+    apiFormData.append("file", file)
+
+    // Enviar para a API externa
+    console.log("Enviando dados para API externa:", {
+      name,
+      email,
+      cpf,
+      text,
+      file: `${file.name} (${file.size} bytes)`,
+    })
+
+    const response = await fetch("https://chat-metrics-api.onrender.com/api/v1/metrics/upload", {
+      method: "POST",
+      body: apiFormData,
+    })
+
+    // Verificar resposta
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error("Erro na resposta da API:", response.status, errorText)
+
+      try {
+        const errorData = JSON.parse(errorText)
+        return NextResponse.json(
+          { success: false, message: errorData.message || `Erro ao processar o arquivo: ${response.status}` },
+          { status: response.status },
+        )
+      } catch (e) {
+        return NextResponse.json(
+          { success: false, message: `Erro ao processar o arquivo: ${response.status}` },
+          { status: response.status },
+        )
+      }
+    }
+
+    // Processar resposta bem-sucedida
+    const result = await response.json()
+    console.log("Resposta da API externa:", result)
 
     // Retornar os dados processados
     return NextResponse.json({
       success: true,
       message: "Arquivo processado com sucesso!",
-      metrics: {
-        participants: metricsData,
-        id: generateUniqueId(),
-      },
+      metrics: result.metrics,
     })
   } catch (error: any) {
     console.error("Erro ao processar upload:", error)
@@ -62,9 +100,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     )
   }
-}
-
-// Função para gerar um ID único
-function generateUniqueId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9)
 }

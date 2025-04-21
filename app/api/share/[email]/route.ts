@@ -13,14 +13,27 @@ export async function GET(request: Request, { params }: { params: { email: strin
     // Decodificar o email
     const decodedEmail = decodeURIComponent(email)
 
-    // Retornar erro indicando que os dados não estão disponíveis
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Dados não disponíveis. Apenas o proprietário pode ver esta retrospectiva após fazer upload do arquivo.",
-      },
-      { status: 404 },
-    )
+    // Tentar buscar os dados do usuário da API externa
+    const response = await fetch(`https://chat-metrics-api.onrender.com/api/v1/metrics/user/${decodedEmail}`)
+
+    if (!response.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Dados não disponíveis. Apenas o proprietário pode ver esta retrospectiva após fazer upload do arquivo.",
+        },
+        { status: 404 },
+      )
+    }
+
+    const result = await response.json()
+
+    // Retornar os dados do usuário
+    return NextResponse.json({
+      success: true,
+      data: result.metrics.participants,
+    })
   } catch (error) {
     console.error("Erro ao obter dados compartilhados:", error)
     return NextResponse.json({ success: false, error: "Erro interno ao obter dados" }, { status: 500 })
