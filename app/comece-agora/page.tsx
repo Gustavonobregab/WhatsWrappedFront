@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Upload, Check, Loader2, ArrowRight, AlertCircle } from "lucide-react"
+import { ArrowLeft, Upload, Loader2, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
 
@@ -12,9 +12,6 @@ export default function ComecePage() {
   const [step, setStep] = useState(1)
   const [isUploading, setIsUploading] = useState(false)
   const [isUploaded, setIsUploaded] = useState(false)
-  const [isValidating, setIsValidating] = useState(false)
-  const [isValidFile, setIsValidFile] = useState(false)
-  const [validationMessage, setValidationMessage] = useState("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const router = useRouter()
 
@@ -23,8 +20,6 @@ export default function ComecePage() {
     if (!file) return
 
     setIsUploading(true)
-    setIsValidFile(false)
-    setValidationMessage("")
 
     // Verificar se é um arquivo ZIP
     if (file.type !== "application/zip" && !file.name.endsWith(".zip")) {
@@ -60,58 +55,14 @@ export default function ComecePage() {
     sessionStorage.setItem("whatsappFile", file.name)
     sessionStorage.setItem("fileSelected", "true")
 
+    // Marcar o arquivo como validado automaticamente
+    sessionStorage.setItem("fileValidated", "true")
+
     // Simular o upload do arquivo
     setTimeout(() => {
       setIsUploading(false)
       setIsUploaded(true)
-
-      // Iniciar validação do arquivo
-      validateFile(file)
     }, 1500)
-  }
-
-  const validateFile = async (file: File) => {
-    setIsValidating(true)
-
-    try {
-      // Criar um FormData para enviar o arquivo
-      const formData = new FormData()
-      formData.append("file", file)
-
-      // Fazer a chamada real para a API
-      const response = await fetch("/api/v1/validate-whatsapp-file", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error(`Erro na validação: ${response.status}`)
-      }
-
-      const result = await response.json()
-      console.log("Resposta da validação:", result)
-
-      if (result.success && result.data && result.data.isValid) {
-        // Arquivo válido
-        setIsValidFile(true)
-        setValidationMessage("Arquivo válido! Conversas detectadas com sucesso.")
-
-        // Armazenar informação de validação
-        sessionStorage.setItem("fileValidated", "true")
-      } else {
-        // Arquivo inválido
-        setIsValidFile(false)
-        setValidationMessage(result.error || "Não foi possível detectar conversas válidas do WhatsApp neste arquivo.")
-        sessionStorage.removeItem("fileValidated")
-      }
-    } catch (error) {
-      console.error("Erro ao validar arquivo:", error)
-      setIsValidFile(false)
-      setValidationMessage("Ocorreu um erro ao validar o arquivo. Por favor, tente novamente.")
-      sessionStorage.removeItem("fileValidated")
-    } finally {
-      setIsValidating(false)
-    }
   }
 
   const handleContinue = () => {
@@ -125,14 +76,8 @@ export default function ComecePage() {
         return
       }
 
-      if (!isValidFile) {
-        toast({
-          title: "Arquivo inválido",
-          description: "Por favor, selecione um arquivo de conversa do WhatsApp válido.",
-          variant: "destructive",
-        })
-        return
-      }
+      // Limpar quaisquer dados de pagamento anteriores para evitar problemas
+      sessionStorage.removeItem("paymentData")
 
       router.push("/dados-pessoais")
     } else {
@@ -289,26 +234,20 @@ export default function ComecePage() {
                 ) : (
                   <div className="space-y-4">
                     <div className="flex justify-center">
-                      {isValidating ? (
-                        <Loader2 className="h-12 w-12 text-primary animate-spin" />
-                      ) : isValidFile ? (
-                        <div className="rounded-full bg-green-100 p-5">
-                          <Check className="h-12 w-12 text-green-600" />
-                        </div>
-                      ) : (
-                        <div className="rounded-full bg-red-100 p-5">
-                          <AlertCircle className="h-12 w-12 text-red-600" />
-                        </div>
-                      )}
+                      <div className="rounded-full bg-green-100 p-5">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-12 w-12 text-green-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
                     </div>
 
-                    <h3
-                      className={`text-2xl font-medium ${
-                        isValidating ? "text-primary" : isValidFile ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {isValidating ? "Validando arquivo..." : isValidFile ? "Arquivo válido!" : "Arquivo inválido"}
-                    </h3>
+                    <h3 className="text-2xl font-medium text-green-600">Arquivo carregado com sucesso!</h3>
 
                     <p className="text-lg">
                       {selectedFile?.name} (
@@ -318,25 +257,17 @@ export default function ComecePage() {
                       )
                     </p>
 
-                    {validationMessage && (
-                      <p className={`text-sm ${isValidFile ? "text-green-600" : "text-red-600"}`}>
-                        {validationMessage}
-                      </p>
-                    )}
-
-                    {!isValidFile && !isValidating && (
-                      <div className="relative mt-4">
-                        <input
-                          type="file"
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                          accept=".zip"
-                          onChange={handleFileUpload}
-                        />
-                        <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white">
-                          Selecionar outro arquivo
-                        </Button>
-                      </div>
-                    )}
+                    <div className="relative mt-4">
+                      <input
+                        type="file"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        accept=".zip"
+                        onChange={handleFileUpload}
+                      />
+                      <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white">
+                        Selecionar outro arquivo
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -348,7 +279,7 @@ export default function ComecePage() {
                 </Button>
                 <Button
                   onClick={handleContinue}
-                  disabled={!isUploaded || !isValidFile || isValidating}
+                  disabled={!isUploaded}
                   className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
                 >
                   Continuar

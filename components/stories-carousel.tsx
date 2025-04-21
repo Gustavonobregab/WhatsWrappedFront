@@ -426,7 +426,6 @@ export function StoriesCarousel({ metricsData = [], showOnlyDataStories = false 
           <p className="text-xl md:text-2xl font-medium mb-4 text-center">Uma data especial! 🌟</p>
 
           <div className="bg-white/20 rounded-lg p-4 text-center mb-4 max-w-xs md:max-w-md">
-            <h3 className="text-xl md:text-2xl font-bold mb-2">Primeira mensagem:</h3>
             <p className="text-lg md:text-xl italic">"Oi! Tudo bem?"</p>
           </div>
 

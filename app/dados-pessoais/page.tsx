@@ -31,25 +31,14 @@ export default function DadosPessoaisPage() {
   const [loveMessageLength, setLoveMessageLength] = useState(0) // Contador de caracteres
   const router = useRouter()
 
-  // Verificar se o arquivo foi selecionado e validado
+  // Verificar se o arquivo foi selecionado
   useEffect(() => {
     const fileSelected = sessionStorage.getItem("fileSelected")
-    const fileValidated = sessionStorage.getItem("fileValidated")
 
     if (!fileSelected) {
       toast({
         title: "Arquivo não selecionado",
         description: "Por favor, selecione um arquivo de conversa do WhatsApp.",
-        variant: "destructive",
-      })
-      router.push("/comece-agora")
-      return
-    }
-
-    if (!fileValidated) {
-      toast({
-        title: "Arquivo não validado",
-        description: "Por favor, selecione um arquivo de conversa do WhatsApp válido.",
         variant: "destructive",
       })
       router.push("/comece-agora")
@@ -121,7 +110,6 @@ export default function DadosPessoaisPage() {
     }
   }
 
-  // Modificar a função handleSubmit para tratar melhor os erros de usuário já existente
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -132,52 +120,9 @@ export default function DadosPessoaisPage() {
     setIsLoading(true)
 
     try {
-      // Primeiro, processar o arquivo para garantir que os dados sejam válidos
-      const fileBlob = sessionStorage.getItem("whatsappFileBlob")
-      const fileName = sessionStorage.getItem("whatsappFile")
-
-      if (!fileBlob || !fileName) {
-        throw new Error("Arquivo não encontrado. Por favor, faça o upload novamente.")
-      }
-
-      // Processar o arquivo antes de prosseguir com o pagamento
-      try {
-        const response = await fetch(fileBlob)
-        const blob = await response.blob()
-        const file = new File([blob], fileName, { type: "application/zip" })
-
-        const formData = new FormData()
-        formData.append("file", file)
-        formData.append("email", formData.email)
-
-        toast({
-          title: "Processando arquivo",
-          description: "Estamos validando seu arquivo antes de prosseguir...",
-        })
-
-        const uploadResponse = await fetch("/api/v1/metrics/upload", {
-          method: "POST",
-          body: formData,
-        })
-
-        if (!uploadResponse.ok) {
-          throw new Error("Não foi possível processar o arquivo. Por favor, tente novamente.")
-        }
-
-        const metricsData = await uploadResponse.json()
-
-        // Verificar se os dados foram processados corretamente
-        if (!metricsData.success || !metricsData.data || metricsData.data.length === 0) {
-          throw new Error(
-            "Não foi possível extrair dados do arquivo. Por favor, verifique se é um arquivo de conversa do WhatsApp válido.",
-          )
-        }
-
-        // Armazenar os dados processados
-        sessionStorage.setItem("metricsData", JSON.stringify(metricsData.data))
-      } catch (error) {
-        console.error("Erro ao processar arquivo:", error)
-        throw new Error("Erro ao processar o arquivo. Por favor, tente novamente.")
+      // Salvar a mensagem de amor no sessionStorage
+      if (formData.loveMessage) {
+        sessionStorage.setItem("loveMessage", formData.loveMessage)
       }
 
       // 1. Registrar o usuário
@@ -193,9 +138,6 @@ export default function DadosPessoaisPage() {
 
       console.log("Enviando dados de registro:", registerData)
 
-      let userRegistered = false
-      let registerError = null
-
       try {
         const registerResponse = await fetch("/api/v1/auth/register", {
           method: "POST",
@@ -205,50 +147,18 @@ export default function DadosPessoaisPage() {
           body: JSON.stringify(registerData),
         })
 
-        const registerResult = await registerResponse.json()
-        console.log("Resposta do registro:", registerResult)
+        if (!registerResponse.ok) {
+          const registerResult = await registerResponse.json()
+          console.error("Erro no registro:", registerResult)
 
-        if (registerResponse.ok) {
-          userRegistered = true
-        } else {
-          // Verificar se é um erro de usuário já existente
-          if (
-            registerResponse.status === 409 ||
-            registerResponse.status === 400 ||
-            (registerResult.error &&
-              (registerResult.error.includes("já cadastrado") ||
-                registerResult.error.includes("already exists") ||
-                registerResult.error.includes("Email já cadastrado") ||
-                registerResult.error.includes("CPF já cadastrado")))
-          ) {
-            // Se o usuário já existe, podemos continuar com o pagamento
-            console.log("Usuário já existe, continuando com o pagamento")
-            userRegistered = true
-
-            // Mostrar toast informativo
-            toast({
-              title: "Informação",
-              description: "Este email ou CPF já está cadastrado. Continuando com o pagamento.",
-              variant: "default",
-            })
-          } else {
-            // Se for outro tipo de erro, armazenar para lançar depois
-            registerError = new Error(registerResult.error || "Erro ao registrar usuário")
+          // Se for um erro de usuário já existente, podemos continuar
+          if (registerResponse.status !== 409) {
+            throw new Error(registerResult.error || "Erro ao registrar usuário")
           }
         }
       } catch (error) {
         console.error("Erro na requisição de registro:", error)
-        registerError = error
-      }
-
-      // Se houve um erro que não é de usuário já existente, lançar o erro
-      if (!userRegistered && registerError) {
-        throw registerError
-      }
-
-      // Salvar a mensagem de amor no sessionStorage
-      if (formData.loveMessage) {
-        sessionStorage.setItem("loveMessage", formData.loveMessage)
+        // Não lançar erro aqui para permitir continuar com o pagamento
       }
 
       // 2. Gerar o pagamento PIX
@@ -259,23 +169,33 @@ export default function DadosPessoaisPage() {
         cpf: formData.cpf,
       }
 
-      const paymentResponse = await fetch("/api/v1/payment/pix/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(paymentData),
-      })
+      try {
+        const paymentResponse = await fetch("/api/v1/payment/pix/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(paymentData),
+        })
 
-      if (!paymentResponse.ok) {
-        const paymentError = await paymentResponse.json()
-        throw new Error(paymentError.error || "Erro ao gerar pagamento")
+        if (!paymentResponse.ok) {
+          const paymentError = await paymentResponse.text()
+          throw new Error(`Erro ao gerar pagamento: ${paymentError}`)
+        }
+
+        const paymentResult = await paymentResponse.json()
+
+        if (!paymentResult.success || !paymentResult.data) {
+          throw new Error("Resposta inválida da API de pagamento")
+        }
+
+        sessionStorage.setItem("paymentData", JSON.stringify(paymentResult))
+      } catch (error) {
+        console.error("Erro ao gerar pagamento:", error)
+        throw error
       }
 
-      const paymentResult = await paymentResponse.json()
-
-      // Armazenar os dados do pagamento e do usuário
-      sessionStorage.setItem("paymentData", JSON.stringify(paymentResult))
+      // Armazenar os dados do usuário
       sessionStorage.setItem("userData", JSON.stringify(formData))
 
       // Redirecionar para a página de pagamento

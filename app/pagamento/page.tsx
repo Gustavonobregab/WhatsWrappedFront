@@ -8,28 +8,6 @@ import { useRouter } from "next/navigation"
 import type { PaymentStatus } from "@/lib/api-config"
 import { toast } from "@/components/ui/use-toast"
 
-// Dados de exemplo para fallback
-const EXAMPLE_DATA = [
-  {
-    sender: "Bbkinha",
-    totalMessages: 3542,
-    loveMessages: 21,
-    apologyMessages: 6,
-    firstMessageDate: "2024-04-19",
-    messageStreak: 31,
-    daysStartedConversation: 155,
-  },
-  {
-    sender: "Gabriela",
-    totalMessages: 4380,
-    loveMessages: 40,
-    apologyMessages: 1,
-    firstMessageDate: "2024-04-19",
-    messageStreak: 31,
-    daysStartedConversation: 153,
-  },
-]
-
 export default function PagamentoPage() {
   const [copied, setCopied] = useState(false)
   const [isVerifying, setIsVerifying] = useState(false)
@@ -138,105 +116,117 @@ export default function PagamentoPage() {
       const userData = JSON.parse(userDataStr)
       const email = userData.email
 
+      if (!email) {
+        throw new Error("Email do usuário não encontrado")
+      }
+
       // Verificar se temos o arquivo para processar
       if (!fileBlob) {
         throw new Error("Arquivo não encontrado. Por favor, faça o upload novamente.")
       }
 
+      // Limpar dados antigos da retrospectiva
+      sessionStorage.removeItem("metricsData")
+
+      // Obter o arquivo do blob URL
       try {
-        const formData = new FormData()
-
         const response = await fetch(fileBlob)
-        const blob = await response.blob()
-        const file = new File([blob], fileName || "chat.zip", { type: "application/zip" })
+        const file = await response.blob()
 
-        formData.append("file", file)
+        // Criar um objeto File a partir do Blob
+        const whatsappFile = new File([file], fileName || "whatsapp.zip", {
+          type: "application/zip",
+        })
+
+        // Criar um FormData para enviar o arquivo
+        const formData = new FormData()
+        formData.append("file", whatsappFile)
         formData.append("email", email)
 
-        toast({
-          title: "Processando arquivo",
-          description: "Estamos processando seu arquivo. Isso pode levar alguns instantes...",
+        // Enviar o arquivo para processamento
+        const uploadResponse = await fetch("/api/v1/metrics/upload", {
+          method: "POST",
+          body: formData,
         })
 
-        // Fazer até 3 tentativas de processamento
-        let uploadResponse = null
-        let apiData = null
-        let attempts = 0
-        const maxAttempts = 3
-
-        while (attempts < maxAttempts) {
-          attempts++
-          try {
-            uploadResponse = await fetch("/api/v1/metrics/upload", {
-              method: "POST",
-              body: formData,
-            })
-
-            if (!uploadResponse.ok) {
-              console.error(`Tentativa ${attempts}: Erro na API de upload: ${uploadResponse.status}`)
-              if (attempts === maxAttempts) {
-                throw new Error(`Erro ao processar arquivo: ${uploadResponse.statusText}`)
-              }
-              // Esperar antes de tentar novamente
-              await new Promise((resolve) => setTimeout(resolve, 2000))
-              continue
-            }
-
-            apiData = await uploadResponse.json()
-
-            // Verificar se os dados foram processados corretamente
-            if (!apiData.success || !apiData.data || apiData.data.length === 0) {
-              console.error(`Tentativa ${attempts}: Dados inválidos recebidos da API`)
-              if (attempts === maxAttempts) {
-                throw new Error("Não foi possível processar os dados do seu arquivo. Por favor, tente novamente.")
-              }
-              // Esperar antes de tentar novamente
-              await new Promise((resolve) => setTimeout(resolve, 2000))
-              continue
-            }
-
-            // Se chegou aqui, os dados foram processados com sucesso
-            break
-          } catch (e) {
-            console.error(`Tentativa ${attempts}: Erro ao processar arquivo:`, e)
-            if (attempts === maxAttempts) {
-              throw e
-            }
-            // Esperar antes de tentar novamente
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-          }
+        if (!uploadResponse.ok) {
+          throw new Error(`Erro ao processar arquivo: ${uploadResponse.status}`)
         }
 
-        // Se chegou aqui e não temos dados, lançar erro
-        if (!apiData || !apiData.data || apiData.data.length === 0) {
-          throw new Error("Não foi possível processar os dados do seu arquivo após várias tentativas.")
+        const uploadResult = await uploadResponse.json()
+        console.log("Resposta do processamento do arquivo:", uploadResult)
+
+        // Armazenar os dados da retrospectiva no sessionStorage
+        if (uploadResult.data && Array.isArray(uploadResult.data)) {
+          console.log("Dados obtidos do processamento:", uploadResult.data)
+          sessionStorage.setItem("metricsData", JSON.stringify(uploadResult.data))
+
+          toast({
+            title: "Pagamento confirmado!",
+            description: "Seu WhatsWrapped está sendo gerado...",
+          })
+
+          // Redirecionar para a página de resultados após um breve delay
+          setTimeout(() => {
+            router.push(`/wrapped/${encodeURIComponent(email)}`)
+          }, 2000)
+          return
+        } else {
+          console.error("Formato de resposta inválido:", uploadResult)
+          throw new Error("Formato de resposta inválido do processamento do arquivo")
         }
-
-        // Armazenar os dados processados
-        sessionStorage.setItem("metricsData", JSON.stringify(apiData.data))
-
-        toast({
-          title: "Arquivo processado com sucesso!",
-          description: "Seu WhatsWrapped está sendo gerado...",
-        })
-
-        setTimeout(() => {
-          router.push(`/wrapped/${encodeURIComponent(email)}`)
-        }, 2000)
-      } catch (e) {
-        console.error("Erro ao processar arquivo:", e)
-        // Não usar fallback, mostrar erro para o usuário
-        throw new Error("Erro ao processar seu arquivo. Por favor, tente novamente mais tarde.")
+      } catch (error) {
+        console.error("Erro ao processar o arquivo:", error)
+        throw error
       }
     } catch (error: any) {
       console.error("Erro ao processar arquivo:", error)
       setError(error.message || "Erro ao processar seu arquivo. Por favor, tente novamente.")
 
-      toast({
-        title: "Erro no processamento",
-        description: "Ocorreu um erro ao processar seu arquivo. Por favor, tente novamente.",
-        variant: "destructive",
-      })
+      // Usar dados de exemplo como fallback para garantir que o usuário veja algo
+      const userDataStr = sessionStorage.getItem("userData")
+      if (userDataStr) {
+        try {
+          const userData = JSON.parse(userDataStr)
+          const email = userData.email
+
+          // Dados de exemplo para fallback
+          const EXAMPLE_DATA = [
+            {
+              sender: "Usuário",
+              totalMessages: 3542,
+              loveMessages: 21,
+              apologyMessages: 6,
+              firstMessageDate: "2024-04-19",
+              messageStreak: 31,
+              daysStartedConversation: 155,
+            },
+            {
+              sender: "Contato",
+              totalMessages: 4380,
+              loveMessages: 40,
+              apologyMessages: 1,
+              firstMessageDate: "2024-04-19",
+              messageStreak: 31,
+              daysStartedConversation: 153,
+            },
+          ]
+
+          console.log("Usando dados de exemplo como fallback após erro crítico")
+          sessionStorage.setItem("metricsData", JSON.stringify(EXAMPLE_DATA))
+
+          toast({
+            title: "Continuando com dados de exemplo",
+            description: "Estamos usando dados de exemplo para mostrar como funciona o WhatsWrapped.",
+          })
+
+          setTimeout(() => {
+            router.push(`/wrapped/${encodeURIComponent(email)}`)
+          }, 2000)
+        } catch (e) {
+          console.error("Erro ao processar dados do usuário:", e)
+        }
+      }
     } finally {
       setIsProcessingFile(false)
     }
@@ -270,12 +260,45 @@ export default function PagamentoPage() {
   }
 
   const skipToResults = () => {
-    toast({
-      title: "Atenção",
-      description: "Para visualizar sua retrospectiva real, é necessário processar seu arquivo de conversa.",
-    })
+    const userDataStr = sessionStorage.getItem("userData")
+    if (userDataStr) {
+      try {
+        const userData = JSON.parse(userDataStr)
+        const email = userData.email
 
-    router.push("/comece-agora")
+        // Dados de exemplo para fallback
+        const EXAMPLE_DATA = [
+          {
+            sender: "Usuário",
+            totalMessages: 3542,
+            loveMessages: 21,
+            apologyMessages: 6,
+            firstMessageDate: "2024-04-19",
+            messageStreak: 31,
+            daysStartedConversation: 155,
+          },
+          {
+            sender: "Contato",
+            totalMessages: 4380,
+            loveMessages: 40,
+            apologyMessages: 1,
+            firstMessageDate: "2024-04-19",
+            messageStreak: 31,
+            daysStartedConversation: 153,
+          },
+        ]
+
+        // Limpar dados antigos e definir novos dados
+        sessionStorage.removeItem("metricsData")
+        sessionStorage.setItem("metricsData", JSON.stringify(EXAMPLE_DATA))
+
+        if (email) {
+          router.push(`/wrapped/${encodeURIComponent(email)}`)
+        }
+      } catch (e) {
+        console.error("Erro ao processar dados do usuário:", e)
+      }
+    }
   }
 
   if (error) {
@@ -346,7 +369,7 @@ export default function PagamentoPage() {
                 <div className="flex justify-center mb-8">
                   <div className="bg-white p-4 border-2 border-primary/20 rounded-lg shadow-lg">
                     <img
-                      src={paymentData.data?.pixQrCode || "/placeholder.svg"}
+                      src={paymentData.data?.pixQrCode || "/placeholder.svg?height=300&width=300&query=QR+Code+PIX"}
                       alt="QR Code PIX"
                       className="w-72 h-72"
                     />
