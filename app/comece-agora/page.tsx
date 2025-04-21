@@ -151,19 +151,30 @@ export default function ComecePage() {
       })
 
       // Enviar para a API
+      console.log("Enviando requisição para /api/v1/metrics/upload...")
       const response = await fetch("/api/v1/metrics/upload", {
         method: "POST",
         body: formDataToSend,
       })
 
-      const responseData = await response.json()
+      // Obter o texto da resposta para debug
+      const responseText = await response.text()
+      console.log("Resposta bruta da API:", responseText)
+
+      // Tentar converter para JSON
+      let responseData
+      try {
+        responseData = JSON.parse(responseText)
+        console.log("Resposta da API (parseada):", JSON.stringify(responseData, null, 2))
+      } catch (e) {
+        console.error("Erro ao parsear resposta JSON:", e)
+        throw new Error("Formato de resposta inválido da API")
+      }
 
       if (!response.ok) {
         console.error("Erro na resposta:", responseData)
         throw new Error(responseData.message || "Erro ao processar o arquivo")
       }
-
-      console.log("Resposta da API:", responseData)
 
       // Salvar dados na sessão
       sessionStorage.setItem(
@@ -181,21 +192,36 @@ export default function ComecePage() {
 
       // Salvar métricas na sessão
       if (responseData.metrics && responseData.metrics.participants) {
+        console.log("Salvando métricas na sessão:", responseData.metrics.participants)
         sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants))
 
         // Salvar ID único retornado pela API para uso posterior
         if (responseData.metrics.id) {
-          sessionStorage.setItem("metricsId", responseData.metrics.id)
-          console.log("ID da retrospectiva salvo:", responseData.metrics.id)
+          const retrospectiveId = responseData.metrics.id
+          console.log("ID da retrospectiva salvo:", retrospectiveId)
+          sessionStorage.setItem("metricsId", retrospectiveId)
+
+          // Redirecionar diretamente para a página de retrospectiva com o ID
+          toast({
+            title: "Arquivo processado com sucesso!",
+            description: "Redirecionando para sua retrospectiva...",
+          })
+
+          router.push(`/retrospectiva/${retrospectiveId}`)
+          return
+        } else {
+          console.warn("API não retornou ID da retrospectiva")
         }
+      } else {
+        console.warn("API não retornou métricas ou participantes:", responseData)
       }
 
+      // Fallback: redirecionar para a página de pagamento
       toast({
         title: "Arquivo processado com sucesso!",
         description: "Suas métricas foram extraídas. Continue para o pagamento.",
       })
 
-      // Redirecionar para a página de pagamento
       router.push("/pagamento")
     } catch (error: any) {
       console.error("Erro ao processar arquivo:", error)
@@ -371,7 +397,7 @@ export default function ComecePage() {
                     </>
                   ) : (
                     <>
-                      Continuar para pagamento
+                      Continuar
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </>
                   )}

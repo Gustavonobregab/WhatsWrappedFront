@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
+  console.log("Recebida requisição POST em /api/v1/metrics/upload")
+
   try {
     // Obter o FormData da requisição
     const formData = await request.formData()
@@ -48,44 +50,58 @@ export async function POST(request: NextRequest) {
     apiFormData.append("email", email)
     apiFormData.append("cpf", cpf)
     apiFormData.append("text", text)
-    apiFormData.append("file", file)
+    apiFormData.append("file", file, file.name) // Garantir que o nome do arquivo seja enviado
 
-    // Enviar para a API externa
-    console.log("Enviando dados para API externa:", {
+    // Log do FormData que está sendo enviado
+    console.log("FormData sendo enviado para API externa:", {
       name,
       email,
       cpf,
       text,
       file: `${file.name} (${file.size} bytes)`,
+      "Content-Type": file.type,
     })
 
+    // Enviar para a API externa
     const response = await fetch("https://chat-metrics-api.onrender.com/api/v1/metrics/upload", {
       method: "POST",
       body: apiFormData,
     })
 
+    // Log da resposta bruta para debug
+    const responseText = await response.text()
+    console.log("Resposta bruta da API externa:", responseText)
+
     // Verificar resposta
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error("Erro na resposta da API:", response.status, errorText)
+      console.error("Erro na resposta da API:", response.status, responseText)
 
       try {
-        const errorData = JSON.parse(errorText)
+        const errorData = JSON.parse(responseText)
         return NextResponse.json(
           { success: false, message: errorData.message || `Erro ao processar o arquivo: ${response.status}` },
           { status: response.status },
         )
       } catch (e) {
         return NextResponse.json(
-          { success: false, message: `Erro ao processar o arquivo: ${response.status}` },
+          {
+            success: false,
+            message: `Erro ao processar o arquivo: ${response.status} - ${responseText.substring(0, 100)}`,
+          },
           { status: response.status },
         )
       }
     }
 
     // Processar resposta bem-sucedida
-    const result = await response.json()
-    console.log("Resposta da API externa:", result)
+    let result
+    try {
+      result = JSON.parse(responseText)
+      console.log("Resposta da API externa (parseada):", JSON.stringify(result, null, 2))
+    } catch (e) {
+      console.error("Erro ao parsear resposta JSON:", e)
+      return NextResponse.json({ success: false, message: "Erro ao processar resposta da API" }, { status: 500 })
+    }
 
     // Retornar os dados processados
     return NextResponse.json({

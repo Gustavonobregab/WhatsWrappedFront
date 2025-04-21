@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { StoriesCarousel } from "@/components/stories-carousel"
 import { ShareButton } from "@/components/share-button"
+import { toast } from "@/components/ui/use-toast"
 
 export default function RetrospectivaPorIdPage({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true)
   const [metricsData, setMetricsData] = useState<any[]>([])
   const [loveMessage, setLoveMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isMockData, setIsMockData] = useState(false)
+  const [isMockData, setIsMockData] = useState<boolean>(false)
   const [isBrowser, setIsBrowser] = useState(false)
   const retrospectiveId = params.id
 
@@ -28,27 +29,70 @@ export default function RetrospectivaPorIdPage({ params }: { params: { id: strin
       try {
         setIsLoading(true)
 
-        // Buscar dados da retrospectiva pelo ID
-        const response = await fetch(`/api/retrospectiva/${retrospectiveId}`)
+        console.log(`Buscando dados da retrospectiva: ${retrospectiveId}`)
+
+        // Buscar dados da retrospectiva pelo ID usando a nova rota
+        const response = await fetch(`/api/v1/metrics/retrospective/${retrospectiveId}`)
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: "Erro desconhecido" }))
           throw new Error(errorData.error || "Não foi possível carregar a retrospectiva")
         }
 
-        const data = await response.json()
+        const responseData = await response.json()
+        console.log("Resposta da API:", responseData)
 
-        if (data.success && data.data) {
-          setMetricsData(data.data.participants || [])
-          setLoveMessage(data.data.loveMessage || null)
-          setIsMockData(data.data.isMock || false)
-          console.log("Dados carregados com sucesso:", data.data)
-        } else {
-          throw new Error("Dados inválidos recebidos da API")
+        if (!responseData.success) {
+          throw new Error(responseData.error || "Erro ao carregar dados")
         }
+
+        const data = responseData.data
+
+        // Verificar se temos dados válidos
+        if (!data || !data.participants || !Array.isArray(data.participants) || data.participants.length === 0) {
+          console.error("Dados inválidos recebidos:", data)
+          throw new Error("Dados inválidos ou incompletos recebidos da API")
+        }
+
+        // Verificar se cada participante tem os campos necessários
+        const validParticipants = data.participants.filter((p) => p && p.sender && typeof p.totalMessages === "number")
+
+        if (validParticipants.length === 0) {
+          console.error("Nenhum participante válido encontrado:", data.participants)
+          throw new Error("Nenhum participante válido encontrado nos dados")
+        }
+
+        console.log("Participantes válidos:", validParticipants)
+
+        setMetricsData(validParticipants)
+        setLoveMessage(data.loveMessage || data.text || null)
+        setIsMockData(data.isMock || false)
+
+        toast({
+          title: "Retrospectiva carregada",
+          description: "Sua retrospectiva foi carregada com sucesso!",
+        })
       } catch (error: any) {
         console.error("Erro ao carregar retrospectiva:", error)
         setError(error.message || "Erro ao carregar a retrospectiva")
+
+        // Tentar usar dados mockados como fallback
+        try {
+          console.log("Tentando usar dados mockados como fallback")
+          const { getPersonalizedMockData } = await import("@/lib/mock-data")
+          const mockData = getPersonalizedMockData("Usuário")
+          setMetricsData(mockData)
+          setIsMockData(true)
+          setError(null) // Limpar o erro já que temos dados mockados
+
+          toast({
+            title: "Usando dados de demonstração",
+            description: "Não foi possível carregar seus dados reais. Exibindo dados de demonstração.",
+            variant: "destructive",
+          })
+        } catch (fallbackError) {
+          console.error("Erro ao carregar dados mockados:", fallbackError)
+        }
       } finally {
         setTimeout(() => {
           setIsLoading(false)
@@ -59,15 +103,20 @@ export default function RetrospectivaPorIdPage({ params }: { params: { id: strin
     fetchRetrospectiveData()
   }, [retrospectiveId, isBrowser])
 
-  if (error) {
+  if (error && metricsData.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-violet-600/20 to-background flex items-center justify-center">
         <div className="bg-white rounded-xl shadow-md p-8 max-w-md text-center">
           <h2 className="text-xl font-bold mb-4 text-red-600">Erro</h2>
           <p className="mb-6">{error}</p>
-          <Button asChild>
-            <Link href="/">Voltar para o início</Link>
-          </Button>
+          <div className="flex flex-col gap-4">
+            <Button asChild>
+              <Link href="/">Voltar para o início</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/comece-agora">Criar nova retrospectiva</Link>
+            </Button>
+          </div>
         </div>
       </div>
     )
@@ -124,6 +173,15 @@ export default function RetrospectivaPorIdPage({ params }: { params: { id: strin
                     <span className="text-lg">ℹ️</span>
                     Você está visualizando dados de demonstração. Para ver dados reais, faça o upload do seu arquivo de
                     conversa.
+                  </p>
+                </div>
+              )}
+
+              {error && (
+                <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3 text-red-800 text-sm">
+                  <p className="flex items-center gap-2">
+                    <span className="text-lg">⚠️</span>
+                    {error}
                   </p>
                 </div>
               )}

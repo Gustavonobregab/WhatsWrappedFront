@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Share2, Check } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
@@ -23,15 +23,8 @@ export function ShareButton({
   size = "sm",
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false)
-  const [isBrowser, setIsBrowser] = useState(false)
-
-  useEffect(() => {
-    setIsBrowser(true)
-  }, [])
 
   const handleShare = async () => {
-    if (!isBrowser) return
-
     // Verificar se a API Web Share está disponível
     if (navigator.share) {
       try {
@@ -58,8 +51,6 @@ export function ShareButton({
 
   // Função auxiliar para copiar para a área de transferência
   const copyToClipboard = (text: string) => {
-    if (!isBrowser) return
-
     navigator.clipboard
       .writeText(text)
       .then(() => {

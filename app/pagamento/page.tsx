@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Copy, Check, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
+import { v4 as uuidv4 } from "uuid" // Você precisará instalar esta dependência
 
 export default function PagamentoPage() {
   const [copied, setCopied] = useState(false)
@@ -18,17 +19,9 @@ export default function PagamentoPage() {
   const [checkCount, setCheckCount] = useState(0)
   const [userData, setUserData] = useState<any>(null)
   const [retrospectiveId, setRetrospectiveId] = useState("")
-  const [isBrowser, setIsBrowser] = useState(false)
   const router = useRouter()
 
-  // Verificar se estamos no navegador
   useEffect(() => {
-    setIsBrowser(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isBrowser) return // Não executar no servidor
-
     // Carregar dados do usuário da sessão
     const userDataStr = sessionStorage.getItem("userData")
     if (!userDataStr) {
@@ -39,14 +32,10 @@ export default function PagamentoPage() {
     const userData = JSON.parse(userDataStr)
     setUserData(userData)
 
-    // Obter o ID da retrospectiva da sessão (retornado pela API)
-    const savedRetrospectiveId = sessionStorage.getItem("metricsId")
-    if (savedRetrospectiveId) {
-      setRetrospectiveId(savedRetrospectiveId)
-      console.log("ID da retrospectiva carregado da sessão:", savedRetrospectiveId)
-    } else {
-      console.error("ID da retrospectiva não encontrado na sessão")
-    }
+    // Gerar um ID único para a retrospectiva
+    const newRetrospectiveId = uuidv4()
+    setRetrospectiveId(newRetrospectiveId)
+    console.log("ID da retrospectiva gerado:", newRetrospectiveId)
 
     // Simular dados de pagamento para demonstração
     setPaymentData({
@@ -59,12 +48,10 @@ export default function PagamentoPage() {
       },
     })
     setPaymentId("mock-payment-id-12345")
-  }, [router, isBrowser])
+  }, [router])
 
   // Efeito para simular pagamento após muitas verificações
   useEffect(() => {
-    if (!isBrowser) return // Não executar no servidor
-
     // Após 5 verificações sem sucesso, oferecer opção de simular pagamento
     if (checkCount >= 5 && paymentStatus === "PENDING") {
       toast({
@@ -72,7 +59,7 @@ export default function PagamentoPage() {
         description: "Está demorando? Você pode simular o pagamento para testar o sistema.",
       })
     }
-  }, [checkCount, paymentStatus, isBrowser])
+  }, [checkCount, paymentStatus])
 
   const processPayment = async () => {
     try {
@@ -90,19 +77,6 @@ export default function PagamentoPage() {
 
       const metricsData = JSON.parse(metricsDataStr)
       const loveMessage = sessionStorage.getItem("loveMessage")
-
-      // Verificar se temos o ID da retrospectiva
-      if (!retrospectiveId) {
-        console.error("ID da retrospectiva não definido")
-        // Tentar obter novamente da sessão
-        const savedId = sessionStorage.getItem("metricsId")
-        if (savedId) {
-          setRetrospectiveId(savedId)
-          console.log("ID da retrospectiva recuperado da sessão:", savedId)
-        } else {
-          throw new Error("ID da retrospectiva não encontrado")
-        }
-      }
 
       // Confirmar o pagamento na API
       const confirmResponse = await fetch("/api/payment/confirm", {
@@ -122,8 +96,8 @@ export default function PagamentoPage() {
         // Continuar mesmo com erro na confirmação do pagamento
       }
 
-      // Usar o ID retornado pela API para salvar a retrospectiva permanentemente
-      const saveResponse = await fetch(`/api/retrospectiva/${retrospectiveId}`, {
+      // Salvar a retrospectiva permanentemente
+      const saveResponse = await fetch("/api/retrospectiva/" + retrospectiveId, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -146,7 +120,7 @@ export default function PagamentoPage() {
         description: "Sua retrospectiva foi salva com sucesso!",
       })
 
-      // Redirecionar para a página permanente da retrospectiva usando o ID retornado pela API
+      // Redirecionar para a página permanente da retrospectiva
       setTimeout(() => {
         router.push(`/retrospectiva/${retrospectiveId}`)
       }, 2000)
@@ -156,13 +130,7 @@ export default function PagamentoPage() {
 
       // Fallback para redirecionamento simples
       setTimeout(() => {
-        if (retrospectiveId) {
-          router.push(`/retrospectiva/${retrospectiveId}`)
-        } else if (userData && userData.email) {
-          router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
-        } else {
-          router.push("/")
-        }
+        router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
       }, 2000)
     } finally {
       setIsProcessingFile(false)
@@ -195,8 +163,8 @@ export default function PagamentoPage() {
 
       const loveMessage = sessionStorage.getItem("loveMessage")
 
-      // Salvar a retrospectiva usando o ID retornado pela API
-      await fetch(`/api/retrospectiva/${retrospectiveId}`, {
+      // Salvar a retrospectiva
+      await fetch("/api/retrospectiva/" + retrospectiveId, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -210,7 +178,7 @@ export default function PagamentoPage() {
         }),
       })
 
-      // Redirecionar para a página permanente usando o ID retornado pela API
+      // Redirecionar para a página permanente
       router.push(`/retrospectiva/${retrospectiveId}`)
     } catch (error) {
       console.error("Erro ao salvar retrospectiva:", error)
@@ -220,8 +188,6 @@ export default function PagamentoPage() {
   }
 
   const copyPixCode = () => {
-    if (!isBrowser) return // Não executar no servidor
-
     if (paymentData?.data?.pixCode) {
       navigator.clipboard.writeText(paymentData.data.pixCode)
       setCopied(true)

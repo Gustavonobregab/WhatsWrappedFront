@@ -13,18 +13,10 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
   const [metricsData, setMetricsData] = useState<any[]>([])
   const [error, setError] = useState<string | null>(null)
   const [shareUrl, setShareUrl] = useState<string>("")
-  const [isBrowser, setIsBrowser] = useState(false)
   const router = useRouter()
   const email = decodeURIComponent(params.email)
 
-  // Verificar se estamos no navegador
   useEffect(() => {
-    setIsBrowser(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isBrowser) return // Não executar no servidor
-
     try {
       setIsLoading(true)
 
@@ -69,9 +61,11 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
         setIsLoading(false)
       }, 1000)
     }
-  }, [params.email, isBrowser])
+  }, [params.email])
 
   // Modificar a função fetchMetricsFromAPI para usar dados mockados quando a API falhar
+
+  // Substituir a função fetchMetricsFromAPI atual por esta versão:
   const fetchMetricsFromAPI = async (email: string) => {
     try {
       // Fazer requisição para a API
@@ -141,15 +135,13 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
             </Button>
             <h1 className="text-2xl font-bold">{getPageTitle()}</h1>
           </div>
-          {isBrowser && (
-            <ShareButton
-              url={shareUrl}
-              title={`WhatsWrapped de ${metricsData.map((data) => data.sender).join(" e ")}`}
-              text="Confira nossa retrospectiva de conversas no WhatsApp!"
-              variant="outline"
-              size="sm"
-            />
-          )}
+          <ShareButton
+            url={window.location.href}
+            title={`WhatsWrapped de ${metricsData.map((data) => data.sender).join(" e ")}`}
+            text="Confira nossa retrospectiva de conversas no WhatsApp!"
+            variant="outline"
+            size="sm"
+          />
         </div>
 
         <div className="max-w-md mx-auto">
@@ -169,16 +161,14 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
               Gostou do seu WhatsWrapped? Compartilhe com seus amigos!
             </p>
             <div className="flex justify-center gap-4">
-              {isBrowser && (
-                <ShareButton
-                  url={shareUrl}
-                  title={`WhatsWrapped de ${metricsData.map((data) => data.sender).join(" e ")}`}
-                  text="Confira nossa retrospectiva de conversas no WhatsApp!"
-                  className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
-                  variant="default"
-                  size="lg"
-                />
-              )}
+              <ShareButton
+                url={window.location.href}
+                title={`WhatsWrapped de ${metricsData.map((data) => data.sender).join(" e ")}`}
+                text="Confira nossa retrospectiva de conversas no WhatsApp!"
+                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
+                variant="default"
+                size="lg"
+              />
               <Button variant="outline" asChild className="text-lg py-6 px-8 border-2">
                 <Link href="/">Voltar para o Início</Link>
               </Button>

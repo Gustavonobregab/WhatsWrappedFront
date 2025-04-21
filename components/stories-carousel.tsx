@@ -28,21 +28,23 @@ export function StoriesCarousel({
   const [isPaused, setIsPaused] = React.useState(false)
   const [senderName, setSenderName] = React.useState<string>("Pedro")
   const [messageLove, setMessageLove] = React.useState<string | null>(null)
-  const [isBrowser, setIsBrowser] = React.useState(false)
 
-  // Verificar se estamos no navegador
+  // Validar e processar os dados recebidos
   React.useEffect(() => {
-    setIsBrowser(true)
-  }, [])
-
-  // Adicione este useEffect para carregar a mensagem de amor
-  React.useEffect(() => {
-    if (!isBrowser) return // Não executar no servidor
-
     console.log("Dados recebidos no StoriesCarousel:", metricsData)
 
-    // Definir o nome do remetente para a mensagem de amor
-    if (metricsData && metricsData.length > 0) {
+    // Verificar se temos dados válidos
+    if (!metricsData || !Array.isArray(metricsData) || metricsData.length === 0) {
+      console.warn("Dados inválidos ou vazios recebidos no StoriesCarousel, usando dados mockados")
+      import("@/lib/mock-data").then(({ MOCK_METRICS_DATA }) => {
+        // Usar dados mockados como fallback
+        const mockData = MOCK_METRICS_DATA
+        if (mockData && mockData.length > 0) {
+          setSenderName(mockData[0].sender)
+        }
+      })
+    } else {
+      // Definir o nome do remetente para a mensagem de amor
       setSenderName(metricsData[0].sender)
     }
 
@@ -51,20 +53,28 @@ export function StoriesCarousel({
       setMessageLove(loveMessage)
     } else {
       // Tentar obter a mensagem de amor da sessão
-      try {
+      if (typeof window !== "undefined") {
         const storedLoveMessage = sessionStorage.getItem("loveMessage")
         if (storedLoveMessage) {
           setMessageLove(storedLoveMessage)
         }
-      } catch (error) {
-        console.error("Erro ao acessar sessionStorage:", error)
       }
     }
-  }, [metricsData, loveMessage, isBrowser])
+  }, [metricsData, loveMessage])
+
+  // Garantir que temos dados válidos para exibir
+  const validData = React.useMemo(() => {
+    if (!metricsData || !Array.isArray(metricsData) || metricsData.length === 0) {
+      return MOCK_METRICS_DATA
+    }
+    return metricsData
+  }, [metricsData])
 
   // Usar dados fornecidos ou dados mockados
-  const user1 = metricsData && metricsData.length > 0 ? metricsData[0] : MOCK_METRICS_DATA[0]
-  const user2 = metricsData && metricsData.length > 1 ? metricsData[1] : MOCK_METRICS_DATA[1]
+  const user1 = validData && validData.length > 0 ? validData[0] : MOCK_METRICS_DATA[0]
+  const user2 = validData && validData.length > 1 ? validData[1] : MOCK_METRICS_DATA[1]
+
+  console.log("Usando dados de usuários:", { user1, user2 })
 
   // Calcular a data de início da conversa
   const firstDate = new Date(user1.firstMessageDate)
@@ -90,6 +100,10 @@ export function StoriesCarousel({
 
   // Quem envia mais mensagens
   const messageWinner = user1.totalMessages > user2.totalMessages ? user1.sender : user2.sender
+
+  // Resto do código permanece o mesmo...
+
+  // O restante do componente permanece igual
 
   const allStories = [
     // Tela de introdução
@@ -567,7 +581,7 @@ export function StoriesCarousel({
           </div>
 
           {/* Adicionar esta seção para mostrar quando são dados de demonstração */}
-          {isBrowser && window.location.href.includes("/wrapped/") && (
+          {typeof window !== "undefined" && window.location.href.includes("/wrapped/") && (
             <div className="mt-8 bg-white/20 backdrop-blur-sm rounded-lg p-4 max-w-xs mx-auto">
               <p className="text-sm text-center">
                 Crie sua própria retrospectiva em{" "}
@@ -589,14 +603,14 @@ export function StoriesCarousel({
 
   // Efeito para avançar automaticamente os stories
   React.useEffect(() => {
-    if (!isBrowser || isPaused) return
+    if (isPaused) return
 
     const interval = setInterval(() => {
       setCurrentStory((prev) => (prev === stories.length - 1 ? 0 : prev + 1))
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [isPaused, stories.length, isBrowser])
+  }, [isPaused, stories.length])
 
   // Manipuladores para navegação
   const goToNextStory = () => {
