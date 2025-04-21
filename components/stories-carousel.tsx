@@ -14,9 +14,10 @@ type MetricsData = {
 
 interface StoriesCarouselProps {
   metricsData?: MetricsData[]
+  showOnlyDataStories?: boolean // Nova propriedade para controlar quais stories são exibidos
 }
 
-export function StoriesCarousel({ metricsData = [] }: StoriesCarouselProps) {
+export function StoriesCarousel({ metricsData = [], showOnlyDataStories = false }: StoriesCarouselProps) {
   const [currentStory, setCurrentStory] = React.useState(0)
   const [isPaused, setIsPaused] = React.useState(false)
 
@@ -34,8 +35,8 @@ export function StoriesCarousel({ metricsData = [] }: StoriesCarouselProps) {
   const user2 = metricsData[1] || {
     sender: "Beatriz",
     totalMessages: 10000,
-    loveMessages: 23,
-    apologyMessages: 48,
+    loveMessages: 362,
+    apologyMessages: 438,
     firstMessageDate: "2024-04-19",
     messageStreak: 351,
     daysStartedConversation: 200,
@@ -66,7 +67,7 @@ export function StoriesCarousel({ metricsData = [] }: StoriesCarouselProps) {
   // Quem envia mais mensagens
   const messageWinner = user1.totalMessages > user2.totalMessages ? user1.sender : user2.sender
 
-  const stories = [
+  const allStories = [
     // Tela de introdução
     {
       type: "intro",
@@ -514,6 +515,11 @@ export function StoriesCarousel({ metricsData = [] }: StoriesCarouselProps) {
       ),
     },
   ]
+
+  // Filtrar os stories com base na propriedade showOnlyDataStories
+  const stories = showOnlyDataStories
+    ? allStories.filter((story) => story.type === "data" || story.type === "intro")
+    : allStories
 
   // Efeito para avançar automaticamente os stories
   React.useEffect(() => {

@@ -30,7 +30,7 @@ export function HeroSection() {
           </div>
           <div className="relative mx-auto w-full max-w-sm md:max-w-none">
             <div className="relative aspect-[9/16] overflow-hidden rounded-xl shadow-2xl">
-              <StoriesCarousel />
+              <StoriesCarousel showOnlyDataStories={true} />
             </div>
           </div>
         </div>
