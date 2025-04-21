@@ -266,7 +266,7 @@ export default function PagamentoPage() {
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold mb-3">Escaneie o QR Code para pagar</h2>
                   <p className="text-lg text-muted-foreground">
-                    Valor: <span className="font-bold">R$ 29,90</span>
+                    Valor: <span className="font-bold">R$ 19,90</span>
                   </p>
                 </div>
 

@@ -4,6 +4,7 @@ import { MessageCircle } from "lucide-react"
 import { HeroSection } from "@/components/hero-section"
 import { MetricsSection } from "@/components/metrics-section"
 import { HowItWorksSection } from "@/components/how-it-works-section"
+import { PricingSection } from "@/components/pricing-section"
 import { CtaSection } from "@/components/cta-section"
 import { Footer } from "@/components/footer"
 
@@ -23,8 +24,8 @@ export default function Home() {
             <Link href="#como-funciona" className="text-sm font-medium hover:text-primary">
               Como Funciona
             </Link>
-            <Link href="#depoimentos" className="text-sm font-medium hover:text-primary">
-              Depoimentos
+            <Link href="#pricing" className="text-sm font-medium hover:text-primary">
+              Preço
             </Link>
             <Link href="#beneficios" className="text-sm font-medium hover:text-primary">
               Benefícios
@@ -39,6 +40,7 @@ export default function Home() {
         <HeroSection />
         <MetricsSection />
         <HowItWorksSection />
+        <PricingSection />
         {/*  <TestimonialsSection /> */}
         {/* <BenefitsSection /> */}
         <CtaSection />

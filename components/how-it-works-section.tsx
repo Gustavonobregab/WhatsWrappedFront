@@ -9,7 +9,7 @@ export function HowItWorksSection() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Como Funciona</h2>
           <p className="mt-4 text-xl text-muted-foreground">
-            Dois passos simples para descobrir o que suas conversas dizem sobre você
+            Três passos simples para descobrir o que suas conversas dizem sobre você
           </p>
         </div>
 
@@ -24,8 +24,15 @@ export function HowItWorksSection() {
           <Step
             number={2}
             title="Clique em exportar chat"
-            description="Toque nos três pontos no canto superior direito, role para baixo e selecione 'Exportar chat'. Você pode escolher incluir ou não as mídias."
+            description="Toque nos três pontos no canto superior direito, role para baixo e selecione 'Exportar conversa'."
             image="/whatsapp-export.png"
+          />
+
+          <Step
+            number={3}
+            title="Escolha 'Sem mídia'"
+            description="Selecione a opção 'Sem mídia' para exportar apenas o texto das conversas, criando um arquivo menor e mais fácil de processar."
+            image="/whatsapp-sem-midia.png"
           />
         </div>
 
