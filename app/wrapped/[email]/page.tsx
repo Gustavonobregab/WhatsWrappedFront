@@ -3,11 +3,14 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Share2, Loader2, Copy, Check } from "lucide-react"
+import { ArrowLeft, Loader2, Copy, Check } from "lucide-react"
 import { StoriesCarousel } from "@/components/stories-carousel"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
-import { MOCK_METRICS_DATA } from "@/lib/mock-data"
+// Importar a função getPersonalizedMockData
+import { MOCK_METRICS_DATA, getPersonalizedMockData } from "@/lib/mock-data"
+// Adicionar o componente ShareButton
+import { ShareButton } from "@/components/share-button"
 
 export default function UserWrappedPage({ params }: { params: { email: string } }) {
   const [isLoading, setIsLoading] = useState(true)
@@ -19,24 +22,28 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
   const router = useRouter()
   const email = decodeURIComponent(params.email)
 
-  // Carregar dados de métricas da sessão
+  // Manter a maior parte do código, mas ajustar a lógica para usar o email como identificador único
+
+  // Modificar a função useEffect para usar o email como identificador
   useEffect(() => {
     try {
       setIsLoading(true)
+
+      // Decodificar o email da URL
+      const decodedEmail = decodeURIComponent(params.email)
+      console.log("Email decodificado:", decodedEmail)
 
       // Tentar obter dados da sessão
       const metricsDataStr = sessionStorage.getItem("metricsData")
       console.log("Dados brutos da sessão:", metricsDataStr)
 
-      // Tentar obter o ID de compartilhamento da sessão
-      const storedShareId = sessionStorage.getItem("shareId")
-      if (storedShareId) {
-        setShareId(storedShareId)
-        const baseUrl = window.location.origin
-        setShareUrl(`${baseUrl}/share/${storedShareId}`)
-      }
+      // Verificar se o email atual corresponde ao email armazenado na sessão
+      const userDataStr = sessionStorage.getItem("userData")
+      const userData = userDataStr ? JSON.parse(userDataStr) : null
+      const isCurrentUser = userData && userData.email === decodedEmail
 
-      if (metricsDataStr) {
+      if (metricsDataStr && isCurrentUser) {
+        // Se for o usuário atual, usar os dados da sessão
         const parsedData = JSON.parse(metricsDataStr)
         console.log("Dados parseados da sessão:", parsedData)
 
@@ -48,10 +55,33 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
           setMetricsData(MOCK_METRICS_DATA)
         }
       } else {
-        // Se não houver dados na sessão, usar dados mockados
-        console.warn("Dados de métricas não encontrados na sessão, usando dados mockados")
-        setMetricsData(MOCK_METRICS_DATA)
+        // Se não for o usuário atual ou não houver dados na sessão,
+        // usar dados mockados mas personalizar com o email
+        console.warn("Usando dados mockados personalizados para o email:", decodedEmail)
+
+        // Substituir a parte onde personalizamos os dados mockados
+        // Substituir:
+        // Criar uma cópia dos dados mockados e personalizar com o email
+        // const customData = [...MOCK_METRICS_DATA];
+
+        // // Extrair o nome do usuário do email (parte antes do @)
+        // const userName = decodedEmail.split('@')[0];
+        // // Capitalizar a primeira letra
+        // const capitalizedName = userName.charAt(0).toUpperCase() + userName.slice(1);
+
+        // // Personalizar o primeiro usuário com o nome extraído do email
+        // if (customData.length > 0) {
+        //   customData[0].sender = capitalizedName;
+        // }
+
+        // Por:
+        const customData = getPersonalizedMockData(decodedEmail)
+
+        setMetricsData(customData)
       }
+
+      // Definir a URL de compartilhamento como a URL atual
+      setShareUrl(window.location.href)
     } catch (error) {
       console.error("Erro ao carregar dados de métricas:", error)
       setMetricsData(MOCK_METRICS_DATA)
@@ -61,7 +91,7 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
         setIsLoading(false)
       }, 1000)
     }
-  }, [])
+  }, [params.email])
 
   const handleShare = async () => {
     // Se temos um ID de compartilhamento, usar a URL de compartilhamento
@@ -152,10 +182,14 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
             </Button>
             <h1 className="text-2xl font-bold">{getPageTitle()}</h1>
           </div>
-          <Button variant="outline" size="sm" onClick={handleShare}>
-            <Share2 className="h-4 w-4 mr-2" />
-            Compartilhar
-          </Button>
+          {/* Substituir o botão de compartilhamento pelo componente ShareButton */}
+          <ShareButton
+            url={window.location.href}
+            title={`WhatsWrapped de ${metricsData.map((data) => data.sender).join(" e ")}`}
+            text="Confira nossa retrospectiva de conversas no WhatsApp!"
+            variant="outline"
+            size="sm"
+          />
         </div>
 
         <div className="max-w-md mx-auto">
@@ -190,13 +224,15 @@ export default function UserWrappedPage({ params }: { params: { email: string } 
               Gostou do seu WhatsWrapped? Compartilhe com seus amigos!
             </p>
             <div className="flex justify-center gap-4">
-              <Button
+              {/* E também substituir o botão de compartilhamento na parte inferior */}
+              <ShareButton
+                url={window.location.href}
+                title={`WhatsWrapped de ${metricsData.map((data) => data.sender).join(" e ")}`}
+                text="Confira nossa retrospectiva de conversas no WhatsApp!"
                 className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
-                onClick={handleShare}
-              >
-                <Share2 className="h-5 w-5 mr-2" />
-                Compartilhar
-              </Button>
+                variant="default"
+                size="lg"
+              />
               <Button variant="outline" asChild className="text-lg py-6 px-8 border-2">
                 <Link href="/">Voltar para o Início</Link>
               </Button>

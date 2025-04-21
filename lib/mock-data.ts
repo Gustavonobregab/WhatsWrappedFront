@@ -22,6 +22,28 @@ export const MOCK_METRICS_DATA = [
   },
 ]
 
+// Função para personalizar os dados mockados com base no email ou nome
+export function getPersonalizedMockData(nameOrEmail: string) {
+  // Extrair o nome do email se for um email
+  let name = nameOrEmail
+  if (nameOrEmail.includes("@")) {
+    name = nameOrEmail.split("@")[0]
+  }
+
+  // Capitalizar a primeira letra
+  name = name.charAt(0).toUpperCase() + name.slice(1)
+
+  // Criar uma cópia dos dados mockados
+  const customData = [...MOCK_METRICS_DATA]
+
+  // Personalizar o primeiro usuário
+  if (customData.length > 0) {
+    customData[0].sender = name
+  }
+
+  return customData
+}
+
 // Dados mockados para pagamento
 export const MOCK_PAYMENT_DATA = {
   success: true,

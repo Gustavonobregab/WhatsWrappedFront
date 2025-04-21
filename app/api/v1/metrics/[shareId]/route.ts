@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getMetricsByShareId } from "@/lib/supabase"
+import { MOCK_METRICS_DATA } from "@/lib/mock-data"
 
 export async function GET(request: Request, { params }: { params: { shareId: string } }) {
   try {
@@ -9,15 +9,14 @@ export async function GET(request: Request, { params }: { params: { shareId: str
       return NextResponse.json({ success: false, error: "ID de compartilhamento não fornecido" }, { status: 400 })
     }
 
-    // Obter métricas por ID de compartilhamento
-    const result = await getMetricsByShareId(shareId)
+    // Usar dados mockados em vez de tentar obter do Supabase
+    console.log("Usando dados mockados para o shareId:", shareId)
 
-    if (!result.success) {
-      return NextResponse.json({ success: false, error: result.error || "Erro ao obter métricas" }, { status: 404 })
-    }
-
-    // Retornar os dados
-    return NextResponse.json({ success: true, data: result.data })
+    // Retornar os dados mockados
+    return NextResponse.json({
+      success: true,
+      data: MOCK_METRICS_DATA,
+    })
   } catch (error) {
     console.error("Erro ao obter métricas:", error)
     return NextResponse.json({ success: false, error: "Erro interno ao obter métricas" }, { status: 500 })

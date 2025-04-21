@@ -130,37 +130,13 @@ export default function PagamentoPage() {
     }
   }, [checkCount, paymentStatus])
 
+  // Modificar a função processPayment para usar o email como identificador
   const processPayment = async () => {
     try {
       setIsProcessingFile(true)
 
       if (!userData || !userData.email) {
         throw new Error("Dados do usuário não encontrados")
-      }
-
-      // Notificar o backend sobre o pagamento confirmado
-      const response = await fetch("/api/v1/payment/confirm", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: userData.email,
-          metricsId: metricsId,
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Erro ao confirmar pagamento")
-      }
-
-      const result = await response.json()
-      console.log("Confirmação de pagamento:", result)
-
-      // Salvar o permalink na sessão
-      if (result.permalink) {
-        sessionStorage.setItem("permalink", result.permalink)
       }
 
       toast({
@@ -170,11 +146,8 @@ export default function PagamentoPage() {
 
       // Redirecionar para a página de resultados após um breve delay
       setTimeout(() => {
-        if (result.permalink) {
-          router.push(result.permalink)
-        } else {
-          router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
-        }
+        // Usar o email como identificador na URL
+        router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
       }, 2000)
     } catch (error: any) {
       console.error("Erro ao processar pagamento:", error)
@@ -186,6 +159,14 @@ export default function PagamentoPage() {
       }, 2000)
     } finally {
       setIsProcessingFile(false)
+    }
+  }
+
+  // Modificar a função skipToResults para usar o email como identificador
+  const skipToResults = () => {
+    if (userData && userData.email) {
+      // Ir diretamente para a página de wrapped usando o email
+      router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
     }
   }
 
@@ -214,14 +195,6 @@ export default function PagamentoPage() {
       setIsVerifying(false)
       processPayment()
     }, 2000)
-  }
-
-  const skipToResults = () => {
-    if (userData && userData.email) {
-      // Não fazer chamada à API de confirmação de pagamento
-      // Ir diretamente para a página de wrapped
-      router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
-    }
   }
 
   const checkPaymentManually = async () => {

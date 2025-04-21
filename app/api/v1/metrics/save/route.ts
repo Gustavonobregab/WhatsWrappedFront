@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { saveMetricsWithShareId } from "@/lib/supabase"
 
 export async function POST(request: Request) {
   try {
@@ -10,17 +9,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Dados incompletos" }, { status: 400 })
     }
 
-    // Salvar métricas e obter ID de compartilhamento
-    const result = await saveMetricsWithShareId(body.email, body.data)
-
-    if (!result.success) {
-      return NextResponse.json({ success: false, error: result.error || "Erro ao salvar métricas" }, { status: 500 })
-    }
+    // Gerar um ID de compartilhamento aleatório
+    const shareId = generateShareId()
 
     // Retornar o ID de compartilhamento
-    return NextResponse.json({ success: true, shareId: result.shareId })
+    return NextResponse.json({
+      success: true,
+      shareId: shareId,
+    })
   } catch (error) {
     console.error("Erro ao salvar métricas:", error)
     return NextResponse.json({ success: false, error: "Erro interno ao salvar métricas" }, { status: 500 })
   }
+}
+
+// Função para gerar um ID de compartilhamento único
+function generateShareId(): string {
+  // Gerar um ID aleatório de 10 caracteres
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  let result = ""
+  for (let i = 0; i < 10; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
 }

@@ -22,31 +22,18 @@ export default function PermalinkPage({ params }: { params: { slug: string } }) 
       try {
         setIsLoading(true)
 
-        // Fazer requisição para a API
-        const response = await fetch(`/api/v1/metrics/permalink/${slug}`)
-        const result = await response.json()
+        // Simular um atraso para melhor UX
+        await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || "Erro ao carregar dados")
-        }
-
-        console.log("Dados carregados:", result.data)
-
-        if (Array.isArray(result.data) && result.data.length > 0) {
-          setMetricsData(result.data)
-        } else {
-          console.warn("Formato de dados inválido, usando dados mockados")
-          setMetricsData(MOCK_METRICS_DATA)
-        }
+        // Usar dados mockados em vez de fazer requisição para a API
+        console.log("Usando dados mockados para o permalink:", slug)
+        setMetricsData(MOCK_METRICS_DATA)
       } catch (error: any) {
         console.error("Erro ao carregar métricas:", error)
         setError(error.message || "Erro ao carregar dados da retrospectiva")
         setMetricsData(MOCK_METRICS_DATA)
       } finally {
-        // Simular um tempo de carregamento para melhor UX
-        setTimeout(() => {
-          setIsLoading(false)
-        }, 1000)
+        setIsLoading(false)
       }
     }
 
