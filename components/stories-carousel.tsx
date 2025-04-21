@@ -28,9 +28,17 @@ export function StoriesCarousel({
   const [isPaused, setIsPaused] = React.useState(false)
   const [senderName, setSenderName] = React.useState<string>("Pedro")
   const [messageLove, setMessageLove] = React.useState<string | null>(null)
+  const [isBrowser, setIsBrowser] = React.useState(false)
+
+  // Verificar se estamos no navegador
+  React.useEffect(() => {
+    setIsBrowser(true)
+  }, [])
 
   // Adicione este useEffect para carregar a mensagem de amor
   React.useEffect(() => {
+    if (!isBrowser) return // Não executar no servidor
+
     console.log("Dados recebidos no StoriesCarousel:", metricsData)
 
     // Definir o nome do remetente para a mensagem de amor
@@ -43,20 +51,20 @@ export function StoriesCarousel({
       setMessageLove(loveMessage)
     } else {
       // Tentar obter a mensagem de amor da sessão
-      const storedLoveMessage = sessionStorage.getItem("loveMessage")
-      if (storedLoveMessage) {
-        setMessageLove(storedLoveMessage)
+      try {
+        const storedLoveMessage = sessionStorage.getItem("loveMessage")
+        if (storedLoveMessage) {
+          setMessageLove(storedLoveMessage)
+        }
+      } catch (error) {
+        console.error("Erro ao acessar sessionStorage:", error)
       }
     }
-  }, [metricsData, loveMessage])
-
-  // Resto do código permanece o mesmo, apenas substitua a variável loveMessage por messageLove
+  }, [metricsData, loveMessage, isBrowser])
 
   // Usar dados fornecidos ou dados mockados
   const user1 = metricsData && metricsData.length > 0 ? metricsData[0] : MOCK_METRICS_DATA[0]
   const user2 = metricsData && metricsData.length > 1 ? metricsData[1] : MOCK_METRICS_DATA[1]
-
-  console.log("Usando dados de usuários:", { user1, user2 })
 
   // Calcular a data de início da conversa
   const firstDate = new Date(user1.firstMessageDate)
@@ -559,7 +567,7 @@ export function StoriesCarousel({
           </div>
 
           {/* Adicionar esta seção para mostrar quando são dados de demonstração */}
-          {window.location.href.includes("/wrapped/") && (
+          {isBrowser && window.location.href.includes("/wrapped/") && (
             <div className="mt-8 bg-white/20 backdrop-blur-sm rounded-lg p-4 max-w-xs mx-auto">
               <p className="text-sm text-center">
                 Crie sua própria retrospectiva em{" "}
@@ -581,14 +589,14 @@ export function StoriesCarousel({
 
   // Efeito para avançar automaticamente os stories
   React.useEffect(() => {
-    if (isPaused) return
+    if (!isBrowser || isPaused) return
 
     const interval = setInterval(() => {
       setCurrentStory((prev) => (prev === stories.length - 1 ? 0 : prev + 1))
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [isPaused, stories.length])
+  }, [isPaused, stories.length, isBrowser])
 
   // Manipuladores para navegação
   const goToNextStory = () => {

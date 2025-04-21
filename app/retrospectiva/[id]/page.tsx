@@ -13,9 +13,17 @@ export default function RetrospectivaPorIdPage({ params }: { params: { id: strin
   const [loveMessage, setLoveMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isMockData, setIsMockData] = useState(false)
+  const [isBrowser, setIsBrowser] = useState(false)
   const retrospectiveId = params.id
 
+  // Verificar se estamos no navegador
   useEffect(() => {
+    setIsBrowser(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isBrowser) return // Não executar no servidor
+
     async function fetchRetrospectiveData() {
       try {
         setIsLoading(true)
@@ -49,7 +57,7 @@ export default function RetrospectivaPorIdPage({ params }: { params: { id: strin
     }
 
     fetchRetrospectiveData()
-  }, [retrospectiveId])
+  }, [retrospectiveId, isBrowser])
 
   if (error) {
     return (
@@ -87,13 +95,15 @@ export default function RetrospectivaPorIdPage({ params }: { params: { id: strin
             </Button>
             <h1 className="text-2xl font-bold">{getPageTitle()}</h1>
           </div>
-          <ShareButton
-            url={window.location.href}
-            title={getPageTitle()}
-            text="Confira nossa retrospectiva de conversas no WhatsApp!"
-            variant="outline"
-            size="sm"
-          />
+          {isBrowser && (
+            <ShareButton
+              url={window.location.href}
+              title={getPageTitle()}
+              text="Confira nossa retrospectiva de conversas no WhatsApp!"
+              variant="outline"
+              size="sm"
+            />
+          )}
         </div>
 
         <div className="max-w-md mx-auto">
@@ -125,14 +135,16 @@ export default function RetrospectivaPorIdPage({ params }: { params: { id: strin
               Gostou da sua retrospectiva? Compartilhe com seus amigos!
             </p>
             <div className="flex justify-center gap-4">
-              <ShareButton
-                url={window.location.href}
-                title={getPageTitle()}
-                text="Confira nossa retrospectiva de conversas no WhatsApp!"
-                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
-                variant="default"
-                size="lg"
-              />
+              {isBrowser && (
+                <ShareButton
+                  url={window.location.href}
+                  title={getPageTitle()}
+                  text="Confira nossa retrospectiva de conversas no WhatsApp!"
+                  className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
+                  variant="default"
+                  size="lg"
+                />
+              )}
               <Button variant="outline" asChild className="text-lg py-6 px-8 border-2">
                 <Link href="/">Voltar para o Início</Link>
               </Button>
