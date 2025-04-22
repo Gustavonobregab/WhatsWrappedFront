@@ -269,6 +269,80 @@ export default function ComecePage() {
           <div className="bg-white rounded-xl shadow-md p-6 mb-6">
             <h2 className="text-3xl font-bold text-center mb-8">Preencha seus dados e faça upload do arquivo</h2>
 
+            {/* Adicionar a seção de instruções passo a passo aqui */}
+            <div className="mb-8 border-b pb-8">
+              <h3 className="text-2xl font-bold text-center mb-6">Como exportar sua conversa do WhatsApp</h3>
+
+              <div className="grid gap-8 md:gap-12">
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="space-y-3 text-center md:text-left">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xl font-bold">
+                      1
+                    </div>
+                    <h4 className="text-xl font-bold">Abra a conversa no WhatsApp</h4>
+                    <p className="text-muted-foreground">
+                      Selecione a conversa ou grupo que você deseja analisar no seu WhatsApp.
+                    </p>
+                  </div>
+                  <div className="flex justify-center">
+                    <div className="relative w-full max-w-[250px]">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl transform rotate-3"></div>
+                      <img
+                        src="/whatsapp-chat.png"
+                        alt="Abrir conversa no WhatsApp"
+                        className="relative z-10 rounded-xl border-4 border-background shadow-lg w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="space-y-3 text-center md:text-left md:order-2">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xl font-bold">
+                      2
+                    </div>
+                    <h4 className="text-xl font-bold">Clique em exportar chat</h4>
+                    <p className="text-muted-foreground">
+                      Toque nos três pontos no canto superior direito, role para baixo e selecione 'Exportar conversa'.
+                    </p>
+                  </div>
+                  <div className="flex justify-center md:order-1">
+                    <div className="relative w-full max-w-[250px]">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl transform -rotate-3"></div>
+                      <img
+                        src="/whatsapp-export.png"
+                        alt="Exportar chat no WhatsApp"
+                        className="relative z-10 rounded-xl border-4 border-background shadow-lg w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="space-y-3 text-center md:text-left">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xl font-bold">
+                      3
+                    </div>
+                    <h4 className="text-xl font-bold">Escolha 'Sem mídia'</h4>
+                    <p className="text-muted-foreground">
+                      Selecione a opção 'Sem mídia' para exportar apenas o texto das conversas, criando um arquivo menor
+                      e mais fácil de processar.
+                    </p>
+                  </div>
+                  <div className="flex justify-center">
+                    <div className="relative w-full max-w-[250px]">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl transform rotate-3"></div>
+                      <img
+                        src="/whatsapp-sem-midia.png"
+                        alt="Escolher sem mídia"
+                        className="relative z-10 rounded-xl border-4 border-background shadow-lg w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
