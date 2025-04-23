@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Copy, Check, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
-import { v4 as uuidv4 } from "uuid" // Você precisará instalar esta dependência
 
 export default function PagamentoPage() {
   const [copied, setCopied] = useState(false)
@@ -18,7 +17,6 @@ export default function PagamentoPage() {
   const [isProcessingFile, setIsProcessingFile] = useState(false)
   const [checkCount, setCheckCount] = useState(0)
   const [userData, setUserData] = useState<any>(null)
-  const [retrospectiveId, setRetrospectiveId] = useState("")
   const router = useRouter()
 
   useEffect(() => {
@@ -31,11 +29,6 @@ export default function PagamentoPage() {
 
     const userData = JSON.parse(userDataStr)
     setUserData(userData)
-
-    // Gerar um ID único para a retrospectiva
-    const newRetrospectiveId = uuidv4()
-    setRetrospectiveId(newRetrospectiveId)
-    console.log("ID da retrospectiva gerado:", newRetrospectiveId)
 
     // Simular dados de pagamento para demonstração
     setPaymentData({
@@ -81,16 +74,15 @@ export default function PagamentoPage() {
       // Confirmar o pagamento na API
       // Simular confirmação de pagamento localmente
       console.log("Simulando confirmação de pagamento para:", userData.email, paymentId)
-      // Não precisamos fazer uma chamada real para a API, já que estamos simulando
 
-      // Salvar a retrospectiva permanentemente
-      const saveResponse = await fetch(`/api/v1/metrics/retrospective/${retrospectiveId}`, {
+      // Salvar a retrospectiva permanentemente usando o email como identificador
+      const encodedEmail = encodeURIComponent(userData.email)
+      const saveResponse = await fetch(`/api/v1/metrics/retrospective/${encodedEmail}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: retrospectiveId,
           email: userData.email,
           participants: metricsData,
           loveMessage: loveMessage || undefined,
@@ -107,7 +99,7 @@ export default function PagamentoPage() {
         description: "Sua retrospectiva foi salva com sucesso!",
       })
 
-      // Redirecionar para a página permanente da retrospectiva
+      // Redirecionar para a página permanente da retrospectiva usando o email
       setTimeout(() => {
         const encodedEmail = encodeURIComponent(userData.email)
         router.push(`/retrospectiva/${encodedEmail}`)
@@ -118,7 +110,12 @@ export default function PagamentoPage() {
 
       // Fallback para redirecionamento simples
       setTimeout(() => {
-        router.push(`/retrospectiva/${retrospectiveId}`)
+        if (userData && userData.email) {
+          const encodedEmail = encodeURIComponent(userData.email)
+          router.push(`/retrospectiva/${encodedEmail}`)
+        } else {
+          router.push("/")
+        }
       }, 2000)
     } finally {
       setIsProcessingFile(false)
@@ -126,12 +123,12 @@ export default function PagamentoPage() {
   }
 
   const skipToResults = () => {
-    if (retrospectiveId) {
+    if (userData && userData.email) {
       // Salvar a retrospectiva com dados de exemplo e redirecionar
       saveRetrospectiveAndRedirect()
-    } else if (userData && userData.email) {
-      // Fallback: ir para a página wrapped usando o email
-      router.push(`/retrospectiva/${retrospectiveId}`)
+    } else {
+      // Fallback: ir para a página inicial
+      router.push("/")
     }
   }
 
@@ -151,14 +148,14 @@ export default function PagamentoPage() {
 
       const loveMessage = sessionStorage.getItem("loveMessage")
 
-      // Salvar a retrospectiva
-      await fetch(`/api/v1/metrics/retrospective/${retrospectiveId}`, {
+      // Salvar a retrospectiva usando o email como identificador
+      const encodedEmail = encodeURIComponent(userData.email)
+      await fetch(`/api/v1/metrics/retrospective/${encodedEmail}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: retrospectiveId,
           email: userData.email,
           participants: metricsData,
           loveMessage: loveMessage || undefined,
@@ -167,12 +164,11 @@ export default function PagamentoPage() {
       })
 
       // Redirecionar para a página permanente usando o email
-      const encodedEmail = encodeURIComponent(userData.email)
       router.push(`/retrospectiva/${encodedEmail}`)
     } catch (error) {
       console.error("Erro ao salvar retrospectiva:", error)
       // Fallback
-      router.push(`/retrospectiva/${retrospectiveId}`)
+      router.push("/")
     }
   }
 

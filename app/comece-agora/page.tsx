@@ -198,23 +198,15 @@ export default function ComecePage() {
         console.log("Salvando métricas na sessão:", responseData.metrics.participants)
         sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants))
 
-        // Salvar ID único retornado pela API para uso posterior
-        if (responseData.metrics.id) {
-          const retrospectiveId = responseData.metrics.id
-          console.log("ID da retrospectiva salvo:", retrospectiveId)
-          sessionStorage.setItem("metricsId", retrospectiveId)
+        // IMPORTANTE: Redirecionar usando o email em vez do ID
+        toast({
+          title: "Arquivo processado com sucesso!",
+          description: "Redirecionando para sua retrospectiva...",
+        })
 
-          // Redirecionar diretamente para a página de retrospectiva com o ID
-          toast({
-            title: "Arquivo processado com sucesso!",
-            description: "Redirecionando para sua retrospectiva...",
-          })
-
-          router.push(`/retrospectiva/${retrospectiveId}`)
-          return
-        } else {
-          console.warn("API não retornou ID da retrospectiva")
-        }
+        // Redirecionar para a página de pagamento
+        router.push("/pagamento")
+        return
       } else {
         console.warn("API não retornou métricas ou participantes:", responseData)
       }
