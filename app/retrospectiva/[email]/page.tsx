@@ -8,14 +8,16 @@ import { StoriesCarousel } from "@/components/stories-carousel"
 import { ShareButton } from "@/components/share-button"
 import { toast } from "@/components/ui/use-toast"
 
-export default function RetrospectivaPorIdPage({ params }: { params: { id: string } }) {
+export default function RetrospectivaPorEmailPage({ params }: { params: { email: string } }) {
   const [isLoading, setIsLoading] = useState(true)
   const [metricsData, setMetricsData] = useState<any[]>([])
   const [loveMessage, setLoveMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isMockData, setIsMockData] = useState<boolean>(false)
-  const [isBrowser, setIsBrowser] = useState(false)
-  const retrospectiveId = params.id
+  const [isBrowser, setIsBrowser] = useState<boolean>(false)
+
+  // Decodificar o email da URL
+  const email = decodeURIComponent(params.email)
 
   // Verificar se estamos no navegador
   useEffect(() => {
@@ -29,10 +31,10 @@ export default function RetrospectivaPorIdPage({ params }: { params: { id: strin
       try {
         setIsLoading(true)
 
-        console.log(`Buscando dados da retrospectiva: ${retrospectiveId}`)
+        console.log(`Buscando dados da retrospectiva para o email: ${email}`)
 
-        // Buscar dados da retrospectiva pelo ID usando a nova rota
-        const response = await fetch(`/api/v1/metrics/retrospective/${retrospectiveId}`)
+        // Buscar dados da retrospectiva pelo email usando a rota correta
+        const response = await fetch(`/api/v1/metrics/retrospective/${encodeURIComponent(email)}`)
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: "Erro desconhecido" }))
@@ -80,7 +82,7 @@ export default function RetrospectivaPorIdPage({ params }: { params: { id: strin
         try {
           console.log("Tentando usar dados mockados como fallback")
           const { getPersonalizedMockData } = await import("@/lib/mock-data")
-          const mockData = getPersonalizedMockData("Usuário")
+          const mockData = getPersonalizedMockData(email || "Usuário")
           setMetricsData(mockData)
           setIsMockData(true)
           setError(null) // Limpar o erro já que temos dados mockados
@@ -101,7 +103,7 @@ export default function RetrospectivaPorIdPage({ params }: { params: { id: strin
     }
 
     fetchRetrospectiveData()
-  }, [retrospectiveId, isBrowser])
+  }, [email, isBrowser])
 
   if (error && metricsData.length === 0) {
     return (

@@ -4,24 +4,31 @@ import type { RetrospectiveData } from "@/lib/types"
 // Simulação de banco de dados em memória
 const retrospectiveDatabase: Record<string, RetrospectiveData> = {}
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { email: string } }) {
   try {
-    const id = params.id
+    const email = decodeURIComponent(params.email)
 
-    console.log(`Buscando retrospectiva com ID: ${id}`)
+    console.log(`Buscando retrospectiva para o email: ${email}`)
 
     // Verificar se temos a retrospectiva em nosso "banco de dados"
-    if (retrospectiveDatabase[id]) {
-      console.log(`Retrospectiva encontrada no banco de dados local`)
+    // Procurar por email em vez de ID
+    const retrospectiveByEmail = Object.values(retrospectiveDatabase).find(
+      (retro) => retro.email.toLowerCase() === email.toLowerCase(),
+    )
+
+    if (retrospectiveByEmail) {
+      console.log(`Retrospectiva encontrada no banco de dados local para o email: ${email}`)
       return NextResponse.json({
         success: true,
-        data: retrospectiveDatabase[id],
+        data: retrospectiveByEmail,
       })
     }
 
     // Se não temos localmente, buscar da API externa
-    console.log(`Buscando retrospectiva da API externa`)
-    const response = await fetch(`https://chat-metrics-api.onrender.com/api/v1/metrics/retrospective/${id}`)
+    console.log(`Buscando retrospectiva da API externa para o email: ${email}`)
+    const response = await fetch(
+      `https://chat-metrics-api.onrender.com/api/v1/metrics/retrospective/${encodeURIComponent(email)}`,
+    )
 
     if (!response.ok) {
       const errorText = await response.text()
@@ -36,12 +43,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
 
     const data = await response.json()
-    console.log(`Dados da retrospectiva recebidos da API:`, data)
+    console.log(`Dados da retrospectiva recebidos da API para o email: ${email}`, data)
 
     // Formatar os dados para o formato esperado pelo frontend
     const formattedData: RetrospectiveData = {
-      id: data.id || data._id || id,
-      email: data.userEmail || data.email || "",
+      id: data.id || data._id || email, // Usar email como ID se não houver outro
+      email: email,
       participants: data.participants || [],
       loveMessage: data.text || data.loveMessage || null,
       createdAt: data.createdAt || new Date().toISOString(),
@@ -62,7 +69,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
 
     // Armazenar no "banco de dados" local para futuras consultas
-    retrospectiveDatabase[id] = formattedData
+    // Usar um ID único baseado no email
+    const storageId = `retro_${email.replace(/[^a-zA-Z0-9]/g, "_")}`
+    retrospectiveDatabase[storageId] = formattedData
 
     return NextResponse.json({
       success: true,
@@ -81,15 +90,15 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Endpoint para salvar uma retrospectiva (usado pelo frontend após o pagamento)
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: { email: string } }) {
   try {
-    const id = params.id
+    const email = decodeURIComponent(params.email)
     const data = await request.json()
 
-    console.log(`Salvando retrospectiva com ID: ${id}`, data)
+    console.log(`Salvando retrospectiva para o email: ${email}`, data)
 
     // Validar dados
-    if (!data.id || !data.email || !data.participants) {
+    if (!data.email || !data.participants) {
       return NextResponse.json(
         {
           success: false,
@@ -100,16 +109,18 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     }
 
     // Salvar no "banco de dados" local
-    retrospectiveDatabase[id] = {
-      id: data.id,
-      email: data.email,
+    // Usar um ID único baseado no email
+    const storageId = `retro_${email.replace(/[^a-zA-Z0-9]/g, "_")}`
+    retrospectiveDatabase[storageId] = {
+      id: data.id || storageId,
+      email: email,
       participants: data.participants,
       loveMessage: data.loveMessage,
       createdAt: data.createdAt || new Date().toISOString(),
       isMock: data.isMock || false,
     }
 
-    console.log(`Retrospectiva salva com sucesso no banco de dados local`)
+    console.log(`Retrospectiva salva com sucesso no banco de dados local para o email: ${email}`)
 
     return NextResponse.json({
       success: true,

@@ -3,9 +3,10 @@ export const API_BASE_URL = "https://chat-metrics-api.onrender.com"
 
 // Endpoints
 export const API_ENDPOINTS = {
-  REGISTER: `${API_BASE_URL}/api/v1/auth/register`,
   PAYMENT_PIX: `${API_BASE_URL}/api/v1/payment/pix`,
-  PAYMENT_CHECK: `${API_BASE_URL}/api/v1/payment/pixQrCode/check`,
+  METRICS_UPLOAD: `${API_BASE_URL}/api/v1/metrics/upload`,
+  METRICS_RETROSPECTIVE: (email: string) => `${API_BASE_URL}/api/v1/metrics/retrospective/${encodeURIComponent(email)}`,
+  PAYMENT_STATUS: (paymentId: string) => `${API_BASE_URL}/api/v1/payment/status/${paymentId}`,
 }
 
 // Tipos para as respostas da API
@@ -58,24 +59,6 @@ export interface RegisterRequest {
   cpf: string
 }
 
-// Função para registrar um usuário
-export async function registerUser(userData: RegisterRequest): Promise<RegisterResponse> {
-  const response = await fetch(API_ENDPOINTS.REGISTER, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  })
-
-  if (!response.ok) {
-    const errorData = await response.json()
-    throw new Error(errorData.error || "Erro ao registrar usuário")
-  }
-
-  return await response.json()
-}
-
 // Função para gerar pagamento PIX
 export async function generatePixPayment(paymentData: PaymentRequest): Promise<PaymentResponse> {
   const response = await fetch(API_ENDPOINTS.PAYMENT_PIX, {
@@ -96,7 +79,7 @@ export async function generatePixPayment(paymentData: PaymentRequest): Promise<P
 
 // Função para verificar status do pagamento
 export async function checkPaymentStatus(paymentId: string): Promise<PaymentStatusResponse> {
-  const response = await fetch(`${API_ENDPOINTS.PAYMENT_CHECK}?id=${paymentId}`, {
+  const response = await fetch(API_ENDPOINTS.PAYMENT_STATUS(paymentId), {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -112,16 +95,12 @@ export async function checkPaymentStatus(paymentId: string): Promise<PaymentStat
 }
 
 // Função para fazer upload do arquivo e obter métricas
-export async function uploadFileAndGetMetrics(file: File): Promise<any[]> {
+export async function uploadFileAndGetMetrics(formData: FormData): Promise<any> {
   try {
-    // Criar um FormData para enviar o arquivo
-    const formData = new FormData()
-    formData.append("file", file)
-
-    console.log("Enviando arquivo para processamento:", file.name, file.size)
+    console.log("Enviando arquivo para processamento")
 
     // Fazer a requisição para a API
-    const response = await fetch(`${API_BASE_URL}/api/v1/metrics/upload`, {
+    const response = await fetch(API_ENDPOINTS.METRICS_UPLOAD, {
       method: "POST",
       body: formData,
     })
@@ -145,13 +124,7 @@ export async function uploadFileAndGetMetrics(file: File): Promise<any[]> {
       // Tentar converter para JSON
       const data = JSON.parse(responseText)
       console.log("Dados processados da API:", data)
-
-      if (Array.isArray(data)) {
-        return data
-      } else {
-        console.error("Resposta da API não é um array:", data)
-        throw new Error("Formato de resposta inválido da API")
-      }
+      return data
     } catch (e) {
       console.error("Erro ao parsear resposta JSON:", e)
       throw new Error("Erro ao processar resposta da API")

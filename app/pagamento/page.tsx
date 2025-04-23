@@ -79,25 +79,12 @@ export default function PagamentoPage() {
       const loveMessage = sessionStorage.getItem("loveMessage")
 
       // Confirmar o pagamento na API
-      const confirmResponse = await fetch("/api/payment/confirm", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: userData.email,
-          paymentId: paymentId,
-        }),
-      })
-
-      if (!confirmResponse.ok) {
-        const errorData = await confirmResponse.json().catch(() => ({ message: "Erro desconhecido" }))
-        console.warn("Aviso ao confirmar pagamento:", errorData)
-        // Continuar mesmo com erro na confirmação do pagamento
-      }
+      // Simular confirmação de pagamento localmente
+      console.log("Simulando confirmação de pagamento para:", userData.email, paymentId)
+      // Não precisamos fazer uma chamada real para a API, já que estamos simulando
 
       // Salvar a retrospectiva permanentemente
-      const saveResponse = await fetch("/api/retrospectiva/" + retrospectiveId, {
+      const saveResponse = await fetch(`/api/v1/metrics/retrospective/${retrospectiveId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -122,7 +109,8 @@ export default function PagamentoPage() {
 
       // Redirecionar para a página permanente da retrospectiva
       setTimeout(() => {
-        router.push(`/retrospectiva/${retrospectiveId}`)
+        const encodedEmail = encodeURIComponent(userData.email)
+        router.push(`/retrospectiva/${encodedEmail}`)
       }, 2000)
     } catch (error: any) {
       console.error("Erro ao processar pagamento:", error)
@@ -130,7 +118,7 @@ export default function PagamentoPage() {
 
       // Fallback para redirecionamento simples
       setTimeout(() => {
-        router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
+        router.push(`/retrospectiva/${retrospectiveId}`)
       }, 2000)
     } finally {
       setIsProcessingFile(false)
@@ -143,7 +131,7 @@ export default function PagamentoPage() {
       saveRetrospectiveAndRedirect()
     } else if (userData && userData.email) {
       // Fallback: ir para a página wrapped usando o email
-      router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
+      router.push(`/retrospectiva/${retrospectiveId}`)
     }
   }
 
@@ -164,7 +152,7 @@ export default function PagamentoPage() {
       const loveMessage = sessionStorage.getItem("loveMessage")
 
       // Salvar a retrospectiva
-      await fetch("/api/retrospectiva/" + retrospectiveId, {
+      await fetch(`/api/v1/metrics/retrospective/${retrospectiveId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -178,12 +166,13 @@ export default function PagamentoPage() {
         }),
       })
 
-      // Redirecionar para a página permanente
-      router.push(`/retrospectiva/${retrospectiveId}`)
+      // Redirecionar para a página permanente usando o email
+      const encodedEmail = encodeURIComponent(userData.email)
+      router.push(`/retrospectiva/${encodedEmail}`)
     } catch (error) {
       console.error("Erro ao salvar retrospectiva:", error)
       // Fallback
-      router.push(`/wrapped/${encodeURIComponent(userData.email)}`)
+      router.push(`/retrospectiva/${retrospectiveId}`)
     }
   }
 
@@ -231,29 +220,42 @@ export default function PagamentoPage() {
     })
 
     try {
-      // Simular verificação de pagamento
-      setCheckCount((prev) => prev + 1)
+      // Verificar o status do pagamento usando a rota correta
+      const response = await fetch(`/api/v1/payment/status/${paymentId}`)
 
-      setTimeout(() => {
-        setIsVerifying(false)
+      if (!response.ok) {
+        throw new Error("Erro ao verificar status do pagamento")
+      }
 
-        // Após 3 verificações, simular pagamento confirmado
+      const statusData = await response.json()
+      console.log("Status do pagamento:", statusData)
+
+      setIsVerifying(false)
+
+      if (statusData.data && statusData.data.status === "PAID") {
+        setPaymentStatus("PAID")
+        toast({
+          title: "Pagamento confirmado!",
+          description: "Seu pagamento foi confirmado com sucesso.",
+        })
+        processPayment()
+      } else {
+        setCheckCount((prev) => prev + 1)
+        toast({
+          title: "Pagamento pendente",
+          description: "Por favor, complete o pagamento.",
+        })
+
+        // Após 3 verificações, oferecer opção de simular pagamento
         if (checkCount >= 2) {
-          setPaymentStatus("PAID")
           toast({
-            title: "Pagamento confirmado!",
-            description: "Seu pagamento foi confirmado com sucesso.",
-          })
-          processPayment()
-        } else {
-          toast({
-            title: "Pagamento pendente",
-            description: "Por favor, complete o pagamento.",
+            title: "Dica",
+            description: "Está demorando? Você pode simular o pagamento para testar o sistema.",
           })
         }
-      }, 2000)
+      }
     } catch (error) {
-      console.error("Erro ao verificar pagamento manualmente:", error)
+      console.error("Erro ao verificar pagamento:", error)
       setIsVerifying(false)
       toast({
         title: "Erro",
