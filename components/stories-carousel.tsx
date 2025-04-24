@@ -438,9 +438,7 @@ export function StoriesCarousel({
 
           <p className="text-xl md:text-2xl font-medium mb-4 text-center">Uma data especial! 🌟</p>
 
-          <div className="bg-white/20 rounded-lg p-4 text-center mb-4 max-w-xs md:max-w-md">
-            <p className="text-lg md:text-xl italic">"Oi! Tudo bem?"</p>
-          </div>
+          {/* Removida a caixa de mensagem "Oi! Tudo bem?" */}
 
           <div className="text-center">
             <span className="text-2xl md:text-3xl font-bold text-white">Há {diffDays} dias atrás</span>
