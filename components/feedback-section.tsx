@@ -1,4 +1,5 @@
-import { Star } from "lucide-react"
+/*
+import { Star } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -117,3 +118,4 @@ const feedbacks = [
       "Muito legal! Fácil de usar e o resultado é surpreendente. Só acho que poderia ter mais tipos de estatísticas, mas mesmo assim valeu muito a pena.",
   },
 ]
+*/

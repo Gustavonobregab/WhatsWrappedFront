@@ -1,4 +1,5 @@
-import { Check } from "lucide-react"
+import type React from "react"
+import { Check, Shield, Lock, Brain } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -42,6 +43,26 @@ export function PricingSection() {
                 <Feature text="Acesso permanente aos seus resultados" />
                 <Feature text="Processamento seguro e privado" />
               </ul>
+
+              {/* Seção de privacidade e segurança */}
+              <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
+                <h4 className="font-bold text-lg mb-4 flex items-center">
+                  <Shield className="h-5 w-5 mr-2 text-primary" />
+                  Privacidade e Segurança
+                </h4>
+                <ul className="space-y-4">
+                  <PrivacyFeature
+                    icon={<Lock className="h-5 w-5 text-green-500" />}
+                    title="Sem acesso às suas conversas"
+                    description="Não temos acesso ao conteúdo das suas conversas. Todo o processamento é feito localmente e seus dados nunca são armazenados."
+                  />
+                  <PrivacyFeature
+                    icon={<Brain className="h-5 w-5 text-purple-500" />}
+                    title="Análise 100% por IA"
+                    description="Toda a análise é realizada por Inteligência Artificial avançada, sem intervenção humana, garantindo total privacidade dos seus dados."
+                  />
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -57,6 +78,20 @@ function Feature({ text }: { text: string }) {
         <Check className="h-3.5 w-3.5" />
       </div>
       <span className="ml-3 text-base">{text}</span>
+    </li>
+  )
+}
+
+function PrivacyFeature({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+  return (
+    <li className="bg-white dark:bg-slate-900 rounded-lg p-4 shadow-sm">
+      <div className="flex items-start">
+        <div className="flex-shrink-0 mt-1">{icon}</div>
+        <div className="ml-3">
+          <h5 className="font-medium text-base">{title}</h5>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+        </div>
+      </div>
     </li>
   )
 }

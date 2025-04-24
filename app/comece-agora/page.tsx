@@ -352,6 +352,40 @@ export default function ComecePage() {
               <h2 className="text-3xl font-bold text-center mb-8">Preencha seus dados e faça upload do arquivo</h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Mensagem de amor surpresa - Agora como primeiro campo */}
+                <div className="space-y-2">
+                  <Label htmlFor="text" className="flex items-center gap-2 text-lg">
+                    <span className="bg-gradient-to-r from-pink-500 to-red-500 text-transparent bg-clip-text font-bold text-xl">
+                      ❤️ Mensagem de amor surpresa ❤️
+                    </span>
+                    <span className="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded-full animate-pulse">
+                      Especial!
+                    </span>
+                  </Label>
+                  <div className="relative">
+                    <Textarea
+                      id="text"
+                      name="text"
+                      placeholder="Querido(a), cada mensagem que trocamos é um pedacinho da nossa história. Obrigado(a) por fazer parte da minha vida e por todos os momentos que compartilhamos através dessas conversas..."
+                      value={formData.text}
+                      onChange={handleInputChange}
+                      className="text-lg min-h-[120px] resize-none border-pink-200 focus-visible:ring-pink-400 bg-gradient-to-br from-pink-50 to-white"
+                      maxLength={200}
+                    />
+                    <div className="absolute bottom-2 right-2 text-sm text-pink-500 font-medium">
+                      {formData.text.length}/200
+                    </div>
+                  </div>
+                  <div className="bg-pink-50 p-3 rounded-lg border border-pink-100">
+                    <p className="text-sm text-pink-700 flex items-center gap-2">
+                      <span className="text-lg">✨</span>
+                      Esta mensagem especial será exibida como uma surpresa romântica no final do WhatsWrapped, criando
+                      um momento inesquecível para quem receber.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Campos de nome, email e CPF */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="name" className="text-lg">
@@ -397,38 +431,6 @@ export default function ComecePage() {
                       className={`text-lg py-6 ${errors.cpf ? "border-red-500" : ""}`}
                     />
                     {errors.cpf && <p className="text-xs text-red-500">{errors.cpf}</p>}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="text" className="flex items-center gap-2 text-lg">
-                    <span className="bg-gradient-to-r from-pink-500 to-red-500 text-transparent bg-clip-text font-bold text-xl">
-                      ❤️ Mensagem de amor surpresa ❤️
-                    </span>
-                    <span className="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded-full animate-pulse">
-                      Especial!
-                    </span>
-                  </Label>
-                  <div className="relative">
-                    <Textarea
-                      id="text"
-                      name="text"
-                      placeholder="Querido(a), cada mensagem que trocamos é um pedacinho da nossa história. Obrigado(a) por fazer parte da minha vida e por todos os momentos que compartilhamos através dessas conversas..."
-                      value={formData.text}
-                      onChange={handleInputChange}
-                      className="text-lg min-h-[120px] resize-none border-pink-200 focus-visible:ring-pink-400 bg-gradient-to-br from-pink-50 to-white"
-                      maxLength={200}
-                    />
-                    <div className="absolute bottom-2 right-2 text-sm text-pink-500 font-medium">
-                      {formData.text.length}/200
-                    </div>
-                  </div>
-                  <div className="bg-pink-50 p-3 rounded-lg border border-pink-100">
-                    <p className="text-sm text-pink-700 flex items-center gap-2">
-                      <span className="text-lg">✨</span>
-                      Esta mensagem especial será exibida como uma surpresa romântica no final do WhatsWrapped, criando
-                      um momento inesquecível para quem receber.
-                    </p>
                   </div>
                 </div>
 
