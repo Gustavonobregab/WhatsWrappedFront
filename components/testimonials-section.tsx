@@ -10,7 +10,7 @@ export function TestimonialsSection() {
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">O Que Nossos Usuários Dizem</h2>
-          <p className="mt-4 text-xl text-muted-foreground">Pessoas reais, experiências reais com o WhatsWrapped</p>
+          <p className="mt-4 text-xl text-muted-foreground">Pessoas reais, experiências reais com o ZapLove</p>
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <TestimonialCard

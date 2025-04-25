@@ -5,8 +5,9 @@ import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
+// Atualizar o título e a descrição do site
 export const metadata = {
-  title: "WhatsWrapped - Surpreenda seu amor com uma retrospectiva WhatsApp",
+  title: "ZapLove - Surpreenda seu amor com uma retrospectiva WhatsApp",
   description:
     "Carregue seu backup do WhatsApp e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais.",
   generator: "v0.dev",

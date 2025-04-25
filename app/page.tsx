@@ -16,7 +16,7 @@ export default function Home() {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <MessageCircle className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">WhatsWrapped</span>
+            <span className="text-xl font-bold">ZapLove</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="#metricas" className="text-sm font-medium hover:text-primary">

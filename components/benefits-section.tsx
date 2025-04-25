@@ -8,8 +8,8 @@ export function BenefitsSection() {
     >
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Por Que Usar o WhatsWrapped?</h2>
-          <p className="mt-4 text-xl text-muted-foreground">Descubra o que torna o WhatsWrapped especial e divertido</p>
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Por Que Usar o ZapLove?</h2>
+          <p className="mt-4 text-xl text-muted-foreground">Descubra o que torna o ZapLove especial e divertido</p>
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col items-center text-center p-6 rounded-xl bg-white/80 dark:bg-slate-900/80 shadow-lg transform transition-transform hover:scale-105">

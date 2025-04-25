@@ -101,9 +101,16 @@ export function StoriesCarousel({
   // Quem envia mais mensagens
   const messageWinner = user1.totalMessages > user2.totalMessages ? user1.sender : user2.sender
 
-  // Resto do código permanece o mesmo...
+  // Função para determinar o tamanho da fonte com base no comprimento do texto
+  const getMessageFontSize = (message: string | null) => {
+    if (!message) return "text-xl md:text-2xl"
 
-  // O restante do componente permanece igual
+    const length = message.length
+    if (length > 150) return "text-sm md:text-base"
+    if (length > 100) return "text-base md:text-lg"
+    if (length > 50) return "text-lg md:text-xl"
+    return "text-xl md:text-2xl"
+  }
 
   const allStories = [
     // Tela de introdução
@@ -127,10 +134,10 @@ export function StoriesCarousel({
       type: "transition",
       bgColor: "from-rose-500 via-purple-500 to-indigo-500",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Tá na hora de saber quem ama mais o outro...</h2>
-            <p className="text-2xl md:text-3xl font-medium">Rufem os tambores! 🥁</p>
+            <p className="text-xl md:text-2xl font-medium px-4">Rufem os tambores! 🥁</p>
             <div className="mt-8 flex justify-center">
               <div className="animate-ping">
                 <span className="text-5xl md:text-6xl">❤️</span>
@@ -148,8 +155,8 @@ export function StoriesCarousel({
       subtitle: "",
       bgColor: "from-rose-500 via-red-500 to-pink-600",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
-          <h3 className="text-3xl md:text-5xl font-bold mb-8 text-center">Quem mandou mais te amo?</h3>
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
+          <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center px-4">Quem mandou mais te amo?</h3>
 
           <div className="flex items-center justify-center mb-6">
             <span className="text-4xl md:text-5xl">❤️</span>
@@ -157,7 +164,7 @@ export function StoriesCarousel({
             <span className="text-4xl md:text-5xl">❤️</span>
           </div>
 
-          <div className="w-full space-y-5 max-w-xs md:max-w-md">
+          <div className="w-full space-y-4 max-w-[90%]">
             <div>
               <div className="flex items-center justify-between mb-2 text-center">
                 <span className="text-2xl md:text-3xl font-bold">{user1.sender}</span>
@@ -203,10 +210,10 @@ export function StoriesCarousel({
       type: "transition",
       bgColor: "from-pink-500 via-purple-500 to-indigo-500",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Vocês trocaram muitas mensagens...</h2>
-            <p className="text-2xl md:text-3xl font-medium">Vamos ver quantas exatamente? 👀</p>
+            <p className="text-xl md:text-2xl font-medium px-4">Vamos ver quantas exatamente? 👀</p>
             <div className="mt-8 animate-bounce">
               <span className="text-4xl md:text-5xl">⬇️</span>
             </div>
@@ -222,8 +229,8 @@ export function StoriesCarousel({
       subtitle: "",
       bgColor: "from-pink-500 via-purple-500 to-indigo-500",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
-          <h3 className="text-3xl md:text-5xl font-bold mb-8 text-center">Quantas mensagens vocês trocaram?</h3>
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
+          <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center px-4">Quantas mensagens vocês trocaram?</h3>
 
           <div className="bg-white/20 rounded-2xl px-8 py-4 backdrop-blur-sm text-center mb-8">
             <span className="text-5xl md:text-6xl font-black">
@@ -231,7 +238,7 @@ export function StoriesCarousel({
             </span>
           </div>
 
-          <div className="w-full space-y-5 max-w-xs md:max-w-md">
+          <div className="w-full space-y-4 max-w-[90%]">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-2xl md:text-3xl font-bold">{user1.sender}</span>
@@ -271,10 +278,10 @@ export function StoriesCarousel({
       type: "transition",
       bgColor: "from-purple-600 via-indigo-600 to-blue-600",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Vocês são muito consistentes...</h2>
-            <p className="text-2xl md:text-3xl font-medium">
+            <p className="text-xl md:text-2xl font-medium px-4">
               Vamos ver por quantos dias seguidos vocês conversaram! 🔥
             </p>
             <div className="mt-8 animate-pulse">
@@ -292,8 +299,10 @@ export function StoriesCarousel({
       subtitle: "",
       bgColor: "from-purple-600 via-indigo-600 to-blue-600",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
-          <h3 className="text-3xl md:text-5xl font-bold mb-8 text-center">Quantos dias seguidos vocês conversaram?</h3>
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
+          <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center px-4">
+            Quantos dias seguidos vocês conversaram?
+          </h3>
 
           <div className="flex items-center justify-center gap-4 mb-6">
             <span className="text-4xl md:text-5xl">🔥</span>
@@ -329,10 +338,10 @@ export function StoriesCarousel({
       type: "transition",
       bgColor: "from-teal-500 via-emerald-500 to-green-500",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Quem será que pede mais desculpas?</h2>
-            <p className="text-2xl md:text-3xl font-medium">Vamos descobrir... 🙏</p>
+            <p className="text-xl md:text-2xl font-medium px-4">Vamos descobrir... 🙏</p>
             <div className="mt-8 animate-bounce">
               <span className="text-4xl md:text-5xl">🙏</span>
             </div>
@@ -348,8 +357,8 @@ export function StoriesCarousel({
       subtitle: "",
       bgColor: "from-teal-500 via-emerald-500 to-green-500",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
-          <h3 className="text-3xl md:text-5xl font-bold mb-8 text-center">Quem pede mais desculpas?</h3>
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
+          <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center px-4">Quem pede mais desculpas?</h3>
 
           <div className="flex items-center justify-center mb-6">
             <span className="text-3xl md:text-4xl">🙏</span>
@@ -357,7 +366,7 @@ export function StoriesCarousel({
             <span className="text-3xl md:text-4xl">🙏</span>
           </div>
 
-          <div className="w-full space-y-5 max-w-xs md:max-w-md">
+          <div className="w-full space-y-4 max-w-[90%]">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-2xl md:text-3xl font-bold">{user1.sender}</span>
@@ -407,10 +416,10 @@ export function StoriesCarousel({
       type: "transition",
       bgColor: "from-amber-500 via-orange-500 to-yellow-500",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Vamos voltar no tempo...</h2>
-            <p className="text-2xl md:text-3xl font-medium">Quando tudo começou? 📅</p>
+            <p className="text-xl md:text-2xl font-medium px-4">Quando tudo começou? 📅</p>
             <div className="mt-8 animate-spin">
               <span className="text-5xl md:text-6xl">⏰</span>
             </div>
@@ -426,11 +435,10 @@ export function StoriesCarousel({
       subtitle: "",
       bgColor: "from-amber-500 via-orange-500 to-yellow-500",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
-          <h3 className="text-3xl md:text-5xl font-bold mb-8 text-center">Quando tudo começou?</h3>
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
+          <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center px-4">Quando tudo começou?</h3>
 
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <span className="text-3xl md:text-4xl">📅</span>
+          <div className="flex items-center justify-center mb-4">
             <div className="bg-white/20 rounded-2xl px-6 py-3 backdrop-blur-sm">
               <span className="text-4xl md:text-5xl font-black">{formattedFirstDate}</span>
             </div>
@@ -452,10 +460,10 @@ export function StoriesCarousel({
       type: "transition",
       bgColor: "from-fuchsia-500 via-purple-500 to-violet-500",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Quem será que começa mais as conversas?</h2>
-            <p className="text-2xl md:text-3xl font-medium">Vamos descobrir quem é mais ansioso... 📱</p>
+            <p className="text-xl md:text-2xl font-medium px-4">Vamos descobrir quem é mais ansioso... 📱</p>
             <div className="mt-8 animate-pulse">
               <span className="text-5xl md:text-6xl">📱</span>
             </div>
@@ -471,10 +479,10 @@ export function StoriesCarousel({
       subtitle: "",
       bgColor: "from-fuchsia-500 via-purple-500 to-violet-500",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
-          <h3 className="text-3xl md:text-5xl font-bold mb-8 text-center">Quem começa mais as conversas?</h3>
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
+          <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center px-4">Quem começa mais as conversas?</h3>
 
-          <div className="w-full max-w-xs md:max-w-md mb-6">
+          <div className="w-full max-w-[90%] mb-6">
             <div className="relative h-20 md:h-24 w-full rounded-full bg-white/20 overflow-hidden mb-3">
               <div
                 className="absolute inset-0 bg-gradient-to-r from-fuchsia-300 to-purple-300 rounded-full"
@@ -528,19 +536,19 @@ export function StoriesCarousel({
       type: "love-message",
       bgColor: "from-pink-600 via-rose-600 to-red-600",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
-          <div className="text-center max-w-md mx-auto">
-            <div className="mb-8 animate-bounce">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
+          <div className="text-center max-w-[95%] mx-auto">
+            <div className="mb-6 animate-bounce">
               <span className="text-5xl md:text-6xl">💌</span>
             </div>
-            <h3 className="text-3xl md:text-4xl font-bold mb-8 bg-gradient-to-r from-white to-pink-200 text-transparent bg-clip-text">
+            <h3 className="text-2xl md:text-3xl font-bold mb-6 bg-gradient-to-r from-white to-pink-200 text-transparent bg-clip-text">
               {senderName} deixou esse recado especial para você...
             </h3>
 
-            <div className="bg-white/20 rounded-xl p-8 backdrop-blur-sm mb-8 relative">
+            <div className="bg-white/20 rounded-xl p-4 md:p-6 backdrop-blur-sm mb-6 relative overflow-y-auto max-h-[40vh]">
               <div className="absolute -top-3 -left-3 text-3xl">❝</div>
               <div className="absolute -bottom-3 -right-3 text-3xl">❞</div>
-              <p className="text-xl md:text-2xl italic leading-relaxed text-center">
+              <p className={`${getMessageFontSize(messageLove)} italic leading-relaxed text-center break-words`}>
                 {messageLove ||
                   "Obrigado por compartilhar essa jornada comigo. Cada mensagem é especial e cada momento que passamos juntos é um tesouro que guardo no coração."}
               </p>
@@ -561,7 +569,7 @@ export function StoriesCarousel({
       type: "outro",
       bgColor: "from-rose-600 via-pink-600 to-red-700",
       content: (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 select-none">
           <div className="relative">
             <div className="absolute -top-20 -left-20 w-40 h-40 bg-pink-500/30 rounded-full blur-xl animate-pulse"></div>
             <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-red-500/30 rounded-full blur-xl animate-pulse"></div>
@@ -584,7 +592,7 @@ export function StoriesCarousel({
               <p className="text-sm text-center">
                 Crie sua própria retrospectiva em{" "}
                 <a href="/" className="underline font-bold">
-                  whats-wrapped.vercel.app
+                  zaplove.vercel.app
                 </a>
               </p>
             </div>

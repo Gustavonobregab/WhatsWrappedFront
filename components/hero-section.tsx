@@ -22,14 +22,14 @@ export function HeroSection() {
             <div className="flex justify-center">
               <Button size="lg" className="bg-white text-rose-700 hover:bg-white/90" asChild>
                 <Link href="/comece-agora" id="comecar">
-                  Crie seu Wrapped
+                  Crie seu ZapLove
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
           </div>
           <div className="relative mx-auto w-full max-w-sm md:max-w-none">
-            <div className="relative aspect-[9/16] overflow-hidden rounded-xl shadow-2xl">
+            <div className="relative aspect-[9/16] overflow-hidden rounded-xl shadow-2xl md:max-w-[85%] lg:max-w-[75%] xl:max-w-[65%] md:mx-auto">
               <StoriesCarousel showOnlyDataStories={true} />
             </div>
           </div>

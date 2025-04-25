@@ -370,10 +370,10 @@ export default function ComecePage() {
                       value={formData.text}
                       onChange={handleInputChange}
                       className="text-lg min-h-[120px] resize-none border-pink-200 focus-visible:ring-pink-400 bg-gradient-to-br from-pink-50 to-white"
-                      maxLength={200}
+                      maxLength={199}
                     />
                     <div className="absolute bottom-2 right-2 text-sm text-pink-500 font-medium">
-                      {formData.text.length}/200
+                      {formData.text.length}/199
                     </div>
                   </div>
                   <div className="bg-pink-50 p-3 rounded-lg border border-pink-100">

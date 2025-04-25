@@ -24,9 +24,7 @@ export function CtaSection() {
             <h2 className="text-3xl font-bold tracking-tighter text-white sm:text-4xl md:text-5xl">
               Pronto para descobrir o que suas conversas dizem sobre você?
             </h2>
-            <p className="mt-4 text-xl text-white/80">
-              Crie seu WhatsWrapped agora mesmo e compartilhe com seus amigos!
-            </p>
+            <p className="mt-4 text-xl text-white/80">Crie seu ZapLove agora mesmo e compartilhe com seus amigos!</p>
             <div className="mt-8 flex justify-center">
               <Button size="lg" className="bg-white text-rose-700 hover:bg-white/90 font-bold text-lg" asChild>
                 <Link href="/comece-agora">

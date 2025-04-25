@@ -124,14 +124,15 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
     )
   }
 
+  // Atualizar o título da página de retrospectiva
   // Determinar o título da página com base nos dados
   const getPageTitle = () => {
     if (metricsData && metricsData.length > 0) {
       // Usar os nomes dos senders para o título
       const senders = metricsData.map((data) => data.sender)
-      return `WhatsWrapped de ${senders.join(" e ")}`
+      return `ZapLove de ${senders.join(" e ")}`
     }
-    return "WhatsWrapped"
+    return "ZapLove"
   }
 
   return (
@@ -165,7 +166,7 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
             </div>
           ) : (
             <>
-              <div className="relative aspect-[9/16] rounded-xl overflow-hidden shadow-2xl">
+              <div className="relative aspect-[9/16] rounded-xl overflow-hidden shadow-2xl max-w-[320px] md:max-w-[340px] lg:max-w-[360px] xl:max-w-[380px] mx-auto">
                 <StoriesCarousel metricsData={metricsData} loveMessage={loveMessage} />
               </div>
 

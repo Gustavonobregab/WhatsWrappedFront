@@ -297,7 +297,7 @@ export default function PagamentoPage() {
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold">Pagamento WhatsWrapped</h1>
+          <h1 className="text-2xl font-bold">Pagamento ZapLove</h1>
         </div>
 
         <div className="max-w-md mx-auto">

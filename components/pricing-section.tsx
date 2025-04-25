@@ -12,7 +12,7 @@ export function PricingSection() {
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Preço Único e Acessível</h2>
-          <p className="mt-4 text-xl text-muted-foreground">Crie seu WhatsWrapped personalizado por um valor único</p>
+          <p className="mt-4 text-xl text-muted-foreground">Crie seu ZapLove personalizado por um valor único</p>
         </div>
 
         <div className="max-w-md mx-auto">
@@ -29,7 +29,7 @@ export function PricingSection() {
                 asChild
                 className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
               >
-                <Link href="/comece-agora">Criar Meu WhatsWrapped</Link>
+                <Link href="/comece-agora">Criar Meu ZapLove</Link>
               </Button>
             </div>
 
