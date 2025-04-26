@@ -68,6 +68,29 @@ export function MetricsSection() {
             color="from-indigo-500 to-blue-500"
             emoji="📱"
           />
+          {/* Novo card "E muito mais!" */}
+          <div className="rounded-xl overflow-hidden shadow-lg transform transition-transform hover:scale-105 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <div className="p-6 text-center relative h-full flex flex-col items-center justify-center">
+              <div className="absolute top-0 left-0 w-full h-full">
+                <div className="absolute top-5 left-5 w-12 h-12 rounded-full bg-white/10 animate-pulse"></div>
+                <div
+                  className="absolute bottom-5 right-5 w-16 h-16 rounded-full bg-white/10 animate-pulse"
+                  style={{ animationDelay: "1s" }}
+                ></div>
+                <div
+                  className="absolute top-1/2 left-1/4 w-10 h-10 rounded-full bg-white/10 animate-pulse"
+                  style={{ animationDelay: "0.5s" }}
+                ></div>
+              </div>
+              <div className="relative z-10">
+                <span className="text-4xl mb-4 block">✨</span>
+                <h3 className="text-2xl font-bold mb-2">E muito mais!</h3>
+                <p className="text-lg text-white/90">
+                  Descubra todas as estatísticas e curiosidades sobre suas conversas
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

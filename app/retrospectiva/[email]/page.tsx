@@ -33,22 +33,19 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
 
         console.log(`Buscando dados da retrospectiva para o email: ${email}`)
 
-        // Buscar dados da retrospectiva pelo email usando a rota correta
-        const response = await fetch(`/api/v1/metrics/retrospective/${encodeURIComponent(email)}`)
+        // Buscar dados da retrospectiva diretamente do backend
+        const response = await fetch(
+          `https://chat-metrics-api.onrender.com/api/v1/metrics/retrospective/${encodeURIComponent(email)}`,
+        )
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: "Erro desconhecido" }))
-          throw new Error(errorData.error || "Não foi possível carregar a retrospectiva")
+          const errorText = await response.text()
+          console.error(`Erro ao buscar retrospectiva: ${response.status}`, errorText)
+          throw new Error(`Não foi possível carregar a retrospectiva: ${response.status}`)
         }
 
-        const responseData = await response.json()
-        console.log("Resposta da API:", responseData)
-
-        if (!responseData.success) {
-          throw new Error(responseData.error || "Erro ao carregar dados")
-        }
-
-        const data = responseData.data
+        const data = await response.json()
+        console.log("Resposta da API:", data)
 
         // Verificar se temos dados válidos
         if (!data || !data.participants || !Array.isArray(data.participants) || data.participants.length === 0) {
@@ -67,8 +64,8 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
         console.log("Participantes válidos:", validParticipants)
 
         setMetricsData(validParticipants)
-        setLoveMessage(data.loveMessage || data.text || null)
-        setIsMockData(data.isMock || false)
+        setLoveMessage(data.text || null)
+        setIsMockData(false)
 
         toast({
           title: "Retrospectiva carregada",
@@ -86,6 +83,12 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
           setMetricsData(mockData)
           setIsMockData(true)
           setError(null) // Limpar o erro já que temos dados mockados
+
+          // Tentar obter a mensagem de amor da sessão
+          const storedLoveMessage = sessionStorage.getItem("loveMessage")
+          if (storedLoveMessage) {
+            setLoveMessage(storedLoveMessage)
+          }
 
           toast({
             title: "Usando dados de demonstração",
@@ -124,7 +127,6 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
     )
   }
 
-  // Atualizar o título da página de retrospectiva
   // Determinar o título da página com base nos dados
   const getPageTitle = () => {
     if (metricsData && metricsData.length > 0) {

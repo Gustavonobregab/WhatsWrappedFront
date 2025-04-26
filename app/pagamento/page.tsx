@@ -62,41 +62,12 @@ export default function PagamentoPage() {
         throw new Error("Dados do usuário não encontrados")
       }
 
-      // Obter os dados de métricas da sessão
-      const metricsDataStr = sessionStorage.getItem("metricsData")
-      if (!metricsDataStr) {
-        throw new Error("Dados de métricas não encontrados")
-      }
-
-      const metricsData = JSON.parse(metricsDataStr)
-      const loveMessage = sessionStorage.getItem("loveMessage")
-
-      // Confirmar o pagamento na API
       // Simular confirmação de pagamento localmente
       console.log("Simulando confirmação de pagamento para:", userData.email, paymentId)
 
-      // Salvar a retrospectiva permanentemente usando o email como identificador
-      const encodedEmail = encodeURIComponent(userData.email)
-      const saveResponse = await fetch(`/api/v1/metrics/retrospective/${encodedEmail}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: userData.email,
-          participants: metricsData,
-          loveMessage: loveMessage || undefined,
-        }),
-      })
-
-      if (!saveResponse.ok) {
-        const errorData = await saveResponse.json().catch(() => ({ error: "Erro desconhecido" }))
-        throw new Error(errorData.error || "Erro ao salvar retrospectiva")
-      }
-
       toast({
         title: "Pagamento confirmado!",
-        description: "Sua retrospectiva foi salva com sucesso!",
+        description: "Redirecionando para sua retrospectiva...",
       })
 
       // Redirecionar para a página permanente da retrospectiva usando o email
@@ -124,50 +95,11 @@ export default function PagamentoPage() {
 
   const skipToResults = () => {
     if (userData && userData.email) {
-      // Salvar a retrospectiva com dados de exemplo e redirecionar
-      saveRetrospectiveAndRedirect()
+      // Redirecionar diretamente para a página de retrospectiva
+      const encodedEmail = encodeURIComponent(userData.email)
+      router.push(`/retrospectiva/${encodedEmail}`)
     } else {
       // Fallback: ir para a página inicial
-      router.push("/")
-    }
-  }
-
-  const saveRetrospectiveAndRedirect = async () => {
-    try {
-      // Obter dados de métricas da sessão ou usar dados de exemplo
-      let metricsData
-      const metricsDataStr = sessionStorage.getItem("metricsData")
-
-      if (metricsDataStr) {
-        metricsData = JSON.parse(metricsDataStr)
-      } else {
-        // Usar dados de exemplo
-        const { getPersonalizedMockData } = await import("@/lib/mock-data")
-        metricsData = getPersonalizedMockData(userData.name || userData.email)
-      }
-
-      const loveMessage = sessionStorage.getItem("loveMessage")
-
-      // Salvar a retrospectiva usando o email como identificador
-      const encodedEmail = encodeURIComponent(userData.email)
-      await fetch(`/api/v1/metrics/retrospective/${encodedEmail}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: userData.email,
-          participants: metricsData,
-          loveMessage: loveMessage || undefined,
-          isMock: true, // Indicar que são dados de exemplo
-        }),
-      })
-
-      // Redirecionar para a página permanente usando o email
-      router.push(`/retrospectiva/${encodedEmail}`)
-    } catch (error) {
-      console.error("Erro ao salvar retrospectiva:", error)
-      // Fallback
       router.push("/")
     }
   }

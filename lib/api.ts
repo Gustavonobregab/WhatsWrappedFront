@@ -43,6 +43,26 @@ export interface PaymentStatusResponse {
   error?: string
 }
 
+export interface RetrospectiveResponse {
+  _id: string
+  userEmail: string
+  name: string
+  cpf: string
+  text: string
+  participants: {
+    sender: string
+    totalMessages: number
+    loveMessages: number
+    apologyMessages: number
+    firstMessageDate: string
+    messageStreak: number
+    daysStartedConversation: number
+  }[]
+  id: string
+  createdAt: string
+  __v: number
+}
+
 export type PaymentStatus = "PENDING" | "EXPIRED" | "CANCELLED" | "PAID" | "REFUNDED"
 
 // Tipos para as requisições
@@ -131,6 +151,22 @@ export async function uploadFileAndGetMetrics(formData: FormData): Promise<any> 
     }
   } catch (error: any) {
     console.error("Erro ao fazer upload do arquivo:", error)
+    throw error
+  }
+}
+
+// Função para buscar a retrospectiva pelo email
+export async function getRetrospectiveByEmail(email: string): Promise<RetrospectiveResponse> {
+  try {
+    const response = await fetch(API_ENDPOINTS.METRICS_RETROSPECTIVE(email))
+
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar retrospectiva: ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error: any) {
+    console.error("Erro ao buscar retrospectiva:", error)
     throw error
   }
 }
