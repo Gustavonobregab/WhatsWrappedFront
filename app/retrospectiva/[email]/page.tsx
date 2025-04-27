@@ -54,7 +54,7 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
         }
 
         // Verificar se cada participante tem os campos necessários
-        const validParticipants = data.participants.filter((p) => p && p.sender && typeof p.totalMessages === "number")
+        const validParticipants = data.participants.filter((p: any) => p && p.sender && typeof p.totalMessages === "number")
 
         if (validParticipants.length === 0) {
           console.error("Nenhum participante válido encontrado:", data.participants)

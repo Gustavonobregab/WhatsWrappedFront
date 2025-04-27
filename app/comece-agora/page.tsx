@@ -10,6 +10,7 @@ import { toast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { loadStripe } from "@stripe/stripe-js"
 
 export default function ComecePage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -119,67 +120,44 @@ export default function ComecePage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
+    e.preventDefault();
+  
     if (!validateForm()) {
-      return
+      return;
     }
-
-    setIsLoading(true)
-
+  
+    setIsLoading(true);
+  
     try {
-      // Criar FormData para enviar arquivo e dados do usuário
-      const formDataToSend = new FormData()
-
-      // Adicionar todos os campos obrigatórios
-      formDataToSend.append("name", formData.name)
-      formDataToSend.append("email", formData.email)
-      formDataToSend.append("cpf", formData.cpf.replace(/\D/g, "")) // Remover formatação
-
-      // Garantir que o texto nunca esteja vazio
-      const textToSend = formData.text.trim() || "Obrigado por compartilhar essa jornada comigo!"
-      formDataToSend.append("text", textToSend)
-
-      // Adicionar o arquivo
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("cpf", formData.cpf.replace(/\D/g, ""));
+      formDataToSend.append("text", formData.text.trim() || "Obrigado por compartilhar essa jornada comigo!");
       if (selectedFile) {
-        formDataToSend.append("file", selectedFile)
+        formDataToSend.append("file", selectedFile);
       }
-
-      console.log("Enviando dados:", {
-        name: formData.name,
-        email: formData.email,
-        cpf: formData.cpf.replace(/\D/g, ""),
-        text: textToSend,
-        file: selectedFile ? `${selectedFile.name} (${selectedFile.size} bytes)` : "AUSENTE",
-      })
-
-      // Enviar para a API
-      console.log("Enviando requisição para /api/v1/metrics/upload...")
+  
+      // Upload dos dados e arquivo
       const response = await fetch("/api/v1/metrics/upload", {
         method: "POST",
         body: formDataToSend,
-      })
+      });
+  
+      const responseText = await response.text();
 
-      // Obter o texto da resposta para debug
-      const responseText = await response.text()
-      console.log("Resposta bruta da API:", responseText)
 
-      // Tentar converter para JSON
-      let responseData
+      let responseData;
       try {
-        responseData = JSON.parse(responseText)
-        console.log("Resposta da API (parseada):", JSON.stringify(responseData, null, 2))
+        responseData = JSON.parse(responseText);
       } catch (e) {
-        console.error("Erro ao parsear resposta JSON:", e)
-        throw new Error("Formato de resposta inválido da API")
+        throw new Error("Formato de resposta inválido da API");
       }
-
+  
       if (!response.ok) {
-        console.error("Erro na resposta:", responseData)
-        throw new Error(responseData.message || "Erro ao processar o arquivo")
+        throw new Error(responseData.message || "Erro ao processar o arquivo");
       }
-
-      // Salvar dados na sessão
+  
       sessionStorage.setItem(
         "userData",
         JSON.stringify({
@@ -187,48 +165,47 @@ export default function ComecePage() {
           email: formData.email,
           cpf: formData.cpf,
         }),
-      )
+      );
 
+      console.log("formData.email", formData.email)
       if (formData.text) {
-        sessionStorage.setItem("loveMessage", formData.text)
+        sessionStorage.setItem("loveMessage", formData.text);
       }
-
-      // Salvar métricas na sessão
+  
       if (responseData.metrics && responseData.metrics.participants) {
-        console.log("Salvando métricas na sessão:", responseData.metrics.participants)
-        sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants))
-
-        // IMPORTANTE: Redirecionar usando o email em vez do ID
-        toast({
-          title: "Arquivo processado com sucesso!",
-          description: "Redirecionando para sua retrospectiva...",
-        })
-
-        // Redirecionar para a página de pagamento
-        router.push("/pagamento")
-        return
-      } else {
-        console.warn("API não retornou métricas ou participantes:", responseData)
+        sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));
       }
 
-      // Fallback: redirecionar para a página de pagamento
-      toast({
-        title: "Arquivo processado com sucesso!",
-        description: "Suas métricas foram extraídas. Continue para o pagamento.",
-      })
-
-      router.push("/pagamento")
+      // 🔥 Aqui chama o checkout
+      const checkoutResponse = await fetch("/api/v1/payment/checkout/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ testeId: responseData.metrics.id, email: formData.email }),
+      });
+    
+  
+      const { sessionId } = await checkoutResponse.json();
+  
+      const stripeClient = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUB_KEY as string);
+  
+      if (!stripeClient) throw new Error("Stripe failed to initialize.");
+  
+      await stripeClient.redirectToCheckout({ sessionId });
+      
     } catch (error: any) {
-      console.error("Erro ao processar arquivo:", error)
+      console.error("Erro ao processar:", error);
       toast({
-        title: "Erro ao processar arquivo",
-        description: error.message || "Ocorreu um erro ao processar seu arquivo.",
+        title: "Erro",
+        description: error.message || "Erro desconhecido",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-violet-600/10 to-background">
