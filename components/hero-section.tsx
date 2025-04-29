@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import { StoriesCarousel } from "./stories-carousel"
+import { StoriesCarouselMocked } from "./landing-carousel"
 
 export function HeroSection() {
   return (
@@ -30,7 +31,7 @@ export function HeroSection() {
           </div>
           <div className="relative mx-auto w-full max-w-sm md:max-w-none">
             <div className="relative aspect-[9/16] overflow-hidden rounded-xl shadow-2xl md:max-w-[85%] lg:max-w-[75%] xl:max-w-[65%] md:mx-auto">
-              <StoriesCarousel showOnlyDataStories={true} />
+              <StoriesCarouselMocked />
             </div>
           </div>
         </div>
