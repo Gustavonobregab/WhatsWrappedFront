@@ -35,7 +35,7 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
 
         // Buscar dados da retrospectiva diretamente do backend
         const response = await fetch(
-          `https://chat-metrics-api.onrender.com/api/v1/metrics/retrospective/${encodeURIComponent(email)}`,
+          `/api/v1/metrics/retrospective/${encodeURIComponent(email)}`
         )
 
         if (!response.ok) {
