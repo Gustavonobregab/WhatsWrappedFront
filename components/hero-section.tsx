@@ -8,8 +8,8 @@ import { StoriesCarouselMocked } from "./landing-carousel"
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-rose-600 via-pink-600 to-red-700 py-20 md:py-32">
-      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-10"></div>
+<section className="relative overflow-hidden bg-[url('/neon-landing.png')] bg-cover bg-center py-20 md:py-32">
+<div className="absolute inset-0 bg-[url('/noise.svg')] opacity-10"></div>
       <div className="container relative z-10">
         <div className="grid gap-8 md:grid-cols-2 md:gap-12 items-center">
           <div className="space-y-6 text-center md:text-center">
