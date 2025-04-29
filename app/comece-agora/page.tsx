@@ -10,7 +10,6 @@ import { toast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { loadStripe } from "@stripe/stripe-js"
 
 export default function ComecePage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -119,6 +118,7 @@ export default function ComecePage() {
     return valid
   }
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
@@ -145,8 +145,7 @@ export default function ComecePage() {
       });
   
       const responseText = await response.text();
-
-
+  
       let responseData;
       try {
         responseData = JSON.parse(responseText);
@@ -166,8 +165,7 @@ export default function ComecePage() {
           cpf: formData.cpf,
         }),
       );
-
-      console.log("formData.email", formData.email)
+  
       if (formData.text) {
         sessionStorage.setItem("loveMessage", formData.text);
       }
@@ -175,25 +173,10 @@ export default function ComecePage() {
       if (responseData.metrics && responseData.metrics.participants) {
         sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));
       }
-
-      // 🔥 Aqui chama o checkout
-      const checkoutResponse = await fetch("/api/v1/payment/checkout/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ testeId: responseData.metrics.id, email: formData.email }),
-      });
-    
   
-      const { sessionId } = await checkoutResponse.json();
+      // 🎯 NOVO: Redirecionar para a página de pagamento
+      router.push("/pagamento");
   
-      const stripeClient = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUB_KEY as string);
-  
-      if (!stripeClient) throw new Error("Stripe failed to initialize.");
-  
-      await stripeClient.redirectToCheckout({ sessionId });
-      
     } catch (error: any) {
       console.error("Erro ao processar:", error);
       toast({
@@ -205,6 +188,7 @@ export default function ComecePage() {
       setIsLoading(false);
     }
   };
+
   
 
   return (
