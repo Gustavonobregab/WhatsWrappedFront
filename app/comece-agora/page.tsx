@@ -121,13 +121,13 @@ export default function ComecePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     if (!validateForm()) {
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
@@ -137,26 +137,37 @@ export default function ComecePage() {
       if (selectedFile) {
         formDataToSend.append("file", selectedFile);
       }
-  
+
       // Upload dos dados e arquivo
       const response = await fetch("/api/v1/metrics/upload", {
         method: "POST",
         body: formDataToSend,
       });
-  
+
       const responseText = await response.text();
-  
+
       let responseData;
       try {
         responseData = JSON.parse(responseText);
       } catch (e) {
         throw new Error("Formato de resposta inválido da API");
       }
-  
+
+
       if (!response.ok) {
-        throw new Error(responseData.message || "Erro ao processar o arquivo");
+        if (responseData?.field === "email") {
+          console.log("Dados de erro da API:", responseData); // <----- ADICIONE ESTE LOG
+          setErrors({ ...errors, email: responseData.message });
+        } else {
+          toast({
+            title: "Erro",
+            description: responseData?.message || `Erro ao processar o arquivo: ${response.status}`,
+            variant: "destructive",
+          });
+        }
+        return;
       }
-  
+
       sessionStorage.setItem(
         "userData",
         JSON.stringify({
@@ -165,18 +176,18 @@ export default function ComecePage() {
           cpf: formData.cpf,
         }),
       );
-  
+
       if (formData.text) {
         sessionStorage.setItem("loveMessage", formData.text);
       }
-  
+
       if (responseData.metrics && responseData.metrics.participants) {
         sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));
       }
-  
+
       // 🎯 NOVO: Redirecionar para a página de pagamento
       router.push("/pagamento");
-  
+
     } catch (error: any) {
       console.error("Erro ao processar:", error);
       toast({

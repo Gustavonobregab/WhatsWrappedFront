@@ -62,8 +62,15 @@ export async function POST(request: NextRequest) {
 
       try {
         const errorData = JSON.parse(responseText);
+        // 🎯 MODIFICADO: Adaptando a resposta para o frontend
+        if (errorData?.code === "VALIDATION_ERROR" && errorData?.error?.toLowerCase().includes("e-mail")) {
+          return NextResponse.json(
+            { success: false, message: errorData.error, field: "email" }, // Usando 'error' da API externa e adicionando 'field'
+            { status: response.status }
+          );
+        }
         return NextResponse.json(
-          { success: false, message: errorData.message || `Erro ao processar o arquivo: ${response.status}` },
+          { success: false, message: errorData.error || `Erro ao processar o arquivo: ${response.status}` }, // Usando 'error' aqui também
           { status: response.status },
         );
       } catch (e) {
