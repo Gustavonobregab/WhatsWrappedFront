@@ -132,7 +132,7 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
     if (metricsData && metricsData.length > 0) {
       // Usar os nomes dos senders para o título
       const senders = metricsData.map((data) => data.sender)
-      return `ZapLove de ${senders.join(" e ")}`
+      return `ZapLove ${senders.join(" e ")}`
     }
     return "ZapLove"
   }
@@ -194,9 +194,6 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
           )}
 
           <div className="mt-8 text-center">
-            <p className="text-xl text-muted-foreground mb-6">
-              Gostou da sua retrospectiva? Compartilhe com seus amigos!
-            </p>
             <div className="flex justify-center gap-4">
               {isBrowser && (
                 <ShareButton
@@ -208,13 +205,23 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
                   size="lg"
                 />
               )}
-              <Button variant="outline" asChild className="text-lg py-6 px-8 border-2">
-                <Link href="/">Voltar para o Início</Link>
-              </Button>
             </div>
           </div>
         </div>
       </div>
+      <footer className="mt-12 text-center text-muted-foreground text-sm pb-8">
+  <p>
+    Precisa de ajuda? Entre em contato conosco:{" "}
+    <a
+      href="https://wa.me/5583988146652"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline"
+    >
+      Clique aqui!
+    </a>
+  </p>
+</footer>
     </div>
   )
 }
