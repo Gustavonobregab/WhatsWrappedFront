@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import { MOCK_METRICS_DATA } from "@/lib/mock-data"
 
 type MetricsData = {
   sender: string
@@ -10,107 +9,81 @@ type MetricsData = {
   apologyMessages: number
   firstMessageDate: string
   messageStreak: number
+  totalAudios: number
+  totalPhotos: number
   daysStartedConversation: number
 }
 
 interface StoriesCarouselProps {
-  metricsData?: MetricsData[]
+  metricsData: MetricsData[] // Agora é obrigatório
   showOnlyDataStories?: boolean
   loveMessage?: string | null
 }
 
 export function StoriesCarousel({
-  metricsData = MOCK_METRICS_DATA,
+  metricsData,
   showOnlyDataStories = false,
   loveMessage = null,
 }: StoriesCarouselProps) {
   const [currentStory, setCurrentStory] = React.useState(0)
   const [isPaused, setIsPaused] = React.useState(false)
-  const [senderName, setSenderName] = React.useState<string>("Pedro")
+  const [senderName, setSenderName] = React.useState<string>("")
   const [messageLove, setMessageLove] = React.useState<string | null>(null)
 
-  // Validar e processar os dados recebidos
   React.useEffect(() => {
-    console.log("Dados recebidos no StoriesCarousel:", metricsData)
-
-    // Verificar se temos dados válidos
-    if (!metricsData || !Array.isArray(metricsData) || metricsData.length === 0) {
-      console.warn("Dados inválidos ou vazios recebidos no StoriesCarousel, usando dados mockados")
-      import("@/lib/mock-data").then(({ MOCK_METRICS_DATA }) => {
-        // Usar dados mockados como fallback
-        const mockData = MOCK_METRICS_DATA
-        if (mockData && mockData.length > 0) {
-          setSenderName(mockData[0].sender)
-        }
-      })
-    } else {
-      // Definir o nome do remetente para a mensagem de amor
+    if (metricsData && metricsData.length > 0) {
       setSenderName(metricsData[0].sender)
     }
 
-    // Usar a mensagem de amor fornecida como prop ou tentar obter da sessão
     if (loveMessage) {
       setMessageLove(loveMessage)
-    } else {
-      // Tentar obter a mensagem de amor da sessão
-      if (typeof window !== "undefined") {
-        const storedLoveMessage = sessionStorage.getItem("loveMessage")
-        if (storedLoveMessage) {
-          setMessageLove(storedLoveMessage)
-        }
+    } else if (typeof window !== "undefined") {
+      const storedLoveMessage = sessionStorage.getItem("loveMessage")
+      if (storedLoveMessage) {
+        setMessageLove(storedLoveMessage)
       }
     }
   }, [metricsData, loveMessage])
 
-  // Garantir que temos dados válidos para exibir
-  const validData = React.useMemo(() => {
-    if (!metricsData || !Array.isArray(metricsData) || metricsData.length === 0) {
-      return MOCK_METRICS_DATA
-    }
-    return metricsData
-  }, [metricsData])
+  if (!metricsData || metricsData.length < 2) {
+    return <p>Dados insuficientes para mostrar a retrospectiva.</p>
+  }
 
-  // Usar dados fornecidos ou dados mockados
-  const user1 = validData && validData.length > 0 ? validData[0] : MOCK_METRICS_DATA[0]
-  const user2 = validData && validData.length > 1 ? validData[1] : MOCK_METRICS_DATA[1]
+  const user1 = metricsData[0]
+  const user2 = metricsData[1]
 
-  console.log("Usando dados de usuários:", { user1, user2 })
-
-  // Calcular a data de início da conversa
   const firstDate = new Date(user1.firstMessageDate)
   const formattedFirstDate = firstDate.toLocaleDateString("pt-BR")
 
-  // Calcular dias desde o início
   const today = new Date()
   const diffTime = Math.abs(today.getTime() - firstDate.getTime())
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-  // Determinar quem inicia mais conversas
-  const whoStartsMore = user1.daysStartedConversation > user2.daysStartedConversation ? user1.sender : user2.sender
-  const startPercentage = Math.max(
-    (user1.daysStartedConversation / (user1.daysStartedConversation + user2.daysStartedConversation)) * 100,
-    (user2.daysStartedConversation / (user1.daysStartedConversation + user2.daysStartedConversation)) * 100,
-  )
+  const whoStartsMore =
+    user1.daysStartedConversation > user2.daysStartedConversation ? user1.sender : user2.sender
 
-  // Quem diz mais "te amo"
+  const totalStarts = user1.daysStartedConversation + user2.daysStartedConversation
+  const startPercentage =
+    totalStarts > 0
+      ? Math.max(
+          (user1.daysStartedConversation / totalStarts) * 100,
+          (user2.daysStartedConversation / totalStarts) * 100
+        )
+      : 0
+
   const loveWinner = user1.loveMessages > user2.loveMessages ? user1.sender : user2.sender
-
-  // Quem pede mais desculpas
   const apologyWinner = user1.apologyMessages > user2.apologyMessages ? user1.sender : user2.sender
-
-  // Quem envia mais mensagens
   const messageWinner = user1.totalMessages > user2.totalMessages ? user1.sender : user2.sender
 
-  // Função para determinar o tamanho da fonte com base no comprimento do texto
   const getMessageFontSize = (message: string | null) => {
     if (!message) return "text-xl md:text-2xl"
-
     const length = message.length
     if (length > 150) return "text-sm md:text-base"
     if (length > 100) return "text-base md:text-lg"
     if (length > 50) return "text-lg md:text-xl"
     return "text-xl md:text-2xl"
   }
+
 
   const allStories = [
     // Tela de introdução
@@ -543,6 +516,90 @@ export function StoriesCarousel({
   ),
 },
 // Mensagem personalizada (sem alteração pois usa função dinâmica)
+{
+  type: "data",
+  title: "Quem envia mais áudios?",
+  subtitle: "",
+  bgColor: "from-indigo-500 via-purple-500 to-pink-500",
+  content: (
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
+      <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">Quem manda mais áudios?</h3>
+
+      <div className="w-full max-w-md mb-6">
+        <div className="relative h-16 md:h-24 w-full rounded-full bg-white/20 overflow-hidden mb-2">
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-indigo-300 to-purple-300 rounded-full"
+            style={{
+              width: `${(user1.totalAudios / (user1.totalAudios + user2.totalAudios)) * 100}%`,
+            }}
+          ></div>
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full flex justify-between px-4 md:px-6">
+              <span className="text-sm md:text-lg font-bold truncate max-w-[40%]">{user1.sender}</span>
+              <span className="text-sm md:text-lg font-bold truncate max-w-[40%] text-right">{user2.sender}</span>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-between px-2">
+          <span className="text-base md:text-xl">
+            {Math.round((user1.totalAudios / (user1.totalAudios + user2.totalAudios)) * 100)}%
+          </span>
+          <span className="text-base md:text-xl">
+            {Math.round((user2.totalAudios / (user1.totalAudios + user2.totalAudios)) * 100)}%
+          </span>
+        </div>
+      </div>
+
+      <div className="text-center mt-6">
+        <span className="text-xl md:text-2xl font-bold text-white">
+          Foram enviados {user1.totalAudios + user2.totalAudios} áudios no total! 🎙️
+        </span>
+      </div>
+    </div>
+  ),
+},
+{
+  type: "data",
+  title: "Quem envia mais fotos?",
+  subtitle: "",
+  bgColor: "from-yellow-400 via-orange-400 to-pink-500",
+  content: (
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none">
+      <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">Quem manda mais fotos?</h3>
+
+      <div className="w-full max-w-md mb-6">
+        <div className="relative h-16 md:h-24 w-full rounded-full bg-white/20 overflow-hidden mb-2">
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-orange-300 rounded-full"
+            style={{
+              width: `${(user1.totalPhotos / (user1.totalPhotos + user2.totalPhotos)) * 100}%`,
+            }}
+          ></div>
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full flex justify-between px-4 md:px-6">
+              <span className="text-sm md:text-lg font-bold truncate max-w-[40%]">{user1.sender}</span>
+              <span className="text-sm md:text-lg font-bold truncate max-w-[40%] text-right">{user2.sender}</span>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-between px-2">
+          <span className="text-base md:text-xl">
+            {Math.round((user1.totalPhotos / (user1.totalPhotos + user2.totalPhotos)) * 100)}%
+          </span>
+          <span className="text-base md:text-xl">
+            {Math.round((user2.totalPhotos / (user1.totalPhotos + user2.totalPhotos)) * 100)}%
+          </span>
+        </div>
+      </div>
+
+      <div className="text-center mt-6">
+        <span className="text-xl md:text-2xl font-bold text-white">
+          Foram enviadas {user1.totalPhotos + user2.totalPhotos} fotos no total! 📸
+        </span>
+      </div>
+    </div>
+  ),
+},
 {
   type: "love-message",
   bgColor: "from-pink-600 via-rose-600 to-red-600",
