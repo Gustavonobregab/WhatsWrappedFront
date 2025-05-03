@@ -47,6 +47,15 @@
     --input: 240 3.7% 15.9%;
     --ring: 255 70% 60%;
   }
+
+  /* Bloqueia seleção de texto para qualquer conteúdo com a classe `story-container` */
+.story-container {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
 }
 
 @layer base {
