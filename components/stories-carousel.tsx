@@ -15,7 +15,7 @@ type MetricsData = {
 }
 
 interface StoriesCarouselProps {
-  metricsData: MetricsData[] // Agora é obrigatório
+  metricsData: MetricsData[]
   showOnlyDataStories?: boolean
   loveMessage?: string | null
 }
@@ -37,11 +37,6 @@ export function StoriesCarousel({
 
     if (loveMessage) {
       setMessageLove(loveMessage)
-    } else if (typeof window !== "undefined") {
-      const storedLoveMessage = sessionStorage.getItem("loveMessage")
-      if (storedLoveMessage) {
-        setMessageLove(storedLoveMessage)
-      }
     }
   }, [metricsData, loveMessage])
 

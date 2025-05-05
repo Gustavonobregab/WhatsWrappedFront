@@ -177,9 +177,6 @@ export default function ComecePage() {
         }),
       );
 
-      if (formData.text) {
-        sessionStorage.setItem("loveMessage", formData.text);
-      }
 
       if (responseData.metrics && responseData.metrics.participants) {
         sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));

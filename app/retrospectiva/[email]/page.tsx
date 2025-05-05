@@ -84,11 +84,6 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
           setIsMockData(true)
           setError(null) // Limpar o erro já que temos dados mockados
 
-          // Tentar obter a mensagem de amor da sessão
-          const storedLoveMessage = sessionStorage.getItem("loveMessage")
-          if (storedLoveMessage) {
-            setLoveMessage(storedLoveMessage)
-          }
 
           toast({
             title: "Usando dados de demonstração",
