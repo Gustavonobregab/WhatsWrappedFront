@@ -35,7 +35,7 @@ export function CtaSection() {
             </div>
             <p className="mt-6 text-white/80 flex items-center justify-center gap-2">
               <span className="text-lg">🔒</span>
-              Seus dados são processados localmente e nunca armazenados.
+              Seus dados são processados localmente e nunca armazenados!.
             </p>
           </div>
         </div>
