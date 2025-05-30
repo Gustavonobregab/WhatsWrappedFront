@@ -23,6 +23,7 @@ export default function PagamentoPage() {
           name: userData.name,
           email: userData.email,
           cpf: userData.cpf.replace(/\D/g, ""),
+          cellphone: userData.cellphone.replace(/\D/g, "") 
         }),
       });
 

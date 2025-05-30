@@ -18,12 +18,14 @@ export default function ComecePage() {
     name: "",
     email: "",
     cpf: "",
+    cellphone: "", // ← novo campo
     text: "Obrigado por compartilhar essa jornada comigo!", // Valor padrão para garantir que nunca esteja vazio
   })
   const [errors, setErrors] = useState({
     name: "",
     email: "",
     cpf: "",
+    cellphone: "", 
     file: "",
   })
   // Estado para controlar qual tela está sendo exibida
@@ -85,6 +87,7 @@ export default function ComecePage() {
       name: "",
       email: "",
       cpf: "",
+      cellphone: "",
       file: "",
     }
 
@@ -113,6 +116,13 @@ export default function ComecePage() {
       newErrors.file = "Por favor, selecione um arquivo de backup do WhatsApp"
       valid = false
     }
+
+    const phoneDigits = formData.cellphone.replace(/\D/g, "");
+    if (!phoneDigits || phoneDigits.length < 10) {
+      newErrors.cellphone = "Celular inválido (ex: 11999999999)";
+      valid = false;
+    }
+
 
     setErrors(newErrors)
     return valid
@@ -174,6 +184,8 @@ export default function ComecePage() {
           name: formData.name,
           email: formData.email,
           cpf: formData.cpf,
+          cellphone: formData.cellphone, // ← aqui também
+
         }),
       );
 
@@ -402,6 +414,21 @@ export default function ComecePage() {
                     {errors.cpf && <p className="text-xs text-red-500">{errors.cpf}</p>}
                   </div>
                 </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="cellphone" className="text-lg">
+                    Celular (com DDD)
+                  </Label>
+                  <Input
+                    id="cellphone"
+                    name="cellphone"
+                    placeholder="11999999999"
+                    value={formData.cellphone}
+                    onChange={handleInputChange}
+                    className={`text-lg py-6 ${errors.cellphone ? "border-red-500" : ""}`}
+                  />
+                  {errors.cellphone && <p className="text-xs text-red-500">{errors.cellphone}</p>}
+                </div>
+
 
                 <div className="border-2 border-dashed border-primary/30 rounded-lg p-6 text-center">
                   <div className="space-y-4">
