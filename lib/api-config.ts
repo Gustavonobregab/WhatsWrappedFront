@@ -17,7 +17,6 @@ export interface RegisterResponse {
     id: string
     name: string
     email: string
-    phone: string
     cpf: string
   }
 }
@@ -49,13 +48,11 @@ export type PaymentStatus = "PENDING" | "EXPIRED" | "CANCELLED" | "PAID" | "REFU
 export interface RegisterRequest {
   name: string
   email: string
-  phone: string
   cpf: string
 }
 
 export interface PaymentRequest {
   name: string
   email: string
-  cellphone: string
   cpf: string
 }

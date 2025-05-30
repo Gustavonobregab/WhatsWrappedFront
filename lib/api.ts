@@ -15,7 +15,6 @@ export interface RegisterResponse {
     id: string
     name: string
     email: string
-    phone: string
     cpf: string
     hasPaid: boolean
   }
@@ -75,7 +74,6 @@ export interface PaymentRequest {
 export interface RegisterRequest {
   name: string
   email: string
-  phone: string
   cpf: string
 }
 

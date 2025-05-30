@@ -22,7 +22,6 @@ export default function PagamentoPage() {
         body: JSON.stringify({
           name: userData.name,
           email: userData.email,
-          cellphone: "",
           cpf: userData.cpf.replace(/\D/g, ""),
         }),
       });
