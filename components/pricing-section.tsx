@@ -21,7 +21,7 @@ export function PricingSection() {
               <h3 className="text-2xl font-bold mb-2">Crie seu site e surpreenda!</h3>
               <div className="flex items-center justify-center gap-1 mb-6">
                 <span className="text-4xl font-bold">R$</span>
-                <span className="text-6xl font-extrabold">19,90</span>
+                <span className="text-6xl font-extrabold">9,90</span>
               </div>
               <p className="text-muted-foreground mb-6">Pagamento único</p>
 

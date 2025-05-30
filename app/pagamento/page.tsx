@@ -152,7 +152,7 @@ export default function PagamentoPage() {
             <h1 className="text-3xl font-extrabold text-center mb-4 text-pink-600">Finalize seu pagamento</h1>
 
             <div className="text-center mb-2">
-              <p className="text-2xl font-bold text-black">R$ 19,90</p>
+              <p className="text-2xl font-bold text-black">R$ 9,90</p>
               <p className="text-sm text-muted-foreground">Oferta por tempo limitado</p>
             </div>
 
