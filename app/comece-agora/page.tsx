@@ -146,10 +146,12 @@ export default function ComecePage() {
     }
 
     const phoneDigits = formData.cellphone.replace(/\D/g, "");
-    if (!phoneDigits || phoneDigits.length < 10) {
-      newErrors.cellphone = "Celular inválido (ex: 11999999999)";
+    const cellphoneRegex = /^[1-9]{2}9\d{8}$/;
+    if (!cellphoneRegex.test(phoneDigits)) {
+      newErrors.cellphone = "Celular inválido. Use o formato 11999999999";
       valid = false;
     }
+    
 
 
     setErrors(newErrors)
