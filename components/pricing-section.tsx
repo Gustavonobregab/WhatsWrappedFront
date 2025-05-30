@@ -18,6 +18,10 @@ export function PricingSection() {
         <div className="max-w-md mx-auto">
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl overflow-hidden transform transition-all hover:scale-105">
             <div className="p-8 text-center">
+                      {/* Tag de promoção */}
+            <div className="inline-block bg-pink-100 text-pink-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4 shadow-sm">
+              💘 Promoção Dia dos Namorados
+            </div>
               <h3 className="text-2xl font-bold mb-2">Crie seu site e surpreenda!</h3>
               <div className="flex items-center justify-center gap-1 mb-6">
                 <span className="text-4xl font-bold">R$</span>

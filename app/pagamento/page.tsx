@@ -151,10 +151,14 @@ export default function PagamentoPage() {
           <>
             <h1 className="text-3xl font-extrabold text-center mb-4 text-pink-600">Finalize seu pagamento</h1>
 
-            <div className="text-center mb-2">
+            <div className="text-center mb-4">
+              <div className="inline-block bg-pink-100 text-pink-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-2 shadow-sm">
+                💘 Promoção Dia dos Namorados
+              </div>
               <p className="text-2xl font-bold text-black">R$ 9,90</p>
               <p className="text-sm text-muted-foreground">Oferta por tempo limitado</p>
             </div>
+
 
             <div className="flex justify-center mb-6">
               <img src={paymentData.pixQrCode} alt="QR Code PIX" className="w-72 h-72 rounded-md shadow" />
