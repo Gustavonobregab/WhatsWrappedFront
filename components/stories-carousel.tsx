@@ -513,48 +513,6 @@ export function StoriesCarousel({
 // Mensagem personalizada (sem alteração pois usa função dinâmica)
 {
   type: "data",
-  title: "Quem envia mais áudios?",
-  subtitle: "",
-  bgColor: "from-indigo-500 via-purple-500 to-pink-500",
-  content: (
-<div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
-<h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">Quem manda mais áudios?</h3>
-
-      <div className="w-full max-w-md mb-6">
-        <div className="relative h-16 md:h-24 w-full rounded-full bg-white/20 overflow-hidden mb-2">
-          <div
-            className="absolute inset-0 bg-gradient-to-r from-indigo-300 to-purple-300 rounded-full"
-            style={{
-              width: `${(user1.totalAudios / (user1.totalAudios + user2.totalAudios)) * 100}%`,
-            }}
-          ></div>
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full flex justify-between px-4 md:px-6">
-              <span className="text-sm md:text-lg font-bold truncate max-w-[40%]">{user1.sender}</span>
-              <span className="text-sm md:text-lg font-bold truncate max-w-[40%] text-right">{user2.sender}</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-between px-2">
-          <span className="text-base md:text-xl">
-            {Math.round((user1.totalAudios / (user1.totalAudios + user2.totalAudios)) * 100)}%
-          </span>
-          <span className="text-base md:text-xl">
-            {Math.round((user2.totalAudios / (user1.totalAudios + user2.totalAudios)) * 100)}%
-          </span>
-        </div>
-      </div>
-
-      <div className="text-center mt-6">
-        <span className="text-xl md:text-2xl font-bold text-white">
-          Foram enviados {user1.totalAudios + user2.totalAudios} áudios no total! 🎙️
-        </span>
-      </div>
-    </div>
-  ),
-},
-{
-  type: "data",
   title: "Quem envia mais fotos?",
   subtitle: "",
   bgColor: "from-yellow-400 via-orange-400 to-pink-500",
