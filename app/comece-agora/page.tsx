@@ -221,9 +221,20 @@ export default function ComecePage() {
 
 
       if (responseData.metrics && responseData.metrics.participants) {
+        // Verificar se existem exatamente dois participantes
+        if (!responseData.metrics.participants || responseData.metrics.participants.length !== 2) {
+          setErrors({
+            ...errors,
+            file: "O arquivo enviado não é válido para o WhatsWrapped. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 988146652"
+          });
+          return;
+        }
+
+        console.log("Storing metrics data in sessionStorage");
         sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));
       }
 
+      console.log("Attempting to redirect to payment page");
       // 🎯 NOVO: Redirecionar para a página de pagamento
       router.push("/pagamento");
 
