@@ -68,12 +68,12 @@ export default function ComecePage() {
       return
     }
 
-    // Verificar o tamanho do arquivo (limite de 10MB)
-    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB em bytes
+    // Verificar o tamanho do arquivo (limite de 30MB)
+    const MAX_FILE_SIZE = 30 * 1024 * 1024 // 30MB em bytes
     if (file.size > MAX_FILE_SIZE) {
       setErrors({
         ...errors,
-        file: "O tamanho máximo permitido é de 10MB. Por favor, selecione um arquivo menor.",
+        file: "O tamanho máximo permitido é de 30MB. Por favor, selecione um arquivo menor.",
       })
       return
     }
@@ -466,7 +466,7 @@ export default function ComecePage() {
                       <Upload className="h-16 w-16 text-primary" />
                     </div>
                     <h3 className="text-2xl font-medium">Arraste seu arquivo aqui ou clique para selecionar</h3>
-                    <p className="text-sm text-muted-foreground">Arquivos .zip do WhatsApp (máx. 10MB)</p>
+                    <p className="text-sm text-muted-foreground">Arquivos .zip do WhatsApp (máx. 30MB)</p>
                     <div className="relative">
                       <input
                         ref={fileInputRef}
