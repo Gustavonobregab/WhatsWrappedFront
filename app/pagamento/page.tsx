@@ -155,7 +155,7 @@ export default function PagamentoPage() {
               <div className="inline-block bg-pink-100 text-pink-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-2 shadow-sm">
                 💘 Promoção Dia dos Namorados
               </div>
-              <p className="text-2xl font-bold text-black">R$ 9,90</p>
+              <p className="text-2xl font-bold text-black">R$ 19,90</p>
               <p className="text-sm text-muted-foreground">Oferta por tempo limitado</p>
             </div>
 
