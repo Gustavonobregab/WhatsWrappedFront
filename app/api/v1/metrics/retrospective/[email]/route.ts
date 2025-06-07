@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL!; // Pegando da .env
 
-export async function GET(req: NextRequest, context: { params: { email: string } }) {
-  try {
-    const { email } = context.params;
+export async function GET(req: NextRequest, context: any) {
+  const { email } = context.params; 
+   try {
 
     const response = await fetch(`${API_URL}/api/v1/metrics/retrospective/${encodeURIComponent(email)}`, {
       method: "GET",
