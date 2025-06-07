@@ -195,14 +195,31 @@ export default function ComecePage() {
 
 
       if (!response.ok) {
-        if (responseData?.field === "email") {
-          console.log("Dados de erro da API:", responseData); // <----- ADICIONE ESTE LOG
-          setErrors({ ...errors, email: responseData.message });
-        } else {
-          toast({
-            title: "Erro",
-            description: responseData?.message || `Erro ao processar o arquivo: ${response.status}`,
-            variant: "destructive",
+        console.error("Erro na resposta da API:", response.status, responseText);
+
+        try {
+          const errorData = JSON.parse(responseText);
+          // Verificar erro específico de arquivo ZIP sem arquivos TXT
+          if (errorData?.message === "No TXT files found in the ZIP" || errorData?.error === "No TXT files found in the ZIP") {
+            setErrors({
+              ...errors,
+              file: "O arquivo enviado não é válido para o WhatsWrapped. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 988146652"
+            });
+            return;
+          }
+          // 🎯 MODIFICADO: Adaptando a resposta para o frontend
+          if (errorData?.code === "VALIDATION_ERROR" && errorData?.error?.toLowerCase().includes("e-mail")) {
+            setErrors({ ...errors, email: errorData.message });
+          } else {
+            setErrors({
+              ...errors,
+              file: errorData?.message || `Erro ao processar o arquivo: ${response.status}`
+            });
+          }
+        } catch (e) {
+          setErrors({
+            ...errors,
+            file: "Erro ao processar o arquivo. Por favor, tente novamente."
           });
         }
         return;
@@ -496,8 +513,12 @@ export default function ComecePage() {
                         {selectedFile ? "Arquivo selecionado: " + selectedFile.name : "Selecionar Arquivo"}
                       </Button>
                     </div>
-                    {errors.file && <p className="text-xs text-red-500">{errors.file}</p>}
-                    {selectedFile && (
+                    {errors.file && (
+                      <p className="text-sm text-red-500 font-medium mt-2">
+                        {errors.file}
+                      </p>
+                    )}
+                    {selectedFile && !errors.file && (
                       <p className="text-sm text-green-600">
                         Arquivo selecionado: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                       </p>
