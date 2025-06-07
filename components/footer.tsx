@@ -15,7 +15,7 @@ export function Footer() {
           {/* Navegação social */}
           <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm text-muted-foreground">
             <Link
-              href="https://wa.me/5583988146652"
+              href="https://wa.me/5583999359977"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-foreground"

@@ -203,7 +203,7 @@ export default function ComecePage() {
           if (errorData?.message === "No TXT files found in the ZIP" || errorData?.error === "No TXT files found in the ZIP") {
             setErrors({
               ...errors,
-              file: "O arquivo enviado não é válido para o WhatsWrapped. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 988146652"
+              file: "O arquivo enviado não é válido para o WhatsWrapped. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 99935-9977"
             });
             return;
           }
@@ -242,7 +242,7 @@ export default function ComecePage() {
         if (!responseData.metrics.participants || responseData.metrics.participants.length !== 2) {
           setErrors({
             ...errors,
-            file: "O arquivo enviado não é válido para o WhatsWrapped. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 988146652"
+            file: "O arquivo enviado não é válido para o WhatsWrapped. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 99935-9977"
           });
           return;
         }

@@ -208,7 +208,7 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
   <p>
     Precisa de ajuda? Entre em contato conosco:{" "}
     <a
-      href="https://wa.me/5583988146652"
+      href="https://wa.me/5583999359977"
       target="_blank"
       rel="noopener noreferrer"
       className="underline"
