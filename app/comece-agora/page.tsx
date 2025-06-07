@@ -53,7 +53,15 @@ export default function ComecePage() {
         }
         setFormData({ ...formData, [name]: formattedValue })
       }
-    } else {
+    } 
+    // Formatação para celular
+    else if (name === "cellphone") {
+      let formattedValue = value.replace(/\D/g, "")
+      if (formattedValue.length <= 11) {
+        setFormData({ ...formData, [name]: formattedValue })
+      }
+    }
+    else {
       setFormData({ ...formData, [name]: value })
     }
   }
@@ -147,7 +155,7 @@ export default function ComecePage() {
 
     const phoneDigits = formData.cellphone.replace(/\D/g, "");
     const cellphoneRegex = /^[1-9]{2}9\d{8}$/;
-    if (!cellphoneRegex.test(phoneDigits)) {
+    if (phoneDigits.length !== 11 || !cellphoneRegex.test(phoneDigits)) {
       newErrors.cellphone = "Celular inválido. Use o formato 11999999999";
       valid = false;
     }
