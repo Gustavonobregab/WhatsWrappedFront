@@ -2,15 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-type Context = {
-  params: {
-    paymentId: string;
-  };
-};
-
-export async function GET(req: NextRequest, context: Context) {
+export async function GET(req: NextRequest, { params }: { params: { paymentId: string } }) {
   try {
-    const { paymentId } = context.params;
+    const { paymentId } = params;
 
     const response = await fetch(`${API_URL}/api/v1/payment/status/${paymentId}`, {
       method: "GET",
