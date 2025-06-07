@@ -1,32 +1,16 @@
-import { stripe } from "@/lib/stripe";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 
-export async function POST(req: NextRequest) {
-  const { testeId, email } = await req.json(); 
-
-  console.log("email recebido", email)
-
+export async function POST(req: Request) {
   try {
-    const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price: process.env.STRIPE_PRICE_ID!,
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      payment_method_types: ["card", "boleto"],
-      success_url: `${req.headers.get("origin")}/retrospectiva/${encodeURIComponent(email)}`, 
-      cancel_url: `${req.headers.get("origin")}/`, 
-      metadata: {
-        testeId,
-        email,
-      },
-    });
+    const body = await req.json()
+    console.log("Payment request received:", body)
 
-    return NextResponse.json({ sessionId: session.id });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.error();
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("Payment error:", error)
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    )
   }
 }
