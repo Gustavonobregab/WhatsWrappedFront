@@ -57,17 +57,6 @@ export function getPersonalizedMockData(nameOrEmail: string) {
     customData[1].sender = secondName
   }
 
-  // Adicionar alguma variação nos números para tornar mais realista
-  customData.forEach((user) => {
-    // Adicionar variação de até 10% nos valores numéricos
-    const randomFactor = 0.9 + Math.random() * 0.2 // Entre 0.9 e 1.1
-
-    user.totalMessages = Math.floor(user.totalMessages * randomFactor)
-    user.loveMessages = Math.floor(user.loveMessages * randomFactor)
-    user.apologyMessages = Math.floor(user.apologyMessages * randomFactor)
-    user.messageStreak = Math.floor(user.messageStreak * randomFactor)
-    user.daysStartedConversation = Math.floor(user.daysStartedConversation * randomFactor)
-  })
 
   return customData
 }
