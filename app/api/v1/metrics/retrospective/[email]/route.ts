@@ -8,6 +8,7 @@ export async function GET(req: NextRequest, { params }: { params: { email: strin
   try {
     const response = await fetch(`${API_URL}/api/v1/metrics/retrospective/${encodeURIComponent(email)}`, {
       method: "GET",
+      cache: "no-store",
     });
 
     const data = await response.json();
