@@ -563,7 +563,7 @@ export function StoriesCarousel({
           <span className="text-5xl md:text-5xl">💌</span>
         </div>
         <h3 className="text-2xl md:text-2xl font-bold mb-8 bg-gradient-to-r from-white to-pink-200 text-transparent bg-clip-text">
-          {senderName} deixou esse recado especial para você...
+          Um recado especial para você...
         </h3>
 
         <div className="bg-white/20 rounded-xl p-6 md:p-8 backdrop-blur-sm mb-8 relative overflow-y-auto max-h-[40vh]">
