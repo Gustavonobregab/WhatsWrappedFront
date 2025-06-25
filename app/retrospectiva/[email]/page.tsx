@@ -13,7 +13,6 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
   const [metricsData, setMetricsData] = useState<any[]>([])
   const [loveMessage, setLoveMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isMockData, setIsMockData] = useState<boolean>(false)
   const [isBrowser, setIsBrowser] = useState<boolean>(false)
 
   // Decodificar o email da URL
@@ -65,7 +64,6 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
 
         setMetricsData(validParticipants)
         setLoveMessage(data.text || null)
-        setIsMockData(false)
 
         toast({
           title: "Retrospectiva carregada",
@@ -75,24 +73,6 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
         console.error("Erro ao carregar retrospectiva:", error)
         setError(error.message || "Erro ao carregar a retrospectiva")
 
-        // Tentar usar dados mockados como fallback
-        try {
-          console.log("Tentando usar dados mockados como fallback")
-          const { getPersonalizedMockData } = await import("@/lib/mock-data")
-          const mockData = getPersonalizedMockData(email || "Usuário")
-          setMetricsData(mockData)
-          setIsMockData(true)
-          setError(null) // Limpar o erro já que temos dados mockados
-
-
-          toast({
-            title: "Usando dados de demonstração",
-            description: "Não foi possível carregar seus dados reais. Exibindo dados de demonstração.",
-            variant: "destructive",
-          })
-        } catch (fallbackError) {
-          console.error("Erro ao carregar dados mockados:", fallbackError)
-        }
       } finally {
         setTimeout(() => {
           setIsLoading(false)
@@ -166,17 +146,6 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
               <div className="relative aspect-[9/16] rounded-xl overflow-hidden shadow-2xl max-w-[320px] md:max-w-[340px] lg:max-w-[360px] xl:max-w-[380px] mx-auto">
                 <StoriesCarousel metricsData={metricsData} loveMessage={loveMessage} />
               </div>
-
-              {isMockData && (
-                <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-amber-800 text-sm">
-                  <p className="flex items-center gap-2">
-                    <span className="text-lg">ℹ️</span>
-                    Você está visualizando dados de demonstração. Para ver dados reais, faça o upload do seu arquivo de
-                    conversa.
-                  </p>
-                </div>
-              )}
-
               {error && (
                 <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3 text-red-800 text-sm">
                   <p className="flex items-center gap-2">

@@ -41,7 +41,7 @@ export function StoriesCarousel({
   }, [metricsData, loveMessage])
 
   if (!metricsData || metricsData.length < 2) {
-    return <p>Dados insuficientes para mostrar a retrospectiva.</p>
+    return <p>Ops! Algo deu errado na sua retrospectiva! Contate o suporte, vamos te ajudar!  </p>
   }
 
   const user1 = metricsData[0]

@@ -6,7 +6,6 @@ import { MetricsSection } from "@/components/metrics-section"
 import { HowItWorksSection } from "@/components/how-it-works-section"
 import { PricingSection } from "@/components/pricing-section"
 import { CtaSection } from "@/components/cta-section"
-// import { FeedbackSection } from "@/components/feedback-section"
 import { Footer } from "@/components/footer"
 
 export default function Home() {
@@ -28,9 +27,6 @@ export default function Home() {
             <Link href="#pricing" className="text-sm font-medium hover:text-primary">
               Preço
             </Link>
-            {/* <Link href="#feedback" className="text-sm font-medium hover:text-primary">
-              Feedback
-            </Link> */}
           </nav>
           <Button asChild>
             <Link href="/comece-agora">Comece Agora</Link>
