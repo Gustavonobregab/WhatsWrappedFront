@@ -23,20 +23,15 @@ export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: Payme
           onClick={onSelectCreditCard}
           className="group relative p-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
         >
-          <div className="flex items-center space-x-6">
-            <div className="flex-shrink-0">
-              <div className="w-16 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-md flex items-center justify-center">
-                <CreditCard className="h-6 w-6 text-white" />
-              </div>
+          <div className="flex items-center justify-center gap-6">
+            <div className="w-16 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-md flex items-center justify-center">
+              <CreditCard className="h-6 w-6 text-white" />
             </div>
-            <div className="flex-1 text-left">
+            <div className="text-left">
               <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
                 Cartão de Crédito
               </h3>
               <p className="text-base text-gray-600">Pague com seu cartão de crédito</p>
-            </div>
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 border-2 border-gray-300 rounded-full group-hover:border-blue-500 transition-colors"></div>
             </div>
           </div>
         </button>
@@ -45,24 +40,19 @@ export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: Payme
           onClick={onSelectPix}
           className="group relative p-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl hover:border-green-400 hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
         >
-          <div className="flex items-center space-x-6">
-            <div className="flex-shrink-0">
-              <div className="w-16 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-md flex items-center justify-center">
-                <QrCode className="h-6 w-6 text-white" />
-              </div>
+          <div className="flex items-center justify-center gap-6">
+            <div className="w-16 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-md flex items-center justify-center">
+              <QrCode className="h-6 w-6 text-white" />
             </div>
-            <div className="flex-1 text-left">
+            <div className="text-left">
               <h3 className="text-xl font-semibold text-gray-900 group-hover:text-green-700 transition-colors">
                 PIX
               </h3>
               <p className="text-base text-gray-600">Pague instantaneamente com PIX</p>
-            </div>
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 border-2 border-gray-300 rounded-full group-hover:border-green-500 transition-colors"></div>
             </div>
           </div>
         </button>
       </div>
     </div>
   );
-} 
+}

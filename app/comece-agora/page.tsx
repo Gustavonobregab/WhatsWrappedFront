@@ -10,17 +10,21 @@ import { toast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { PaymentMethodSelector } from "@/components/payment-method-selector"
+import { PixPaymentScreen } from "@/components/pix-payment-screen"
 
+type Step = "INSTRUCTIONS" | "FORM" | "PAYMENT" | "PIX"
 
 export default function ComecePage() {
+  const [step, setStep] = useState<Step>("INSTRUCTIONS")
   const [isLoading, setIsLoading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     cpf: "",
-    cellphone: "", // ← novo campo
-    text: "Obrigado por compartilhar essa jornada comigo!", // Valor padrão para garantir que nunca esteja vazio
+    cellphone: "",
+    text: "Obrigado por compartilhar essa jornada comigo!",
   })
   const [errors, setErrors] = useState({
     name: "",
@@ -29,8 +33,7 @@ export default function ComecePage() {
     cellphone: "", 
     file: "",
   })
-  // Estado para controlar qual tela está sendo exibida
-  const [showInstructions, setShowInstructions] = useState(true)
+  const [userData, setUserData] = useState<any>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
@@ -114,7 +117,6 @@ export default function ComecePage() {
   
     return rev === parseInt(cpf.charAt(10));
   }
-  
 
   const validateForm = () => {
     let valid = true
@@ -145,7 +147,6 @@ export default function ComecePage() {
       newErrors.cpf = "CPF inválido"
       valid = false
     }
-    
 
     // Validação do arquivo
     if (!selectedFile) {
@@ -159,13 +160,10 @@ export default function ComecePage() {
       newErrors.cellphone = "Celular inválido. Use o formato 11999999999";
       valid = false;
     }
-    
-
 
     setErrors(newErrors)
     return valid
   }
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -201,7 +199,6 @@ export default function ComecePage() {
         throw new Error("Formato de resposta inválido da API");
       }
 
-
       if (!response.ok) {
         console.error("Erro na resposta da API:", response.status, responseText);
 
@@ -233,17 +230,15 @@ export default function ComecePage() {
         return;
       }
 
-      sessionStorage.setItem(
-        "userData",
-        JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          cpf: formData.cpf,
-          cellphone: formData.cellphone, // ← aqui também
+      const userDataToStore = {
+        name: formData.name,
+        email: formData.email,
+        cpf: formData.cpf,
+        cellphone: formData.cellphone,
+      };
 
-        }),
-      );
-
+      sessionStorage.setItem("userData", JSON.stringify(userDataToStore));
+      setUserData(userDataToStore);
 
       if (responseData.metrics && responseData.metrics.participants) {
         // Verificar se existem exatamente dois participantes
@@ -259,9 +254,8 @@ export default function ComecePage() {
         sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));
       }
 
-      console.log("Attempting to redirect to payment page");
-      // 🎯 NOVO: Redirecionar para a página de pagamento
-      router.push("/pagamento");
+      console.log("Moving to payment step");
+      setStep("PAYMENT");
 
     } catch (error: any) {
       console.error("Erro ao processar:", error);
@@ -275,40 +269,105 @@ export default function ComecePage() {
     }
   };
 
+  const handlePaymentMethodSelect = async (method: "PIX" | "CREDIT_CARD") => {
+    if (method === "PIX") {
+      setStep("PIX");
+    } else {
+      try {
+        const res = await fetch("/api/v1/payment/card", {
+          method: "POST",
+          body: JSON.stringify({ name: userData.name, email: userData.email }),
+          headers: { "Content-Type": "application/json" },
+        });
+  
+        const data = await res.json();
+        if (data?.url) {
+          window.location.href = data.url;
+        } else {
+          toast({
+            title: "Erro",
+            description: "Erro ao redirecionar para pagamento.",
+            variant: "destructive",
+          });
+        }
+      } catch (err) {
+        toast({
+          title: "Erro",
+          description: "Erro ao iniciar pagamento.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
   
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-600/10 to-background">
-      <div className="container py-8">
-        <div className="flex items-center mb-8">
-          <Button variant="ghost" size="icon" asChild className="mr-2">
-            <Link href="/">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-bold">Vamos criar seu WhatsWrapped! 🎉</h1>
-        </div>
+  const handleBack = () => {
+    switch (step) {
+      case "FORM":
+        setStep("INSTRUCTIONS");
+        break;
+      case "PAYMENT":
+        setStep("FORM");
+        break;
+      case "PIX":
+        setStep("PAYMENT");
+        break;
+    }
+  };
 
-        <div className="max-w-2xl mx-auto">
-          {/* Barra de progresso */}
+  const getStepNumber = (currentStep: Step) => {
+    switch (currentStep) {
+      case "INSTRUCTIONS": return 1;
+      case "FORM": return 2;
+      case "PAYMENT": return 3;
+      case "PIX": return 3;
+      default: return 1;
+    }
+  };
+
+  const getTotalSteps = () => {
+    return step === "PIX" ? 3 : 3;
+  };
+
+  return (
+              <div className="min-h-screen bg-gradient-to-b from-violet-600/10 to-background">
+                <div className="container py-8">
+                  <div className="flex items-center mb-8">
+                    {step !== "INSTRUCTIONS" && (
+                      <Button variant="ghost" size="icon" onClick={handleBack} className="mr-2">
+                        <ArrowLeft className="h-5 w-5" />
+                      </Button>
+                    )}
+                    <h1 className="text-2xl font-bold">Vamos criar seu WhatsWrapped! 🎉</h1>
+                  </div>
+
+                  <div className="max-w-2xl mx-auto">
+                  {/* Barra de progresso */}
           <div className="mb-8">
-            <div className="flex justify-between mb-2">
-              {[1, 2].map((i) => (
+            <div className="flex mb-2">
+              {[1, 2, 3].map((i, idx) => (
                 <div
                   key={i}
-                  className={`w-full h-2 rounded-full ${
-                    i <= 1 ? "bg-gradient-to-r from-pink-500 to-purple-500" : "bg-muted"
-                  }`}
+                  className={`h-4 rounded-full transition-colors duration-300 ${
+                    i <= getStepNumber(step) ? "bg-gradient-to-r from-pink-500 to-purple-500" : "bg-muted"
+                  } ${idx < 2 ? "mr-2" : ""} flex-1`}
                 ></div>
               ))}
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-primary">Cadastro e Upload</span>
-              <span className="text-muted-foreground">Pagamento</span>
+              <span className={getStepNumber(step) >= 1 ? "text-primary" : "text-muted-foreground"}>
+                Instruções
+              </span>
+              <span className={getStepNumber(step) >= 2 ? "text-primary" : "text-muted-foreground"}>
+                Upload
+              </span>
+              <span className={getStepNumber(step) === 3 ? "text-primary" : "text-muted-foreground"}>
+                Pagamento
+              </span>
             </div>
           </div>
-
-          {showInstructions ? (
+          
+          {step === "INSTRUCTIONS" && (
             // Tela de instruções
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
               <h2 className="text-3xl font-bold text-center mb-8">Como exportar sua conversa do WhatsApp</h2>
@@ -386,14 +445,16 @@ export default function ComecePage() {
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-8 px-10"
-                  onClick={() => setShowInstructions(false)}
+                  onClick={() => setStep("FORM")}
                 >
                   <CheckCircle className="mr-2 h-5 w-5" />
                   Já exportei, continuar
                 </Button>
               </div>
             </div>
-          ) : (
+          )}
+
+          {step === "FORM" && (
             // Tela de formulário
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
               <h2 className="text-3xl font-bold text-center mb-8">Preencha seus dados e faça upload do arquivo</h2>
@@ -495,7 +556,6 @@ export default function ComecePage() {
                   {errors.cellphone && <p className="text-xs text-red-500">{errors.cellphone}</p>}
                 </div>
 
-
                 <div className="border-2 border-dashed border-primary/30 rounded-lg p-6 text-center">
                   <div className="space-y-4">
                     <div className="flex justify-center">
@@ -554,6 +614,23 @@ export default function ComecePage() {
                   </Button>
                 </div>
               </form>
+            </div>
+          )}
+
+          {step === "PAYMENT" && (
+            // Tela de seleção de método de pagamento
+            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+              <PaymentMethodSelector
+                onSelectPix={() => handlePaymentMethodSelect("PIX")}
+                onSelectCreditCard={() => handlePaymentMethodSelect("CREDIT_CARD")}
+              />
+            </div>
+          )}
+
+          {step === "PIX" && (
+            // Tela de pagamento PIX
+            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+              <PixPaymentScreen userData={userData} />
             </div>
           )}
 
