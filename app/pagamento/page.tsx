@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PaymentMethodSelector } from "@/components/payment-method-selector";
 import { PixPaymentScreen } from "@/components/pix-payment-screen";
-import { CreditCardPlaceholder } from "@/components/credit-card-placeholder";
 
 export default function PagamentoPage() {
   const [step, setStep] = useState<"SELECT" | "PIX" | "CREDIT_CARD">("SELECT");
@@ -19,6 +18,22 @@ export default function PagamentoPage() {
     }
     setUserData(JSON.parse(userDataStr));
   }, [router]);
+
+  const handleCardPayment = async () => {
+    const res = await fetch("/api/v1/payment/card", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert("Erro ao redirecionar para o pagamento com cartão.");
+    }
+  };
 
   if (!userData) {
     return (
@@ -35,14 +50,11 @@ export default function PagamentoPage() {
         {step === "SELECT" && (
           <PaymentMethodSelector
             onSelectPix={() => setStep("PIX")}
-            onSelectCreditCard={() => setStep("CREDIT_CARD")}
+            onSelectCreditCard={handleCardPayment}
           />
         )}
         {step === "PIX" && (
           <PixPaymentScreen userData={userData} />
-        )}
-        {step === "CREDIT_CARD" && (
-          <CreditCardPlaceholder onBack={() => setStep("SELECT")} />
         )}
       </div>
     </div>
