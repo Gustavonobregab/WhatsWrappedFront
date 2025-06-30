@@ -281,8 +281,9 @@ export default function ComecePage() {
         });
   
         const data = await res.json();
-        if (data?.url) {
-          window.location.href = data.url;
+        if (data?.data?.checkoutUrl) {
+          window.location.href = data.data.checkoutUrl;
+        
         } else {
           toast({
             title: "Erro",

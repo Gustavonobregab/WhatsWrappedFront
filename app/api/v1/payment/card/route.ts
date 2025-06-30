@@ -1,32 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-05-28.basil",
-});
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email } = await req.json();
+    const body = await req.json();
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      mode: "payment",
-      customer_email: email,
-      line_items: [
-        {
-          price: "price_1RHto6FRobeeSk133ILNtspx", // PRICE ID 
-          quantity: 1,
-        },
-      ],
-      metadata: { name },
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/retrospectiva/${encodeURIComponent(email)}?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/pagamento?cancel=true`,
+    const response = await fetch(`${API_URL}/api/v1/payment/stripe`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
     });
 
-    return NextResponse.json({ url: session.url });
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json({ error: data.message || "Erro ao iniciar pagamento com cartão" }, { status: 400 });
+    }
+
+    return NextResponse.json(data);
   } catch (error: any) {
-    console.error("Erro ao criar sessão Stripe:", error);
-    return NextResponse.json({ error: "Erro ao criar pagamento" }, { status: 500 });
+    console.error("Erro ao redirecionar para pagamento com cartão:", error);
+    return NextResponse.json({ error: "Erro interno no servidor" }, { status: 500 });
   }
 }
