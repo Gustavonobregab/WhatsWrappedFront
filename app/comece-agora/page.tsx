@@ -339,7 +339,7 @@ export default function ComecePage() {
                         <ArrowLeft className="h-5 w-5" />
                       </Button>
                     )}
-                    <h1 className="text-2xl font-bold">Vamos criar seu WhatsWrapped! 🎉</h1>
+                    <h1 className="text-2xl font-bold">Vamos criar seu ZapLove! 🎉</h1>
                   </div>
 
                   <div className="max-w-2xl mx-auto">
