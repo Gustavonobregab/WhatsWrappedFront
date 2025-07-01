@@ -252,7 +252,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
             <h2 className="text-3xl md:text-4xl font-bold mb-8">Vocês são muito consistentes...</h2>
-            <p className="text-xl md:text-2xl font-medium">Vamos ver por quantos dias seguidos vocês conversaram! 🔥</p>
+            <p className="text-xl md:text-2xl font-medium">Vamos ver quantos dias seguidos vocês conversaram! 🔥</p>
             <div className="mt-10 animate-pulse">
               <span className="text-5xl md:text-6xl">🔥</span>
             </div>
@@ -297,7 +297,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
             </div>
 
             <p className="text-xl md:text-3xl font-extrabold bg-gradient-to-r from-yellow-400 to-orange-400 text-transparent bg-clip-text text-center">
-              {user1.messageStreak > 300 ? "IMPRESSIONANTE!" : "IMPRESSIONANTE!"}
+              {user1.messageStreak > 300 ? "Aqui não tem vácuo!" : "Aqui não tem vácuo!"}
             </p>
           </div>
         </div>
@@ -330,13 +330,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-            <h3 className="text-3xl md:text-4xl font-bold mb-8 text-center">Quem pede mais desculpas?</h3>
-
-            <div className="flex items-center justify-center mb-8">
-              <span className="text-3xl md:text-4xl">🙏</span>
-              <span className="text-3xl md:text-4xl mx-3 font-bold">DESCULPA</span>
-              <span className="text-3xl md:text-4xl">🙏</span>
-            </div>
+            <h3 className="text-3xl md:text-4xl font-bold mb-8 text-center">Quem pede mais desculpas? 🙏🏻</h3>
 
             <div className="w-full space-y-6 max-w-md">
               <div>
@@ -352,7 +346,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
                     }}
                   ></div>
                   <div className="absolute inset-0 flex items-center justify-end pr-3">
-                    <span className="text-xl md:text-2xl">🙏</span>
+                    <span className="text-xl md:text-2xl">🙈</span>
                   </div>
                 </div>
               </div>
@@ -370,7 +364,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
                     }}
                   ></div>
                   <div className="absolute inset-0 flex items-center justify-end pr-3">
-                    <span className="text-xl md:text-2xl">🙏</span>
+                    <span className="text-xl md:text-2xl">😅</span>
                   </div>
                 </div>
               </div>
@@ -378,7 +372,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
 
             <div className="mt-10 text-center">
               <span className="text-2xl md:text-3xl font-extrabold text-white">
-                {apologyWinner} pede mais desculpas!
+                {apologyWinner} não tem medo de reconhecer!
               </span>
             </div>
           </div>
