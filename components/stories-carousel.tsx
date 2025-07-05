@@ -301,7 +301,7 @@ export function StoriesCarousel({
         </div>
 
         <p className="text-xl md:text-2xl font-extrabold bg-gradient-to-r from-yellow-400 to-orange-400 text-transparent bg-clip-text text-center">
-          {user1.messageStreak > 300 ? "QUASE UM ANO COMPLETO!" : "IMPRESSIONANTE!"}
+          {user1.messageStreak > 300 ? "Ë MUITO TEMPO GENTE!" : "IMPRESSIONANTE!"}
         </p>
       </div>
     </div>
