@@ -19,6 +19,11 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const previousPlanRef = useRef<string | null>(null);
 
+  // Reset scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const createPayment = async (userData: any) => {
     try {
       const response = await fetch("/api/v1/payment/pix/", {

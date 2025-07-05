@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, CheckCircle } from "lucide-react"
 
@@ -10,6 +11,11 @@ interface PlanStepProps {
 }
 
 export function PlanStep({ selectedPlan, onPlanSelect, onContinue }: PlanStepProps) {
+  // Reset scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   return (
     <div className="bg-white rounded-xl shadow-md p-6 mb-6">
       <h2 className="text-3xl font-bold text-center mb-8">Escolha seu ZapLove</h2>

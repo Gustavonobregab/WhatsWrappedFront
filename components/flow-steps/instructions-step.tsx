@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { CheckCircle } from "lucide-react"
 
@@ -8,6 +9,11 @@ interface InstructionsStepProps {
 }
 
 export function InstructionsStep({ onContinue }: InstructionsStepProps) {
+  // Reset scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   return (
     <div className="bg-white rounded-xl shadow-md p-6 mb-6 text-center">
       <h2 className="text-3xl font-bold mb-8">Como exportar sua conversa do WhatsApp</h2>
