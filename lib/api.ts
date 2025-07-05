@@ -69,6 +69,8 @@ export interface PaymentRequest {
   name: string
   email: string
   cpf: string
+  cellphone?: string
+  plan?: "BASIC" | "PREMIUM"
 }
 
 export interface RegisterRequest {

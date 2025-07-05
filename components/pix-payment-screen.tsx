@@ -17,6 +17,7 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
   const [timeLeft, setTimeLeft] = useState<number>(300);
   const router = useRouter();
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const previousPlanRef = useRef<string | null>(null);
 
   const createPayment = async (userData: any) => {
     try {
@@ -27,7 +28,8 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
           name: userData.name,
           email: userData.email,
           cpf: userData.cpf.replace(/\D/g, ""),
-          cellphone: userData.cellphone.replace(/\D/g, "") 
+          cellphone: userData.cellphone.replace(/\D/g, ""),
+          plan: userData.plan?.toLowerCase()
         }),
       });
 
@@ -37,6 +39,7 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
       setPaymentData(result.data);
       sessionStorage.setItem("paymentData", JSON.stringify(result.data));
       sessionStorage.setItem("paymentStart", Date.now().toString());
+      sessionStorage.setItem("currentPlan", userData.plan);
       setTimeLeft(300);
       startStatusPolling(result.data.paymentId);
     } catch (err) {
@@ -48,6 +51,29 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
 
   useEffect(() => {
     const existingPaymentData = sessionStorage.getItem("paymentData");
+    const storedPlan = sessionStorage.getItem("currentPlan");
+    const currentPlan = userData?.plan;
+
+    if (storedPlan && currentPlan && storedPlan !== currentPlan) {
+      console.log("Plano alterado detectado:", { storedPlan, currentPlan });
+      
+      toast({ 
+        title: "Plano alterado", 
+        description: "Gerando novo pagamento com o plano selecionado." 
+      });
+      
+      sessionStorage.removeItem("paymentData");
+      sessionStorage.removeItem("paymentStart");
+      sessionStorage.removeItem("currentPlan");
+      
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
+      
+      createPayment(userData);
+      return;
+    }
 
     if (existingPaymentData) {
       const parsedData = JSON.parse(existingPaymentData);
@@ -60,6 +86,7 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
         toast({ title: "Tempo expirado", description: "Você não finalizou o pagamento a tempo." });
         sessionStorage.removeItem("paymentData");
         sessionStorage.removeItem("paymentStart");
+        sessionStorage.removeItem("currentPlan");
         router.push("/comece-agora");
         return;
       }
@@ -70,6 +97,8 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
     } else {
       createPayment(userData);
     }
+
+    previousPlanRef.current = currentPlan;
   }, [userData, router]);
 
   useEffect(() => {
@@ -82,6 +111,7 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
           toast({ title: "Tempo expirado", description: "Você não finalizou o pagamento a tempo." });
           sessionStorage.removeItem("paymentData");
           sessionStorage.removeItem("paymentStart");
+          sessionStorage.removeItem("currentPlan");
           router.push("/comece-agora");
           return 0;
         }
@@ -104,6 +134,7 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
           clearInterval(pollIntervalRef.current!);
           sessionStorage.removeItem("paymentData");
           sessionStorage.removeItem("paymentStart");
+          sessionStorage.removeItem("currentPlan");
           setPaymentStatus("PAID");
 
           toast({ title: "Pagamento confirmado!", description: "Redirecionando..." });
@@ -159,8 +190,6 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
         <div className="inline-block bg-pink-100 text-pink-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-2 shadow-sm">
           💘 Promoção Dia dos Namorados
         </div>
-        <p className="text-2xl font-bold text-black">R$ 19,90</p>
-        <p className="text-sm text-muted-foreground">Oferta por tempo limitado</p>
       </div>
 
       <div className="flex justify-center mb-6">

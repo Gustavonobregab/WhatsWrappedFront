@@ -13,11 +13,6 @@ export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: Payme
         <p className="text-lg text-muted-foreground">Selecione como você prefere finalizar sua compra</p>
       </div>
 
-      <div className="text-center mb-8">
-        <p className="text-3xl font-bold text-black">R$ 19,90</p>
-        <p className="text-base text-muted-foreground">Oferta por tempo limitado</p>
-      </div>
-
       <div className="grid gap-6 w-full max-w-md">
         <button
           onClick={onSelectCreditCard}

@@ -1,24 +1,27 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
-import Link from "next/link"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Upload, Loader2, ArrowRight, CheckCircle } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { PaymentMethodSelector } from "@/components/payment-method-selector"
 import { PixPaymentScreen } from "@/components/pix-payment-screen"
+import { 
+  InstructionsStep, 
+  FormStep, 
+  PlanStep, 
+  ProgressBar 
+} from "@/components/flow-steps"
 
-type Step = "INSTRUCTIONS" | "FORM" | "PAYMENT" | "PIX"
+type Step = "INSTRUCTIONS" | "FORM" | "PLAN" | "PAYMENT" | "PIX"
 
 export default function ComecePage() {
   const [step, setStep] = useState<Step>("INSTRUCTIONS")
   const [isLoading, setIsLoading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedPlan, setSelectedPlan] = useState<"BASIC" | "PREMIUM" | null>("PREMIUM")
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -35,9 +38,19 @@ export default function ComecePage() {
   })
   const [userData, setUserData] = useState<any>(null)
 
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
+  // Load userData from sessionStorage on component mount
+  useEffect(() => {
+    const storedUserData = sessionStorage.getItem("userData");
+    if (storedUserData) {
+      const parsedUserData = JSON.parse(storedUserData);
+      setUserData(parsedUserData);
+      setSelectedPlan(parsedUserData.plan || "PREMIUM");
+    }
+  }, []);
+
+  // Event handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
 
@@ -92,6 +105,24 @@ export default function ComecePage() {
     setSelectedFile(file)
     setErrors({ ...errors, file: "" })
   }
+
+  const handlePlanSelection = (plan: "BASIC" | "PREMIUM") => {
+    setSelectedPlan(plan);
+    // Update userData with the selected plan
+    const updatedUserData = {
+      ...userData,
+      plan: plan
+    };
+    setUserData(updatedUserData);
+    sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
+    
+    // Se estivermos na etapa PIX, limpar dados de pagamento para forçar novo pagamento
+    if (step === "PIX") {
+      sessionStorage.removeItem("paymentData");
+      sessionStorage.removeItem("paymentStart");
+      sessionStorage.removeItem("currentPlan");
+    }
+  };
 
   function isValidCPF(cpf: string): boolean {
     cpf = cpf.replace(/[^\d]+/g, '');
@@ -180,6 +211,7 @@ export default function ComecePage() {
       formDataToSend.append("email", formData.email);
       formDataToSend.append("cpf", formData.cpf.replace(/\D/g, ""));
       formDataToSend.append("text", formData.text.trim() || "Obrigado por compartilhar essa jornada comigo!");
+      formDataToSend.append("plan", selectedPlan || "BASIC");
       if (selectedFile) {
         formDataToSend.append("file", selectedFile);
       }
@@ -235,6 +267,7 @@ export default function ComecePage() {
         email: formData.email,
         cpf: formData.cpf,
         cellphone: formData.cellphone,
+        plan: selectedPlan || "BASIC",
       };
 
       sessionStorage.setItem("userData", JSON.stringify(userDataToStore));
@@ -254,8 +287,8 @@ export default function ComecePage() {
         sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));
       }
 
-      console.log("Moving to payment step");
-      setStep("PAYMENT");
+      console.log("Moving to plan step");
+      setStep("PLAN");
 
     } catch (error: any) {
       console.error("Erro ao processar:", error);
@@ -276,14 +309,17 @@ export default function ComecePage() {
       try {
         const res = await fetch("/api/v1/payment/card", {
           method: "POST",
-          body: JSON.stringify({ name: userData.name, email: userData.email }),
+          body: JSON.stringify({ 
+            name: userData.name, 
+            email: userData.email,
+            plan: userData.plan?.toLowerCase() 
+          }),
           headers: { "Content-Type": "application/json" },
         });
   
         const data = await res.json();
         if (data?.data?.checkoutUrl) {
           window.location.href = data.data.checkoutUrl;
-        
         } else {
           toast({
             title: "Erro",
@@ -300,18 +336,44 @@ export default function ComecePage() {
       }
     }
   };
-  
 
   const handleBack = () => {
     switch (step) {
       case "FORM":
+        // Limpar dados quando voltar para instruções
         setStep("INSTRUCTIONS");
+        setSelectedFile(null);
+        setFormData({
+          name: "",
+          email: "",
+          cpf: "",
+          cellphone: "",
+          text: "Obrigado por compartilhar essa jornada comigo!",
+        });
+        setErrors({
+          name: "",
+          email: "",
+          cpf: "",
+          cellphone: "",
+          file: "",
+        });
+        setUserData(null);
+        setSelectedPlan("PREMIUM");
+        // Limpar sessionStorage
+        sessionStorage.removeItem("userData");
+        sessionStorage.removeItem("metricsData");
+        sessionStorage.removeItem("paymentData");
+        sessionStorage.removeItem("paymentStart");
+        break;
+      case "PLAN":
+        setStep("FORM");
         break;
       case "PAYMENT":
-        setStep("FORM");
+        setStep("PLAN");
         break;
       case "PIX":
         setStep("PAYMENT");
+        // Não limpar dados de pagamento aqui para permitir que o usuário volte e altere o plano
         break;
     }
   };
@@ -320,287 +382,55 @@ export default function ComecePage() {
     switch (currentStep) {
       case "INSTRUCTIONS": return 1;
       case "FORM": return 2;
-      case "PAYMENT": return 3;
-      case "PIX": return 3;
+      case "PLAN": return 3;
+      case "PAYMENT": return 4;
+      case "PIX": return 4;
       default: return 1;
     }
   };
 
-  const getTotalSteps = () => {
-    return step === "PIX" ? 3 : 3;
-  };
-
   return (
-              <div className="min-h-screen bg-gradient-to-b from-violet-600/10 to-background">
-                <div className="container py-8">
-                  <div className="flex items-center mb-8">
-                    {step !== "INSTRUCTIONS" && (
-                      <Button variant="ghost" size="icon" onClick={handleBack} className="mr-2">
-                        <ArrowLeft className="h-5 w-5" />
-                      </Button>
-                    )}
-                    <h1 className="text-2xl font-bold">Vamos criar seu ZapLove! 🎉</h1>
-                  </div>
+    <div className="min-h-screen bg-gradient-to-b from-violet-600/10 to-background">
+      <div className="container py-8">
+        <div className="flex items-center mb-8">
+          {step !== "INSTRUCTIONS" && (
+            <Button variant="ghost" size="icon" onClick={handleBack} className="mr-2">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          )}
+          <h1 className="text-2xl font-bold">Vamos criar seu ZapLove! 🎉</h1>
+        </div>
 
-                  <div className="max-w-2xl mx-auto">
-                  {/* Barra de progresso */}
-          <div className="mb-8">
-            <div className="flex mb-2">
-              {[1, 2, 3].map((i, idx) => (
-                <div
-                  key={i}
-                  className={`h-4 rounded-full transition-colors duration-300 ${
-                    i <= getStepNumber(step) ? "bg-gradient-to-r from-pink-500 to-purple-500" : "bg-muted"
-                  } ${idx < 2 ? "mr-2" : ""} flex-1`}
-                ></div>
-              ))}
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className={getStepNumber(step) >= 1 ? "text-primary" : "text-muted-foreground"}>
-                Instruções
-              </span>
-              <span className={getStepNumber(step) >= 2 ? "text-primary" : "text-muted-foreground"}>
-                Upload
-              </span>
-              <span className={getStepNumber(step) === 3 ? "text-primary" : "text-muted-foreground"}>
-                Pagamento
-              </span>
-            </div>
-          </div>
+        <div className="max-w-2xl mx-auto">
+          {/* Barra de progresso */}
+          <ProgressBar currentStep={step} totalSteps={4} />
           
+          {/* Renderizar etapa atual */}
           {step === "INSTRUCTIONS" && (
-  <div className="bg-white rounded-xl shadow-md p-6 mb-6 text-center">
-    <h2 className="text-3xl font-bold mb-8">Como exportar sua conversa do WhatsApp</h2>
-
-    <div className="flex flex-col gap-12 items-center">
-      {/* Passo 1 */}
-      <div className="space-y-4 max-w-md">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xl font-bold mx-auto">
-          1
-        </div>
-        <h4 className="text-xl font-bold">Abra a conversa no WhatsApp</h4>
-        <p className="text-muted-foreground">
-          Selecione a conversa que você deseja analisar no seu WhatsApp.
-        </p>
-        <img
-          src="/whatsapp-chat.png"
-          alt="Abrir conversa no WhatsApp"
-          className="rounded-xl border-4 border-background shadow-lg w-full max-w-[620px] mx-auto"
-        />
-      </div>
-
-      {/* Passo 2 */}
-      <div className="space-y-4 max-w-md">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xl font-bold mx-auto">
-          2
-        </div>
-        <h4 className="text-xl font-bold">Clique em exportar conversa</h4>
-        <p className="text-muted-foreground">
-          Toque nos três pontos no canto superior direito, role para baixo e selecione 'Exportar conversa'.
-        </p>
-        <img
-          src="/whatsapp-export.png"
-          alt="Exportar chat no WhatsApp"
-          className="rounded-xl border-4 border-background shadow-lg w-full max-w-[620px] mx-auto"
-        />
-      </div>
-
-      {/* Passo 3 */}
-      <div className="space-y-4 max-w-md">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xl font-bold mx-auto">
-          3
-        </div>
-        <h4 className="text-xl font-bold">Escolha "Sem mídia"</h4>
-        <p className="text-muted-foreground">
-          Selecione a opção 'Sem mídia' para exportar apenas o texto das conversas, criando um arquivo menor e mais fácil de processar.
-        </p>
-        <img
-          src="/whatsapp-sem-midia.png"
-          alt="Escolher sem mídia"
-          className="rounded-xl border-4 border-background shadow-lg w-full max-w-[620px] mx-auto"
-        />
-      </div>
-    </div>
-
-    <div className="mt-12">
-      <Button
-        size="lg"
-        className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-8 px-10"
-        onClick={() => setStep("FORM")}
-      >
-        <CheckCircle className="mr-2 h-5 w-5" />
-        Já exportei, continuar
-      </Button>
-    </div>
-  </div>
-)}
-
+            <InstructionsStep onContinue={() => setStep("FORM")} />
+          )}
 
           {step === "FORM" && (
-            // Tela de formulário
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <h2 className="text-3xl font-bold text-center mb-8">Preencha seus dados e faça upload do arquivo</h2>
+            <FormStep
+              formData={formData}
+              errors={errors}
+              selectedFile={selectedFile}
+              isLoading={isLoading}
+              onInputChange={handleInputChange}
+              onFileChange={handleFileChange}
+              onSubmit={handleSubmit}
+            />
+          )}
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Mensagem de amor surpresa - Agora como primeiro campo */}
-                <div className="space-y-2">
-                  <Label htmlFor="text" className="flex items-center gap-2 text-lg">
-                    <span className="bg-gradient-to-r from-pink-500 to-red-500 text-transparent bg-clip-text font-bold text-xl">
-                      ❤️ Mensagem de amor surpresa ❤️
-                    </span>
-                    <span className="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded-full animate-pulse">
-                      Especial!
-                    </span>
-                  </Label>
-                  <div className="relative">
-                    <Textarea
-                      id="text"
-                      name="text"
-                      placeholder="Querido(a), cada mensagem que trocamos é um pedacinho da nossa história. Obrigado(a) por fazer parte da minha vida e por todos os momentos que compartilhamos através dessas conversas..."
-                      value={formData.text}
-                      onChange={handleInputChange}
-                      className="text-lg min-h-[120px] resize-none border-pink-200 focus-visible:ring-pink-400 bg-gradient-to-br from-pink-50 to-white"
-                      maxLength={199}
-                    />
-                    <div className="absolute bottom-2 right-2 text-sm text-pink-500 font-medium">
-                      {formData.text.length}/199
-                    </div>
-                  </div>
-                  <div className="bg-pink-50 p-3 rounded-lg border border-pink-100">
-                    <p className="text-sm text-pink-700 flex items-center gap-2">
-                      <span className="text-lg">✨</span>
-                      Esta mensagem especial será exibida como uma surpresa romântica no final do WhatsWrapped, criando
-                      um momento inesquecível para quem receber.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Campos de nome, email e CPF */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-lg">
-                      Nome completo
-                    </Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="Seu nome completo"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className={`text-lg py-6 ${errors.name ? "border-red-500" : ""}`}
-                    />
-                    {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-lg">
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className={`text-lg py-6 ${errors.email ? "border-red-500" : ""}`}
-                    />
-                    {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
-                  </div>
-
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="cpf" className="text-lg">
-                      CPF
-                    </Label>
-                    <Input
-                      id="cpf"
-                      name="cpf"
-                      placeholder="999.999.999-99"
-                      value={formData.cpf}
-                      onChange={handleInputChange}
-                      className={`text-lg py-6 ${errors.cpf ? "border-red-500" : ""}`}
-                    />
-                    {errors.cpf && <p className="text-xs text-red-500">{errors.cpf}</p>}
-                  </div>
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="cellphone" className="text-lg">
-                    Celular (com DDD)
-                  </Label>
-                  <Input
-                    id="cellphone"
-                    name="cellphone"
-                    placeholder="11999999999"
-                    value={formData.cellphone}
-                    onChange={handleInputChange}
-                    className={`text-lg py-6 ${errors.cellphone ? "border-red-500" : ""}`}
-                  />
-                  {errors.cellphone && <p className="text-xs text-red-500">{errors.cellphone}</p>}
-                </div>
-
-                <div className="border-2 border-dashed border-primary/30 rounded-lg p-6 text-center">
-                  <div className="space-y-4">
-                    <div className="flex justify-center">
-                      <Upload className="h-16 w-16 text-primary" />
-                    </div>
-                    <h3 className="text-2xl font-medium">Arraste seu arquivo aqui ou clique para selecionar</h3>
-                    <p className="text-sm text-muted-foreground">Arquivos .zip do WhatsApp (máx. 30MB)</p>
-                    <div className="relative">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        accept=".zip"
-                        onChange={handleFileChange}
-                        disabled={isLoading}
-                      />
-                      <Button
-                        type="button"
-                        className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
-                        disabled={isLoading}
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        {selectedFile ? "Arquivo selecionado: " + selectedFile.name : "Selecionar Arquivo"}
-                      </Button>
-                    </div>
-                    {errors.file && (
-                      <p className="text-sm text-red-500 font-medium mt-2">
-                        {errors.file}
-                      </p>
-                    )}
-                    {selectedFile && !errors.file && (
-                      <p className="text-sm text-green-600">
-                        Arquivo selecionado: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="pt-6">
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Processando...
-                      </>
-                    ) : (
-                      <>
-                        Continuar
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </div>
+          {step === "PLAN" && (
+            <PlanStep
+              selectedPlan={selectedPlan}
+              onPlanSelect={handlePlanSelection}
+              onContinue={() => setStep("PAYMENT")}
+            />
           )}
 
           {step === "PAYMENT" && (
-            // Tela de seleção de método de pagamento
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
               <PaymentMethodSelector
                 onSelectPix={() => handlePaymentMethodSelect("PIX")}
@@ -610,7 +440,6 @@ export default function ComecePage() {
           )}
 
           {step === "PIX" && (
-            // Tela de pagamento PIX
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
               <PixPaymentScreen userData={userData} />
             </div>
@@ -630,4 +459,4 @@ export default function ComecePage() {
       </div>
     </div>
   )
-}
+} 
