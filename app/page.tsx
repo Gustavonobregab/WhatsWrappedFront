@@ -8,6 +8,14 @@ import { PricingSection } from "@/components/pricing-section"
 import { CtaSection } from "@/components/cta-section"
 import { Footer } from "@/components/footer"
 
+declare global {
+  interface Window {
+    ttq: {
+      track: (event: string, data?: Record<string, any>) => void;
+    };
+  }
+}
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -28,9 +36,22 @@ export default function Home() {
               Preço
             </Link>
           </nav>
-          <Button asChild>
-            <Link href="/comece-agora">Comece Agora</Link>
-          </Button>
+          <div
+  onClick={() => {
+    if (typeof window !== 'undefined' && window.ttq) {
+      window.ttq.track('ViewContent', {
+        content_id: 'plano-premium', // Ou 'plano-basic' conforme necessário
+        content_type: 'product',
+        value: 26.90,
+        currency: 'BRL'
+      });
+    }
+  }}
+>
+  <Button asChild>
+    <Link href="/comece-agora">Comece Agora</Link>
+  </Button>
+</div>  
         </div>
       </header>
       <main className="flex-1">
