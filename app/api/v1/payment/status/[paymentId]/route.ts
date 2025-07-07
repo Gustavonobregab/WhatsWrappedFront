@@ -8,6 +8,8 @@ export async function GET(req: NextRequest, { params }: { params: { paymentId: s
 
     const response = await fetch(`${API_URL}/api/v1/payment/status/${paymentId}`, {
       method: "GET",
+      cache: "no-store",
+
     });
 
     const data = await response.json();

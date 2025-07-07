@@ -6,23 +6,35 @@ import { Button } from "@/components/ui/button";
 import { Copy, Check, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 
-interface PixPaymentScreenProps {
-  userData: any;
-}
-
-export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
+export function PixPaymentScreen() {
+  const [userData, setUserData] = useState<any>(null);
   const [paymentData, setPaymentData] = useState<any>(null);
   const [paymentStatus, setPaymentStatus] = useState("PENDING");
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(300);
   const router = useRouter();
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const previousPlanRef = useRef<string | null>(null);
 
   // Reset scroll to top when component mounts
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  // Carregar userData do sessionStorage
+  useEffect(() => {
+    const storedUserData = sessionStorage.getItem("userData");
+    if (storedUserData) {
+      try {
+        const parsedUserData = JSON.parse(storedUserData);
+        setUserData(parsedUserData);
+      } catch (error) {
+        console.error("Erro ao carregar dados do usuário:", error);
+        router.push("/comece-agora");
+      }
+    } else {
+      router.push("/comece-agora");
+    }
+  }, [router]);
 
   const createPayment = async (userData: any) => {
     try {
@@ -54,32 +66,44 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
     }
   };
 
+  // useEffect principal para gerenciar pagamento
   useEffect(() => {
+    if (!userData) return; // Aguarda userData estar disponível
+
     const existingPaymentData = sessionStorage.getItem("paymentData");
     const storedPlan = sessionStorage.getItem("currentPlan");
-    const currentPlan = userData?.plan;
+    const currentPlan = userData.plan;
 
-    if (storedPlan && currentPlan && storedPlan !== currentPlan) {
-      console.log("Plano alterado detectado:", { storedPlan, currentPlan });
-      
-      toast({ 
-        title: "Plano alterado", 
-        description: "Gerando novo pagamento com o plano selecionado." 
-      });
-      
+    // Se não existir pagamento OU se o plano mudou
+    if (!existingPaymentData || (storedPlan && currentPlan && storedPlan !== currentPlan)) {
+      // Limpar dados antigos
       sessionStorage.removeItem("paymentData");
       sessionStorage.removeItem("paymentStart");
       sessionStorage.removeItem("currentPlan");
       
+      // Salvar novo plano
+      sessionStorage.setItem("currentPlan", currentPlan);
+      
+      // Cancelar polling ativo
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
         pollIntervalRef.current = null;
       }
       
+      // Se plano mudou, mostrar toast
+      if (storedPlan && currentPlan && storedPlan !== currentPlan) {
+        toast({ 
+          title: "Plano alterado", 
+          description: "Gerando novo pagamento com o plano selecionado." 
+        });
+      }
+      
+      // Criar novo pagamento
       createPayment(userData);
       return;
     }
 
+    // Se existir pagamento e tempo ainda válido, reaproveitar
     if (existingPaymentData) {
       const parsedData = JSON.parse(existingPaymentData);
       const startTime = Number(sessionStorage.getItem("paymentStart"));
@@ -99,11 +123,7 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
       setPaymentData(parsedData);
       setTimeLeft(remaining);
       startStatusPolling(parsedData.paymentId);
-    } else {
-      createPayment(userData);
     }
-
-    previousPlanRef.current = currentPlan;
   }, [userData, router]);
 
   useEffect(() => {
@@ -145,7 +165,7 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
           toast({ title: "Pagamento confirmado!", description: "Redirecionando..." });
 
           setTimeout(() => {
-            const email = JSON.parse(sessionStorage.getItem("userData") || "{}").email;
+            const email = userData?.email || JSON.parse(sessionStorage.getItem("userData") || "{}").email;
             router.push(`/retrospectiva/${encodeURIComponent(email)}`);
           }, 2000);
         }
@@ -169,7 +189,7 @@ export function PixPaymentScreen({ userData }: PixPaymentScreenProps) {
     return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
-  if (!paymentData) {
+  if (!userData || !paymentData) {
     return (
       <div className="flex items-center justify-center py-16">
         <Loader2 className="h-10 w-10 animate-spin text-indigo-600" />

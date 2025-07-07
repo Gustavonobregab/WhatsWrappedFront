@@ -441,7 +441,7 @@ export default function ComecePage() {
 
           {step === "PIX" && (
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <PixPaymentScreen userData={userData} />
+              <PixPaymentScreen />
             </div>
           )}
 
