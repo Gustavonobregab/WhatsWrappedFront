@@ -16,7 +16,7 @@ export function InstructionsStep({ onContinue }: InstructionsStepProps) {
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 mb-6 text-center">
-      <h2 className="text-3xl font-bold mb-8">Como exportar sua conversa do WhatsApp</h2>
+      <h2 className="text-3xl font-bold mb-8">Como exportar sua conversa</h2>
 
       <div className="flex flex-col gap-12 items-center">
         {/* Passo 1 */}
@@ -24,13 +24,13 @@ export function InstructionsStep({ onContinue }: InstructionsStepProps) {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xl font-bold mx-auto">
             1
           </div>
-          <h4 className="text-xl font-bold">Abra a conversa no WhatsApp</h4>
+          <h4 className="text-xl font-bold">Abra a conversa no seu aplicativo de mensagens</h4>
           <p className="text-muted-foreground">
-            Selecione a conversa que você deseja analisar no seu WhatsApp.
+            Selecione a conversa que você deseja exportar.
           </p>
           <img
             src="/whatsapp-chat.png"
-            alt="Abrir conversa no WhatsApp"
+            alt="Abrir conversa"
             className="rounded-xl border-4 border-background shadow-lg w-full max-w-[620px] mx-auto"
           />
         </div>
@@ -42,11 +42,11 @@ export function InstructionsStep({ onContinue }: InstructionsStepProps) {
           </div>
           <h4 className="text-xl font-bold">Clique em exportar conversa</h4>
           <p className="text-muted-foreground">
-            Toque nos três pontos no canto superior direito, role para baixo e selecione 'Exportar conversa'.
+            Toque no menu de opções, role para baixo e selecione 'Exportar conversa'.
           </p>
           <img
             src="/whatsapp-export.png"
-            alt="Exportar chat no WhatsApp"
+            alt="Exportar conversa"
             className="rounded-xl border-4 border-background shadow-lg w-full max-w-[620px] mx-auto"
           />
         </div>

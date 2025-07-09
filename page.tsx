@@ -86,7 +86,7 @@ export default function ComecePage() {
 
     // Verificar se é um arquivo ZIP
     if (file.type !== "application/zip" && !file.name.endsWith(".zip")) {
-      setErrors({ ...errors, file: "Por favor, selecione um arquivo ZIP exportado do WhatsApp." })
+      setErrors({ ...errors, file: "Por favor, selecione um arquivo ZIP exportado do seu aplicativo de mensagens." })
       return
     }
 
@@ -161,7 +161,7 @@ export default function ComecePage() {
 
     // Validação do arquivo
     if (!selectedFile) {
-      newErrors.file = "Por favor, selecione um arquivo de backup do WhatsApp"
+      newErrors.file = "Por favor, selecione um arquivo de backup do seu aplicativo de mensagens"
       valid = false
     }
 

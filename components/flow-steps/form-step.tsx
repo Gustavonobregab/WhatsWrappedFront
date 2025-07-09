@@ -158,7 +158,7 @@ export function FormStep({
               <Upload className="h-16 w-16 text-primary" />
             </div>
             <h3 className="text-2xl font-medium">Arraste seu arquivo aqui ou clique para selecionar</h3>
-            <p className="text-sm text-muted-foreground">Arquivos .zip do WhatsApp (máx. 30MB)</p>
+            <p className="text-sm text-muted-foreground">Arquivos .zip exportados do seu aplicativo de mensagens (máx. 30MB)</p>
             <div className="relative">
               <input
                 ref={fileInputRef}
