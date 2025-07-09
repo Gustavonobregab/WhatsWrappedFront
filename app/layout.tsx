@@ -8,9 +8,9 @@ const inter = Inter({ subsets: ["latin"] })
 
 // Atualizar o metadata para incluir apenas o favicon fornecido
 export const metadata = {
-  title: "ZapLove - Surpreenda seu amor com uma retrospectiva WhatsApp",
+  title: "ZapLove - Surpreenda seu amor com uma retrospectiva personalizada",
   description:
-    "Carregue seu backup do WhatsApp e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais.",
+    "Carregue seu backup e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais.",
   generator: "v0.dev",
   icons: {
     icon: "/favicon.png",

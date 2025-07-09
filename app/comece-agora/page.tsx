@@ -181,7 +181,7 @@ export default function ComecePage() {
 
     // Validação do arquivo
     if (!selectedFile) {
-      newErrors.file = "Por favor, selecione um arquivo de backup do WhatsApp"
+      newErrors.file = "Por favor, selecione um arquivo de backup"
       valid = false
     }
 

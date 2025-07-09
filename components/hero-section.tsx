@@ -14,10 +14,10 @@ export function HeroSection() {
         <div className="grid gap-8 md:grid-cols-2 md:gap-12 items-center">
           <div className="space-y-6 text-center md:text-center">
             <h1 className="text-4xl font-bold tracking-tighter text-white sm:text-5xl xl:text-6xl/none">
-              Surpreenda seu amor com uma retrospectiva WhatsApp
+              Surpreenda seu amor com uma retrospectiva personalizada
             </h1>
             <p className="text-xl text-white/80 md:text-2xl">
-              Carregue seu backup do WhatsApp e receba um resumo visual com dados sobre suas mensagens, emoções, frases
+              Carregue seu backup e receba um resumo visual com dados sobre suas mensagens, emoções, frases
               favoritas e muito mais.
             </p>
             <div className="flex justify-center">

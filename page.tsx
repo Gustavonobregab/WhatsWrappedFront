@@ -220,7 +220,7 @@ export default function ComecePage() {
           if (errorData?.message === "No TXT files found in the ZIP" || errorData?.error === "No TXT files found in the ZIP") {
             setErrors({
               ...errors,
-              file: "O arquivo enviado não é válido para o WhatsWrapped. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 99935-9977"
+              file: "O arquivo enviado não é válido para o ZapLove. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 99935-9977"
             });
             return;
           }
@@ -258,7 +258,7 @@ export default function ComecePage() {
         if (!responseData.metrics.participants || responseData.metrics.participants.length !== 2) {
           setErrors({
             ...errors,
-            file: "O arquivo enviado não é válido para o WhatsWrapped. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 99935-9977"
+            file: "O arquivo enviado não é válido para o Zaplove. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 99935-9977"
           });
           return;
         }
@@ -523,7 +523,7 @@ export default function ComecePage() {
           
           {step === "INSTRUCTIONS" && (
   <div className="bg-white rounded-xl shadow-md p-6 mb-6 text-center">
-    <h2 className="text-3xl font-bold mb-8">Como exportar sua conversa do WhatsApp</h2>
+    <h2 className="text-3xl font-bold mb-8">Como exportar sua conversa</h2>
 
     <div className="flex flex-col gap-12 items-center">
       {/* Passo 1 */}
@@ -531,13 +531,13 @@ export default function ComecePage() {
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xl font-bold mx-auto">
           1
         </div>
-        <h4 className="text-xl font-bold">Abra a conversa no WhatsApp</h4>
+        <h4 className="text-xl font-bold">Abra a conversa</h4>
         <p className="text-muted-foreground">
-          Selecione a conversa que você deseja analisar no seu WhatsApp.
+          Selecione a conversa que você deseja analisar.
         </p>
         <img
           src="/whatsapp-chat.png"
-          alt="Abrir conversa no WhatsApp"
+          alt="Abrir conversa"
           className="rounded-xl border-4 border-background shadow-lg w-full max-w-[620px] mx-auto"
         />
       </div>
@@ -553,7 +553,7 @@ export default function ComecePage() {
         </p>
         <img
           src="/whatsapp-export.png"
-          alt="Exportar chat no WhatsApp"
+          alt="Exportar chat"
           className="rounded-xl border-4 border-background shadow-lg w-full max-w-[620px] mx-auto"
         />
       </div>
@@ -697,7 +697,7 @@ export default function ComecePage() {
                       <Upload className="h-16 w-16 text-primary" />
                     </div>
                     <h3 className="text-2xl font-medium">Arraste seu arquivo aqui ou clique para selecionar</h3>
-                    <p className="text-sm text-muted-foreground">Arquivos .zip do WhatsApp (máx. 30MB)</p>
+                    <p className="text-sm text-muted-foreground">Arquivos .zip (máx. 30MB)</p>
                     <div className="relative">
                       <input
                         ref={fileInputRef}

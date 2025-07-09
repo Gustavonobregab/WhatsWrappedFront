@@ -18,7 +18,7 @@ components/flow-steps/
 
 ### InstructionsStep
 - **Props**: `onContinue: () => void`
-- **Função**: Exibe as instruções para exportar a conversa do WhatsApp
+- **Função**: Exibe as instruções para exportar a conversa
 - **Eventos**: Chama `onContinue` quando o usuário clica em "Já exportei, continuar"
 
 ### FormStep

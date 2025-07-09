@@ -16,8 +16,8 @@ export function HowItWorksSection() {
         <div className="grid gap-16 md:gap-20">
           <Step
             number={1}
-            title="Abra a conversa no WhatsApp"
-            description="Selecione a conversa ou grupo que você deseja analisar no seu WhatsApp."
+            title="Abra a conversa"
+            description="Selecione a conversa ou grupo que você deseja analisar."
             image="/whatsapp-chat.png"
           />
 
