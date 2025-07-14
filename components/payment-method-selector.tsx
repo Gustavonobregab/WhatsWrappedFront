@@ -10,7 +10,7 @@ export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: Payme
     <div className="space-y-8 flex flex-col items-center justify-center min-h-[500px]">
       <div className="text-center">
         <h1 className="text-4xl font-extrabold mb-4 text-pink-600">Agora só finalizar!</h1>
-      {/*  <p className="text-lg text-muted-foreground">Selecione como você prefere finalizar sua compra</p>*/}
+        <p className="text-lg text-muted-foreground">Selecione como você prefere finalizar sua compra</p>
       </div>
 
       <div className="grid gap-6 w-full max-w-md">
@@ -31,7 +31,7 @@ export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: Payme
           </div>
         </button>
 
-{/*    <button
+    <button
           onClick={onSelectPix}
           className="group relative p-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl hover:border-green-400 hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
         >
@@ -47,7 +47,7 @@ export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: Payme
             </div>
           </div>
         </button> 
-        */}
+        
 
       </div>
     </div>
