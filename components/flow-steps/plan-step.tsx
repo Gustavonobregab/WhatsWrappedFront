@@ -97,7 +97,7 @@ export function PlanStep({ selectedPlan, onPlanSelect, onContinue }: PlanStepPro
     if (typeof window !== "undefined" && window.ttq && selectedPlan) {
       window.ttq.track("PlaceAnOrder", {
         content_id: selectedPlan.toLowerCase(), // "basic" ou "premium"
-        content_type: "plan",
+        content_type: "product",
         contents: [
           {
             id: selectedPlan.toLowerCase(),

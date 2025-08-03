@@ -19,7 +19,7 @@ export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: Payme
     if (typeof window !== "undefined" && window.ttq) {
       window.ttq.track("InitiateCheckout", {
         content_id: "credit_card",
-        content_type: "plan",
+        content_type: "product",
         contents: [
           {
             id: "credit_card",
@@ -53,7 +53,7 @@ export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: Payme
     if (typeof window !== "undefined" && window.ttq) {
       window.ttq.track("InitiateCheckout", {
         content_id: "pix",
-        content_type: "plan",
+        content_type: "product",
         contents: [
           {
             id: "pix",
