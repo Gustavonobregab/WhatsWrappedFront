@@ -164,9 +164,10 @@ export function PixPaymentScreen() {
 
           toast({ title: "Pagamento confirmado!", description: "Redirecionando..." });
 
+          // Redirecionar para a página de sucesso
           setTimeout(() => {
             const email = userData?.email || JSON.parse(sessionStorage.getItem("userData") || "{}").email;
-            router.push(`/retrospectiva/${encodeURIComponent(email)}`);
+            router.push(`/success/${encodeURIComponent(email)}`);
           }, 2000);
         }
       } catch (err) {
@@ -202,7 +203,7 @@ export function PixPaymentScreen() {
       <div className="text-center py-16">
         <Check className="h-16 w-16 text-green-500 mx-auto mb-6" />
         <h2 className="text-2xl font-bold text-green-600">Pagamento confirmado!</h2>
-        <p className="mt-2 text-muted-foreground">Preparando sua retrospectiva personalizada...</p>
+        <p className="mt-2 text-muted-foreground">Redirecionando para sua retrospectiva...</p>
       </div>
     );
   }
