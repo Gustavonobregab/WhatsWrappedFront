@@ -44,7 +44,7 @@ export default function RootLayout({
                 s.parentNode.insertBefore(a,s)
               };
 
-              ttq.load('D1M0Q5RC77UF6MBM0LM0');
+              ttq.load('D27CBC3C77UC024T99J0');
               ttq.page();
             }(window, document, 'ttq');
           `}
