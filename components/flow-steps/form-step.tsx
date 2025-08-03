@@ -190,10 +190,10 @@ export function FormStep({
           </div>
         </div>
 
-        <div className="pt-6">
+        <div className="pt-8">
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
+            className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-8"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -203,7 +203,7 @@ export function FormStep({
               </>
             ) : (
               <>
-                Continuar
+                Prosseguir
                 <ArrowRight className="ml-2 h-5 w-5" />
               </>
             )}
