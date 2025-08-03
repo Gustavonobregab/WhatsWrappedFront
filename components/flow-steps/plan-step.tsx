@@ -89,15 +89,33 @@ export function PlanStep({ selectedPlan, onPlanSelect, onContinue }: PlanStepPro
         </div>
       </div>
       <div className="text-center">
-        <Button
-          size="lg"
-          className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-10"
-          disabled={!selectedPlan}
-          onClick={onContinue}
-        >
-          <ArrowRight className="mr-2 h-5 w-5" />
-          Continuar
-        </Button>
+      <Button
+  size="lg"
+  className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-10"
+  disabled={!selectedPlan}
+  onClick={() => {
+    if (typeof window !== "undefined" && window.ttq && selectedPlan) {
+      window.ttq.track("PlaceAnOrder", {
+        content_id: selectedPlan.toLowerCase(), // "basic" ou "premium"
+        content_type: "plan",
+        contents: [
+          {
+            id: selectedPlan.toLowerCase(),
+            quantity: 1,
+          },
+        ],
+        value: selectedPlan === "PREMIUM" ? 19.9 : 0, 
+        currency: "BRL",
+      });
+    }
+
+    onContinue(); 
+  }}
+>
+  <ArrowRight className="mr-2 h-5 w-5" />
+  Continuar
+</Button>
+
       </div>
     </div>
   )
