@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { EmojiDisplay } from "./emoji-display"
 
 type MetricsData = {
   sender: string
@@ -14,6 +15,8 @@ type MetricsData = {
   daysStartedConversation: number
   mostUsedWord: string
   mostUsedWordCount: number
+  mostUsedEmoji: string
+  mostUsedEmojiCount: number
 }
 
 interface StoriesCarouselProps {
@@ -134,9 +137,9 @@ export function StoriesCarousel({
             <h3 className="text-3xl md:text-3xl font-bold mb-8 text-center">Quem mandou mais te amo?</h3>
     
             <div className="flex items-center justify-center mb-8">
-              <span className="text-4xl md:text-4xl">❤️</span>
+              <EmojiDisplay emoji="❤️" size="2.5rem" />
               <h2 className="text-4xl md:text-4xl font-bold mx-3">TE AMO</h2>
-              <span className="text-4xl md:text-4xl">❤️</span>
+              <EmojiDisplay emoji="❤️" size="2.5rem" />
             </div>
     
             <div className="w-full space-y-6 max-w-md">
@@ -151,7 +154,7 @@ export function StoriesCarousel({
                     style={{ width: `${(user1.loveMessages / (user1.loveMessages + user2.loveMessages)) * 100}%` }}
                   ></div>
                   <div className="absolute inset-0 flex items-center justify-end pr-3">
-                    <span className="text-xl md:text-xl">❤️</span>
+                    <EmojiDisplay emoji="❤️" size="1.25rem" />
                   </div>
                 </div>
               </div>
@@ -551,6 +554,71 @@ export function StoriesCarousel({
         <span className="text-xl md:text-2xl font-bold text-white">
           Foram enviadas {user1.totalPhotos + user2.totalPhotos} fotos no total! 📸
         </span>
+      </div>
+    </div>
+  ),
+},
+
+// Transição para Emoji Mais Usado
+{
+  type: "transition",
+  bgColor: "from-emerald-500 via-teal-500 to-cyan-500",
+  content: (
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
+      <div className="text-center max-w-[90%]">
+        <h2 className="text-3xl md:text-3xl font-bold mb-8">Qual emoji vocês mais usam?</h2>
+        <p className="text-xl md:text-xl font-medium">Vamos descobrir... 😊</p>
+        <div className="mt-10 animate-bounce">
+          <span className="text-5xl md:text-5xl">😊</span>
+        </div>
+      </div>
+    </div>
+  ),
+},
+
+// Emoji Mais Usado
+{
+  type: "data",
+  title: "Qual emoji vocês mais usam?",
+  subtitle: "",
+  bgColor: "from-emerald-500 via-teal-500 to-cyan-500",
+  content: (
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
+      <div className="w-full max-w-[90%] flex flex-col items-center">
+        <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">Qual emoji vocês mais usam?</h3>
+
+        <div className="w-full space-y-6 max-w-md">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-2xl md:text-2xl font-bold">{user1.sender}</span>
+              <span className="text-2xl md:text-2xl font-bold">{user1.mostUsedEmojiCount.toLocaleString()}x</span>
+            </div>
+            <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm text-center">
+              <EmojiDisplay emoji={user1.mostUsedEmoji} size="4rem" />
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-2xl md:text-2xl font-bold">{user2.sender}</span>
+              <span className="text-2xl md:text-2xl font-bold">{user2.mostUsedEmojiCount.toLocaleString()}x</span>
+            </div>
+            <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm text-center">
+              <EmojiDisplay emoji={user2.mostUsedEmoji} size="4rem" />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 text-center">
+          <span className="text-xl md:text-2xl font-bold text-white">
+            {user1.mostUsedEmojiCount > user2.mostUsedEmojiCount ? user1.sender : user2.sender} usa mais o emoji{" "}
+            <EmojiDisplay 
+              emoji={user1.mostUsedEmojiCount > user2.mostUsedEmojiCount ? user1.mostUsedEmoji : user2.mostUsedEmoji} 
+              size="1.5rem" 
+            />
+            !
+          </span>
+        </div>
       </div>
     </div>
   ),

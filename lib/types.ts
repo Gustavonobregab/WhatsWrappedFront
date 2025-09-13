@@ -15,6 +15,12 @@ export interface MetricsData {
   firstMessageDate: string
   messageStreak: number
   daysStartedConversation: number
+  totalAudios: number
+  totalPhotos: number
+  mostUsedWord: string
+  mostUsedWordCount: number
+  mostUsedEmoji: string
+  mostUsedEmojiCount: number
 }
 
 export interface RetrospectiveData {
