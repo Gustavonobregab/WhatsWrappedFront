@@ -1,0 +1,68 @@
+{
+  "common": {
+    "brand": "ZapLove",
+    "startNow": "Comece Agora",
+    "createZapLove": "Crie seu ZapLove",
+    "createMyZapLove": "Criar Meu ZapLove"
+  },
+  "navigation": {
+    "metrics": "Métricas",
+    "howItWorks": "Como Funciona",
+    "pricing": "Preço"
+  },
+  "hero": {
+    "title": "Surpreenda seu amor com uma retrospectiva personalizada",
+    "subtitle": "Carregue seu backup e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais."
+  },
+  "pricing": {
+    "title": "Preço Único e Acessível",
+    "subtitle": "Crie seu ZapLove personalizado por um valor único",
+    "promotionTag": "💘 Promoção Dia dos Namorados",
+    "createAndSurprise": "Crie seu site e surpreenda!",
+    "oneTimePayment": "Pagamento único",
+    "whatsIncluded": "O que está incluso:",
+    "features": {
+      "exclusiveSite": "Site exclusivo e personalizado com sua URL",
+      "completeAnalysis": "Análise completa das suas conversas",
+      "interactiveVisualizations": "Visualizações interativas no estilo Spotify Wrapped",
+      "easySharing": "Compartilhamento fácil com amigos",
+      "permanentAccess": "Acesso permanente aos seus resultados",
+      "secureProcessing": "Processamento seguro e privado"
+    },
+    "privacy": {
+      "title": "Privacidade e Segurança",
+      "noAccess": {
+        "title": "Sem acesso às suas conversas",
+        "description": "Não temos acesso ao conteúdo das suas conversas. Todo o processamento é feito localmente e seus dados nunca são armazenados."
+      },
+      "aiAnalysis": {
+        "title": "Análise 100% por IA",
+        "description": "Toda a análise é realizada por Inteligência Artificial avançada, sem intervenção humana, garantindo total privacidade dos seus dados."
+      }
+    }
+  },
+  "metadata": {
+    "title": "ZapLove - Surpreenda seu amor com uma retrospectiva personalizada",
+    "description": "Carregue seu backup e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais."
+  },
+  "flow": {
+    "title": "Vamos criar seu ZapLove! 🎉",
+    "loading": "Preparando sua retrospectiva...",
+    "waiting": "Aguarde um momento",
+    "paymentConfirmed": "Pagamento Confirmado!",
+    "zapLoveReady": "Seu ZapLove está pronto!",
+    "viewRetrospective": "Sua retrospectiva personalizada foi criada com sucesso. Clique no botão abaixo para visualizar seu ZapLove!",
+    "viewMyZapLove": "Ver meu ZapLove",
+    "whatYouWillFind": "✨ O que você vai encontrar:",
+    "features": {
+      "detailedStats": "Estatísticas detalhadas das suas conversas",
+      "specialMoments": "Momentos especiais compartilhados",
+      "personalizedAnalysis": "Análise personalizada do seu relacionamento",
+      "organizedHistory": "Histórico de mensagens organizado"
+    },
+    "dataSecurity": "Seus dados estão seguros",
+    "dataSecurityDescription": "Seus dados pessoais são utilizados apenas para o processamento do pagamento e emissão de nota fiscal. Não compartilhamos suas informações com terceiros.",
+    "plan": "Plano",
+    "email": "Email"
+  }
+}

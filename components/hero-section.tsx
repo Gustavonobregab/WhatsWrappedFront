@@ -5,8 +5,11 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import { StoriesCarousel } from "./stories-carousel"
 import { StoriesCarouselMocked } from "./landing-carousel"
+import { useTranslations } from 'next-intl';
 
 export function HeroSection() {
+  const t = useTranslations();
+  
   return (
 <section className="relative overflow-hidden bg-[url('/neon-landing.png')] bg-cover bg-center py-20 md:py-32">
 <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-10"></div>
@@ -14,16 +17,15 @@ export function HeroSection() {
         <div className="grid gap-8 md:grid-cols-2 md:gap-12 items-center">
           <div className="space-y-6 text-center md:text-center">
             <h1 className="text-4xl font-bold tracking-tighter text-white sm:text-5xl xl:text-6xl/none">
-              Surpreenda seu amor com uma retrospectiva WhatsApp
+              {t('hero.title')}
             </h1>
             <p className="text-xl text-white/80 md:text-2xl">
-              Carregue seu backup do WhatsApp e receba um resumo visual com dados sobre suas mensagens, emoções, frases
-              favoritas e muito mais.
+              {t('hero.subtitle')}
             </p>
             <div className="flex justify-center">
               <Button size="lg" className="bg-white text-rose-700 hover:bg-white/90" asChild>
                 <Link href="/comece-agora" id="comecar">
-                  Crie seu ZapLove
+                  {t('common.createZapLove')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

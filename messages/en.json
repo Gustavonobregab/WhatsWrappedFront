@@ -1,0 +1,68 @@
+{
+  "common": {
+    "brand": "ZapLove",
+    "startNow": "Start Now",
+    "createZapLove": "Create your ZapLove",
+    "createMyZapLove": "Create My ZapLove"
+  },
+  "navigation": {
+    "metrics": "Metrics",
+    "howItWorks": "How It Works",
+    "pricing": "Pricing"
+  },
+  "hero": {
+    "title": "Surprise your loved one with a personalized retrospective",
+    "subtitle": "Upload your backup and receive a visual summary with data about your messages, emotions, favorite phrases and much more."
+  },
+  "pricing": {
+    "title": "Single and Affordable Price",
+    "subtitle": "Create your personalized ZapLove for a single price",
+    "promotionTag": "💘 Valentine's Day Promotion",
+    "createAndSurprise": "Create your site and surprise!",
+    "oneTimePayment": "One-time payment",
+    "whatsIncluded": "What's included:",
+    "features": {
+      "exclusiveSite": "Exclusive and personalized site with your URL",
+      "completeAnalysis": "Complete analysis of your conversations",
+      "interactiveVisualizations": "Interactive visualizations in Spotify Wrapped style",
+      "easySharing": "Easy sharing with friends",
+      "permanentAccess": "Permanent access to your results",
+      "secureProcessing": "Secure and private processing"
+    },
+    "privacy": {
+      "title": "Privacy and Security",
+      "noAccess": {
+        "title": "No access to your conversations",
+        "description": "We don't have access to your conversation content. All processing is done locally and your data is never stored."
+      },
+      "aiAnalysis": {
+        "title": "100% AI Analysis",
+        "description": "All analysis is performed by advanced Artificial Intelligence, without human intervention, ensuring total privacy of your data."
+      }
+    }
+  },
+  "metadata": {
+    "title": "ZapLove - Surprise your loved one with a personalized retrospective",
+    "description": "Upload your backup and receive a visual summary with data about your messages, emotions, favorite phrases and much more."
+  },
+  "flow": {
+    "title": "Let's create your ZapLove! 🎉",
+    "loading": "Preparing your retrospective...",
+    "waiting": "Please wait a moment",
+    "paymentConfirmed": "Payment Confirmed!",
+    "zapLoveReady": "Your ZapLove is ready!",
+    "viewRetrospective": "Your personalized retrospective has been created successfully. Click the button below to view your ZapLove!",
+    "viewMyZapLove": "View my ZapLove",
+    "whatYouWillFind": "✨ What you'll find:",
+    "features": {
+      "detailedStats": "Detailed statistics of your conversations",
+      "specialMoments": "Special moments shared",
+      "personalizedAnalysis": "Personalized analysis of your relationship",
+      "organizedHistory": "Organized message history"
+    },
+    "dataSecurity": "Your data is secure",
+    "dataSecurityDescription": "Your personal data is used only for payment processing and invoice issuance. We do not share your information with third parties.",
+    "plan": "Plan",
+    "email": "Email"
+  }
+}

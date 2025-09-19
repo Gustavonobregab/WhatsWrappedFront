@@ -1,9 +1,14 @@
+"use client"
+
 import type React from "react"
 import { Check, Shield, Lock, Brain } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useTranslations } from 'next-intl';
 
 export function PricingSection() {
+  const t = useTranslations();
+  
   return (
     <section
       id="pricing"
@@ -11,8 +16,8 @@ export function PricingSection() {
     >
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Preço Único e Acessível</h2>
-          <p className="mt-4 text-xl text-muted-foreground">Crie seu ZapLove personalizado por um valor único</p>
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">{t('pricing.title')}</h2>
+          <p className="mt-4 text-xl text-muted-foreground">{t('pricing.subtitle')}</p>
         </div>
 
         <div className="max-w-md mx-auto">
@@ -20,50 +25,50 @@ export function PricingSection() {
             <div className="p-8 text-center">
                       {/* Tag de promoção */}
             <div className="inline-block bg-pink-100 text-pink-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-4 shadow-sm">
-              💘 Promoção Dia dos Namorados
+              {t('pricing.promotionTag')}
             </div>
-              <h3 className="text-2xl font-bold mb-2">Crie seu site e surpreenda!</h3>
+              <h3 className="text-2xl font-bold mb-2">{t('pricing.createAndSurprise')}</h3>
               <div className="flex items-center justify-center gap-1 mb-6">
                 <span className="text-4xl font-bold">R$</span>
                 <span className="text-6xl font-extrabold">19,90</span>
               </div>
-              <p className="text-muted-foreground mb-6">Pagamento único</p>
+              <p className="text-muted-foreground mb-6">{t('pricing.oneTimePayment')}</p>
 
               <Button
                 asChild
                 className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
               >
-                <Link href="/comece-agora">Criar Meu ZapLove</Link>
+                <Link href="/comece-agora">{t('common.createMyZapLove')}</Link>
               </Button>
             </div>
 
             <div className="bg-slate-50 dark:bg-slate-800 p-8">
-              <h4 className="font-bold text-lg mb-4">O que está incluso:</h4>
+              <h4 className="font-bold text-lg mb-4">{t('pricing.whatsIncluded')}</h4>
               <ul className="space-y-3">
-                <Feature text="Site exclusivo e personalizado com sua URL" />
-                <Feature text="Análise completa das suas conversas" />
-                <Feature text="Visualizações interativas no estilo Spotify Wrapped" />
-                <Feature text="Compartilhamento fácil com amigos" />
-                <Feature text="Acesso permanente aos seus resultados" />
-                <Feature text="Processamento seguro e privado" />
+                <Feature text={t('pricing.features.exclusiveSite')} />
+                <Feature text={t('pricing.features.completeAnalysis')} />
+                <Feature text={t('pricing.features.interactiveVisualizations')} />
+                <Feature text={t('pricing.features.easySharing')} />
+                <Feature text={t('pricing.features.permanentAccess')} />
+                <Feature text={t('pricing.features.secureProcessing')} />
               </ul>
 
               {/* Seção de privacidade e segurança */}
               <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
                 <h4 className="font-bold text-lg mb-4 flex items-center">
                   <Shield className="h-5 w-5 mr-2 text-primary" />
-                  Privacidade e Segurança
+                  {t('pricing.privacy.title')}
                 </h4>
                 <ul className="space-y-4">
                   <PrivacyFeature
                     icon={<Lock className="h-5 w-5 text-green-500" />}
-                    title="Sem acesso às suas conversas"
-                    description="Não temos acesso ao conteúdo das suas conversas. Todo o processamento é feito localmente e seus dados nunca são armazenados."
+                    title={t('pricing.privacy.noAccess.title')}
+                    description={t('pricing.privacy.noAccess.description')}
                   />
                   <PrivacyFeature
                     icon={<Brain className="h-5 w-5 text-purple-500" />}
-                    title="Análise 100% por IA"
-                    description="Toda a análise é realizada por Inteligência Artificial avançada, sem intervenção humana, garantindo total privacidade dos seus dados."
+                    title={t('pricing.privacy.aiAnalysis.title')}
+                    description={t('pricing.privacy.aiAnalysis.description')}
                   />
                 </ul>
               </div>
