@@ -17,7 +17,7 @@ interface ShareButtonProps {
 export function ShareButton({
   url,
   title = "ZapLove",
-  text = "Confira esta retrospectiva de conversas no WhatsApp!",
+  text = "Confira esta retrospectiva de conversas!",
   className = "",
   variant = "outline",
   size = "sm",

@@ -12,6 +12,8 @@ type MetricsData = {
   totalAudios: number
   totalPhotos: number
   daysStartedConversation: number
+  mostUsedWord: string
+  mostUsedWordCount: number
 }
 
 interface StoriesCarouselProps {
@@ -301,7 +303,7 @@ export function StoriesCarousel({
         </div>
 
         <p className="text-xl md:text-2xl font-extrabold bg-gradient-to-r from-yellow-400 to-orange-400 text-transparent bg-clip-text text-center">
-          {user1.messageStreak > 300 ? "QUASE UM ANO COMPLETO!" : "IMPRESSIONANTE!"}
+          {user1.messageStreak > 300 ? "É MUITO TEMPO GENTE!" : "IMPRESSIONANTE!"}
         </p>
       </div>
     </div>
@@ -553,6 +555,67 @@ export function StoriesCarousel({
     </div>
   ),
 },
+
+// Transição para Palavra Mais Usada
+{
+  type: "transition",
+  bgColor: "from-cyan-500 via-blue-500 to-indigo-500",
+  content: (
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
+      <div className="text-center max-w-[90%]">
+        <h2 className="text-3xl md:text-3xl font-bold mb-8">Qual palavra vocês mais usam?</h2>
+        <p className="text-xl md:text-xl font-medium">Vamos descobrir... 📝</p>
+        <div className="mt-10 animate-bounce">
+          <span className="text-5xl md:text-5xl">📝</span>
+        </div>
+      </div>
+    </div>
+  ),
+},
+
+// Palavra Mais Usada
+{
+  type: "data",
+  title: "Qual palavra vocês mais usam?",
+  subtitle: "",
+  bgColor: "from-cyan-500 via-blue-500 to-indigo-500",
+  content: (
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
+      <div className="w-full max-w-[90%] flex flex-col items-center">
+        <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">Qual palavra vocês mais usam?</h3>
+
+        <div className="w-full space-y-6 max-w-md">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-2xl md:text-2xl font-bold">{user1.sender}</span>
+              <span className="text-2xl md:text-2xl font-bold">{user1.mostUsedWordCount}x</span>
+            </div>
+            <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm text-center">
+              <span className="text-3xl md:text-4xl font-extrabold text-white">"{user1.mostUsedWord}"</span>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-2xl md:text-2xl font-bold">{user2.sender}</span>
+              <span className="text-2xl md:text-2xl font-bold">{user2.mostUsedWordCount}x</span>
+            </div>
+            <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm text-center">
+              <span className="text-3xl md:text-4xl font-extrabold text-white">"{user2.mostUsedWord}"</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 text-center">
+          <span className="text-xl md:text-2xl font-bold text-white">
+            {user1.mostUsedWordCount > user2.mostUsedWordCount ? user1.sender : user2.sender} usa mais a palavra "{user1.mostUsedWordCount > user2.mostUsedWordCount ? user1.mostUsedWord : user2.mostUsedWord}"!
+          </span>
+        </div>
+      </div>
+    </div>
+  ),
+},
+
 {
   type: "love-message",
   bgColor: "from-pink-600 via-rose-600 to-red-600",

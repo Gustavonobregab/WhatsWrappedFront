@@ -128,7 +128,7 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
             <ShareButton
               url={window.location.href}
               title={getPageTitle()}
-              text="Confira nossa retrospectiva de conversas no WhatsApp!"
+              text="Confira nossa retrospectiva de conversas!"
               variant="outline"
               size="sm"
             />
@@ -163,7 +163,7 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
                 <ShareButton
                   url={window.location.href}
                   title={getPageTitle()}
-                  text="Confira nossa retrospectiva de conversas no WhatsApp!"
+                  text="Confira nossa retrospectiva de conversas!"
                   className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
                   variant="default"
                   size="lg"
