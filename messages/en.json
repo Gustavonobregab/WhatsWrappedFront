@@ -88,7 +88,16 @@
       "cpfPlaceholder": "000.000.000-00",
       "cellphone": "Cell phone",
       "cellphonePlaceholder": "(00) 00000-0000"
-    }
+    },
+    "upload": {
+      "title": "Drag your file here or click to select",
+      "description": ".zip files exported from your messaging app (max. 30MB)",
+      "selectFile": "Select File",
+      "fileSelected": "File selected: ",
+      "fileInfo": "File selected: {name} ({size} MB)"
+    },
+    "processing": "Processing...",
+    "continue": "Continue"
   },
   "carousel": {
     "intro": {

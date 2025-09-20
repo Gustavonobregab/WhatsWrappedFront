@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Upload, Loader2, ArrowRight } from "lucide-react"
+import { useTranslations } from 'next-intl';
 
 interface FormData {
   name: string
@@ -42,6 +43,7 @@ export function FormStep({
   onFileChange,
   onSubmit
 }: FormStepProps) {
+  const t = useTranslations();
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Reset scroll to top when component mounts
@@ -51,24 +53,24 @@ export function FormStep({
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-      <h2 className="text-3xl font-bold text-center mb-8">Preencha seus dados e faça upload do arquivo</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">{t('form.title')}</h2>
 
       <form onSubmit={onSubmit} className="space-y-6">
         {/* Mensagem de amor surpresa */}
         <div className="space-y-2">
           <Label htmlFor="text" className="flex items-center gap-2 text-lg">
             <span className="bg-gradient-to-r from-pink-500 to-red-500 text-transparent bg-clip-text font-bold text-xl">
-              ❤️ Mensagem de amor surpresa ❤️
+              {t('form.loveMessage.label')}
             </span>
             <span className="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded-full animate-pulse">
-              Especial!
+              {t('form.loveMessage.special')}
             </span>
           </Label>
           <div className="relative">
             <Textarea
               id="text"
               name="text"
-              placeholder="Querido(a), cada mensagem que trocamos é um pedacinho da nossa história. Obrigado(a) por fazer parte da minha vida e por todos os momentos que compartilhamos através dessas conversas..."
+              placeholder={t('form.loveMessage.placeholder')}
               value={formData.text}
               onChange={onInputChange}
               className="text-lg min-h-[120px] resize-none border-pink-200 focus-visible:ring-pink-400 bg-gradient-to-br from-pink-50 to-white"
@@ -81,8 +83,7 @@ export function FormStep({
           <div className="bg-pink-50 p-3 rounded-lg border border-pink-100">
             <p className="text-sm text-pink-700 flex items-center gap-2">
               <span className="text-lg">✨</span>
-              Esta mensagem especial será exibida como uma surpresa romântica no final do WhatsWrapped, criando
-              um momento inesquecível para quem receber.
+              {t('form.loveMessage.description')}
             </p>
           </div>
         </div>
@@ -91,12 +92,12 @@ export function FormStep({
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="name" className="text-lg">
-              Nome completo
+              {t('form.fields.name')}
             </Label>
             <Input
               id="name"
               name="name"
-              placeholder="Seu nome completo"
+              placeholder={t('form.fields.namePlaceholder')}
               value={formData.name}
               onChange={onInputChange}
               className={`text-lg py-6 ${errors.name ? "border-red-500" : ""}`}
@@ -106,13 +107,13 @@ export function FormStep({
 
           <div className="space-y-2">
             <Label htmlFor="email" className="text-lg">
-              Email
+              {t('form.fields.email')}
             </Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="seu@email.com"
+              placeholder={t('form.fields.emailPlaceholder')}
               value={formData.email}
               onChange={onInputChange}
               className={`text-lg py-6 ${errors.email ? "border-red-500" : ""}`}
@@ -122,12 +123,12 @@ export function FormStep({
 
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="cpf" className="text-lg">
-              CPF
+              {t('form.fields.cpf')}
             </Label>
             <Input
               id="cpf"
               name="cpf"
-              placeholder="999.999.999-99"
+              placeholder={t('form.fields.cpfPlaceholder')}
               value={formData.cpf}
               onChange={onInputChange}
               className={`text-lg py-6 ${errors.cpf ? "border-red-500" : ""}`}
@@ -138,12 +139,12 @@ export function FormStep({
 
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="cellphone" className="text-lg">
-            Celular (com DDD)
+            {t('form.fields.cellphone')}
           </Label>
           <Input
             id="cellphone"
             name="cellphone"
-            placeholder="11999999999"
+            placeholder={t('form.fields.cellphonePlaceholder')}
             value={formData.cellphone}
             onChange={onInputChange}
             className={`text-lg py-6 ${errors.cellphone ? "border-red-500" : ""}`}
@@ -157,8 +158,8 @@ export function FormStep({
             <div className="flex justify-center">
               <Upload className="h-16 w-16 text-primary" />
             </div>
-            <h3 className="text-2xl font-medium">Arraste seu arquivo aqui ou clique para selecionar</h3>
-            <p className="text-sm text-muted-foreground">Arquivos .zip exportados do seu aplicativo de mensagens (máx. 30MB)</p>
+            <h3 className="text-2xl font-medium">{t('form.upload.title')}</h3>
+            <p className="text-sm text-muted-foreground">{t('form.upload.description')}</p>
             <div className="relative">
               <input
                 ref={fileInputRef}
@@ -174,7 +175,7 @@ export function FormStep({
                 disabled={isLoading}
                 onClick={() => fileInputRef.current?.click()}
               >
-                {selectedFile ? "Arquivo selecionado: " + selectedFile.name : "Selecionar Arquivo"}
+                {selectedFile ? t('form.upload.fileSelected') + selectedFile.name : t('form.upload.selectFile')}
               </Button>
             </div>
             {errors.file && (
@@ -184,7 +185,7 @@ export function FormStep({
             )}
             {selectedFile && !errors.file && (
               <p className="text-sm text-green-600">
-                Arquivo selecionado: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                {t('form.upload.fileInfo', { name: selectedFile.name, size: (selectedFile.size / 1024 / 1024).toFixed(2) })}
               </p>
             )}
           </div>
@@ -199,11 +200,11 @@ export function FormStep({
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Processando...
+                {t('form.processing')}
               </>
             ) : (
               <>
-                Prosseguir
+                {t('form.continue')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </>
             )}

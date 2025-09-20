@@ -88,7 +88,16 @@
       "cpfPlaceholder": "000.000.000-00",
       "cellphone": "Celular",
       "cellphonePlaceholder": "(00) 00000-0000"
-    }
+    },
+    "upload": {
+      "title": "Arraste seu arquivo aqui ou clique para selecionar",
+      "description": "Arquivos .zip exportados do seu aplicativo de mensagens (máx. 30MB)",
+      "selectFile": "Selecionar Arquivo",
+      "fileSelected": "Arquivo selecionado: ",
+      "fileInfo": "Arquivo selecionado: {name} ({size} MB)"
+    },
+    "processing": "Processando...",
+    "continue": "Prosseguir"
   },
   "carousel": {
     "intro": {
