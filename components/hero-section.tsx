@@ -6,9 +6,11 @@ import { ArrowRight } from "lucide-react"
 import { StoriesCarousel } from "./stories-carousel"
 import { StoriesCarouselMocked } from "./landing-carousel"
 import { useTranslations } from 'next-intl';
+import { useLocaleLink } from '@/hooks/use-locale-link';
 
 export function HeroSection() {
   const t = useTranslations();
+  const { createLink } = useLocaleLink();
   
   return (
 <section className="relative overflow-hidden bg-[url('/neon-landing.png')] bg-cover bg-center py-20 md:py-32">
@@ -24,7 +26,7 @@ export function HeroSection() {
             </p>
             <div className="flex justify-center">
               <Button size="lg" className="bg-white text-rose-700 hover:bg-white/90" asChild>
-                <Link href="/comece-agora" id="comecar">
+                <Link href={createLink('/comece-agora')} id="comecar">
                   {t('common.createZapLove')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>

@@ -5,9 +5,11 @@ import { Check, Shield, Lock, Brain } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useTranslations } from 'next-intl';
+import { useLocaleLink } from '@/hooks/use-locale-link';
 
 export function PricingSection() {
   const t = useTranslations();
+  const { createLink } = useLocaleLink();
   
   return (
     <section
@@ -38,7 +40,7 @@ export function PricingSection() {
                 asChild
                 className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6"
               >
-                <Link href="/comece-agora">{t('common.createMyZapLove')}</Link>
+                <Link href={createLink('/comece-agora')}>{t('common.createMyZapLove')}</Link>
               </Button>
             </div>
 

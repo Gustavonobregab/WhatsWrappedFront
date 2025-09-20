@@ -12,6 +12,7 @@ import { Footer } from "@/components/footer"
 import { useTranslations } from 'next-intl';
 import { LanguageSelector } from '@/components/language-selector';
 import { LocaleDebug } from '@/components/locale-debug';
+import { useLocaleLink } from '@/hooks/use-locale-link';
 
 declare global {
   interface Window {
@@ -23,6 +24,7 @@ declare global {
 
 export default function Home() {
   const t = useTranslations();
+  const { createLink } = useLocaleLink();
   
   return (
     <div className="flex min-h-screen flex-col">
@@ -59,7 +61,7 @@ export default function Home() {
               }}
             >
               <Button asChild>
-                <Link href="/comece-agora">{t('common.startNow')}</Link>
+                <Link href={createLink('/comece-agora')}>{t('common.startNow')}</Link>
               </Button>
             </div>
           </div>  

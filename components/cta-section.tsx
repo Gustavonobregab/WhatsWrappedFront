@@ -1,8 +1,11 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Upload } from "lucide-react"
+import { useLocaleLink } from '@/hooks/use-locale-link';
 
 export function CtaSection() {
+  const { createLink } = useLocaleLink();
+  
   return (
     <section className="py-20">
       <div className="container">
@@ -27,7 +30,7 @@ export function CtaSection() {
             <p className="mt-4 text-xl text-white/80">Crie seu ZapLove agora mesmo e compartilhe com seus amigos!</p>
             <div className="mt-8 flex justify-center">
               <Button size="lg" className="bg-white text-rose-700 hover:bg-white/90 font-bold text-lg" asChild>
-                <Link href="/comece-agora">
+                <Link href={createLink('/comece-agora')}>
                   <Upload className="mr-2 h-5 w-5" />
                   Comece Agora
                 </Link>
