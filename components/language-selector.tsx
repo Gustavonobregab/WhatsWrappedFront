@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Globe } from 'lucide-react';
+import { useUrlLocale } from '@/hooks/use-url-locale';
 
 const languages = [
   { code: 'pt', name: 'Português', flag: '🇧🇷' },
@@ -21,6 +22,7 @@ export function LanguageSelector() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const currentLocale = useUrlLocale();
 
   const handleLanguageChange = (newLocale: string) => {
     // Remove o prefixo do idioma atual se existir
@@ -30,7 +32,7 @@ export function LanguageSelector() {
     window.location.href = `/${newLocale}${pathWithoutLocale}`;
   };
 
-  const currentLanguage = languages.find(lang => lang.code === locale) || languages[0];
+  const currentLanguage = languages.find(lang => lang.code === currentLocale) || languages[0];
 
   return (
     <DropdownMenu>
@@ -46,7 +48,7 @@ export function LanguageSelector() {
           <DropdownMenuItem
             key={language.code}
             onClick={() => handleLanguageChange(language.code)}
-            className={locale === language.code ? 'bg-accent' : ''}
+            className={currentLocale === language.code ? 'bg-accent' : ''}
           >
             <span className="mr-2">{language.flag}</span>
             {language.name}

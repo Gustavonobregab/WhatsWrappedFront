@@ -8,15 +8,24 @@ export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = 'pt';
 
 export default getRequestConfig(async ({ locale }) => {
-  console.log('i18n.ts - Locale recebido:', locale);
+  // Se o locale for undefined, usar o padrão
+  if (!locale) {
+    return {
+      locale: defaultLocale,
+      messages: (await import(`./messages/${defaultLocale}.json`)).default
+    };
+  }
   
-  // Se o locale for undefined ou não estiver na lista de idiomas suportados, usar o padrão
-  const validLocale = locale && locales.includes(locale as any) ? locale : defaultLocale;
-  
-  console.log('i18n.ts - Locale válido:', validLocale);
+  // Se o locale não estiver na lista de idiomas suportados, usar o padrão
+  if (!locales.includes(locale as any)) {
+    return {
+      locale: defaultLocale,
+      messages: (await import(`./messages/${defaultLocale}.json`)).default
+    };
+  }
   
   return {
-    locale: validLocale,
-    messages: (await import(`./messages/${validLocale}.json`)).default
+    locale: locale,
+    messages: (await import(`./messages/${locale}.json`)).default
   };
 });

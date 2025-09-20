@@ -64,5 +64,184 @@
     "dataSecurityDescription": "Your personal data is used only for payment processing and invoice issuance. We do not share your information with third parties.",
     "plan": "Plan",
     "email": "Email"
+  },
+  "cta": {
+    "title": "Ready to discover what your conversations say about you?",
+    "subtitle": "Create your ZapLove now and share with your friends!",
+    "button": "Start Now",
+    "privacy": "Your data is processed locally and never stored!"
+  },
+  "form": {
+    "title": "Fill in your details and upload the file",
+    "loveMessage": {
+      "label": "❤️ Surprise love message ❤️",
+      "special": "Special!",
+      "placeholder": "Dear, every message we exchange is a piece of our story. Thank you for being part of my life and for all the moments we've shared through these conversations...",
+      "description": "This special message will be displayed as a romantic surprise at the end of WhatsWrapped, creating an unforgettable moment for whoever receives it."
+    },
+    "fields": {
+      "name": "Full name",
+      "namePlaceholder": "Your full name",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "cpf": "CPF",
+      "cpfPlaceholder": "000.000.000-00",
+      "cellphone": "Cell phone",
+      "cellphonePlaceholder": "(00) 00000-0000"
+    }
+  },
+  "carousel": {
+    "intro": {
+      "title": "Hi love!❤️ How about a retrospective of our story?",
+      "subtitle": "Discover what your conversations say about you"
+    },
+    "transition": {
+      "title": "Time to find out who loves the other more...",
+      "subtitle": "Roll the drums! 🥁"
+    }
+  },
+  "metrics": {
+    "title": "Discover Fascinating Metrics",
+    "subtitle": "See examples of what you'll discover about your conversations",
+    "cards": {
+      "totalLove": {
+        "title": "Total I Love You",
+        "description": "How many times you said this special phrase"
+      },
+      "totalApologies": {
+        "title": "Total Apologies",
+        "description": "How many times you apologized"
+      },
+      "consecutiveDays": {
+        "title": "Consecutive Days",
+        "description": "Your record of consecutive days chatting"
+      },
+      "firstMessage": {
+        "title": "First Message",
+        "description": "When it all began"
+      },
+      "totalDays": {
+        "title": "Total Days",
+        "description": "Total conversation time"
+      },
+      "conversationStarter": {
+        "title": "Started Conversations",
+        "description": "Who sends messages first"
+      },
+      "mostUsedWord": {
+        "title": "Most Used Word",
+        "description": "The word you use most"
+      },
+      "totalMessages": {
+        "title": "Total Messages",
+        "description": "Number of messages sent"
+      },
+      "andMore": {
+        "title": "And much more!",
+        "description": "Discover all the statistics and curiosities about your conversations"
+      }
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Three simple steps to discover what your conversations say about you",
+    "steps": {
+      "step1": {
+        "title": "Open the conversation",
+        "description": "Select the conversation or group you want to analyze."
+      },
+      "step2": {
+        "title": "Click export chat",
+        "description": "Tap the three dots in the top right corner, scroll down and select 'Export chat'."
+      },
+      "step3": {
+        "title": "Choose 'Without media'",
+        "description": "Select the 'Without media' option to export only the text of conversations, creating a smaller and easier file to process."
+      }
+    },
+    "startNow": "Start now"
+  },
+  "retrospective": {
+    "error": "Oops! Something went wrong with your retrospective! Contact support, we'll help you!",
+    "loading": "Loading your retrospective...",
+    "intro": {
+      "title": "How about a retrospective of our story?",
+      "subtitle": "Discover what your conversations say about you"
+    },
+    "transition": {
+      "love": {
+        "title": "Time to find out who loves the other more...",
+        "subtitle": "Roll the drums! 🥁"
+      },
+      "messages": {
+        "title": "You exchanged many messages...",
+        "subtitle": "Let's see exactly how many? 👀"
+      },
+      "streak": {
+        "title": "You are very consistent...",
+        "subtitle": "Let's see for how many consecutive days you chatted! 🔥"
+      },
+      "apologies": {
+        "title": "Who apologizes more?",
+        "subtitle": "Let's find out... 🙏"
+      },
+      "firstMessage": {
+        "title": "Let's go back in time...",
+        "subtitle": "When did it all begin? 📅"
+      },
+      "conversationStarter": {
+        "title": "Who starts more conversations?",
+        "subtitle": "Let's find out who is more anxious... 📱"
+      }
+    },
+    "stories": {
+      "love": {
+        "title": "Who said I love you more?",
+        "winner": "loves more! ❤️"
+      },
+      "messages": {
+        "title": "How many messages did you exchange?",
+        "winner": "sends more messages!"
+      },
+      "streak": {
+        "title": "How many consecutive days did you chat?",
+        "label": "CONSECUTIVE DAYS",
+        "impressive": "IMPRESSIVE!",
+        "veryLong": "THAT'S A LONG TIME!"
+      },
+      "apologies": {
+        "title": "Who apologizes more?",
+        "winner": "apologizes more!"
+      },
+      "firstMessage": {
+        "title": "When did it all begin?",
+        "special": "A special date! 🌟",
+        "daysAgo": "{days} days ago"
+      },
+      "conversationStarter": {
+        "title": "Who starts more conversations?",
+        "winner": "starts more conversations!"
+      },
+      "loveMessage": {
+        "title": "A special message for you...",
+        "default": "Thank you for sharing this journey with me. Every message is special and every moment we spend together is a treasure I keep in my heart."
+      },
+      "outro": {
+        "title": "And much more!",
+        "subtitle": "Get your personalized site!",
+        "createOwn": "Create your own retrospective at"
+      }
+    },
+    "share": {
+      "text": "Check out our conversation retrospective!"
+    },
+    "footer": {
+      "help": "Need help? Contact us:",
+      "contact": "Click here!"
+    },
+    "buttons": {
+      "backToHome": "Back to home",
+      "createNew": "Create new retrospective"
+    }
   }
 }

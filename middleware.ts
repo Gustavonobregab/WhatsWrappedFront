@@ -8,8 +8,8 @@ export default createMiddleware({
   // Idioma padrão
   defaultLocale,
   
-  // Desabilitar detecção automática para evitar conflitos
-  localeDetection: false,
+  // Habilitar detecção automática de idioma
+  localeDetection: true,
   
   // Sempre mostrar o prefixo do idioma
   localePrefix: 'always'

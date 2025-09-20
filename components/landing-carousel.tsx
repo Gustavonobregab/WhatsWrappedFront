@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { useTranslations } from 'next-intl';
 
 type MetricsData = {
   sender: string
@@ -43,6 +44,8 @@ const MOCK_METRICS_DATA: MetricsData[] = [
 export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCarouselProps) {
   const [currentStory, setCurrentStory] = React.useState(0)
   const [isPaused, setIsPaused] = React.useState(false)
+  
+  const t = useTranslations();
 
   const user1 = MOCK_METRICS_DATA[0]
   const user2 = MOCK_METRICS_DATA[1]
@@ -86,10 +89,10 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
             <div className="absolute -top-20 -left-20 w-40 h-40 bg-pink-500/30 rounded-full blur-xl animate-pulse"></div>
             <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-blue-500/30 rounded-full blur-xl animate-pulse"></div>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-8 text-center">
-              Oi amor!❤️ <br />Que tal uma retrospectiva da nossa história?
+              {t('carousel.intro.title')}
             </h1>
             <p className="text-xl md:text-2xl text-white/90 text-center">
-              Descubra o que suas conversas dizem sobre você
+              {t('carousel.intro.subtitle')}
             </p>
           </div>
         </div>
@@ -103,8 +106,8 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">Tá na hora de saber quem ama mais o outro...</h2>
-            <p className="text-xl md:text-2xl font-medium">Rufem os tambores! 🥁</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">{t('carousel.transition.title')}</h2>
+            <p className="text-xl md:text-2xl font-medium">{t('carousel.transition.subtitle')}</p>
             <div className="mt-10 flex justify-center">
               <div className="animate-ping">
                 <span className="text-5xl md:text-6xl">❤️</span>
@@ -124,7 +127,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-            <h3 className="text-3xl md:text-4xl font-bold mb-8 text-center">Quem mandou mais te amo?</h3>
+            <h3 className="text-3xl md:text-4xl font-bold mb-8 text-center">{t('retrospective.stories.love.title')}</h3>
 
             <div className="flex items-center justify-center mb-8">
               <span className="text-4xl md:text-5xl">❤️</span>
@@ -167,7 +170,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
             </div>
 
             <div className="mt-10 text-center">
-              <span className="text-2xl md:text-3xl font-extrabold text-white">{loveWinner} ama mais! ❤️</span>
+              <span className="text-2xl md:text-3xl font-extrabold text-white">{loveWinner} {t('retrospective.stories.love.winner')}</span>
             </div>
           </div>
         </div>
@@ -181,8 +184,8 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">Vocês trocaram muitas mensagens...</h2>
-            <p className="text-xl md:text-2xl font-medium">Vamos ver quantas exatamente? 👀</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">{t('retrospective.transition.messages.title')}</h2>
+            <p className="text-xl md:text-2xl font-medium">{t('retrospective.transition.messages.subtitle')}</p>
             <div className="mt-10 animate-bounce">
               <span className="text-4xl md:text-5xl">⬇️</span>
             </div>
@@ -200,7 +203,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-            <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center">Quantas mensagens vocês trocaram?</h3>
+            <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center">{t('retrospective.stories.messages.title')}</h3>
 
             <div className="bg-white/20 rounded-2xl px-6 py-3 backdrop-blur-sm text-center mb-6">
               <span className="text-4xl md:text-6xl font-black">
@@ -237,7 +240,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
             </div>
 
             <div className="mt-8 text-center">
-              <span className="text-xl md:text-3xl font-bold text-white">{messageWinner} envia mais mensagens!</span>
+              <span className="text-xl md:text-3xl font-bold text-white">{messageWinner} {t('retrospective.stories.messages.winner')}</span>
             </div>
           </div>
         </div>
@@ -251,8 +254,8 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">Vocês são muito consistentes...</h2>
-            <p className="text-xl md:text-2xl font-medium">Vamos ver quantos dias seguidos vocês conversaram! 🔥</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">{t('retrospective.transition.streak.title')}</h2>
+            <p className="text-xl md:text-2xl font-medium">{t('retrospective.transition.streak.subtitle')}</p>
             <div className="mt-10 animate-pulse">
               <span className="text-5xl md:text-6xl">🔥</span>
             </div>
@@ -271,7 +274,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
             <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center">
-              Quantos dias seguidos vocês conversaram?
+              {t('retrospective.stories.streak.title')}
             </h3>
 
             <div className="flex items-center justify-center gap-3 mb-6">
@@ -283,7 +286,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
             </div>
 
             <p className="text-xl md:text-3xl font-bold bg-white/20 px-5 py-2 rounded-full mb-6 text-center">
-              DIAS CONSECUTIVOS
+              {t('retrospective.stories.streak.label')}
             </p>
 
             <div className="grid grid-cols-7 gap-1 md:gap-2 mb-6 max-w-xs md:max-w-md mx-auto">
@@ -297,7 +300,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
             </div>
 
             <p className="text-xl md:text-3xl font-extrabold bg-gradient-to-r from-yellow-400 to-orange-400 text-transparent bg-clip-text text-center">
-              {user1.messageStreak > 300 ? "Aqui não tem vácuo!" : "Aqui não tem vácuo!"}
+              {user1.messageStreak > 300 ? t('retrospective.stories.streak.veryLong') : t('retrospective.stories.streak.impressive')}
             </p>
           </div>
         </div>
@@ -311,8 +314,8 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">Quem será que pede mais desculpas?</h2>
-            <p className="text-xl md:text-2xl font-medium">Vamos descobrir... 🙏</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">{t('retrospective.transition.apologies.title')}</h2>
+            <p className="text-xl md:text-2xl font-medium">{t('retrospective.transition.apologies.subtitle')}</p>
             <div className="mt-10 animate-bounce">
               <span className="text-4xl md:text-5xl">🙏</span>
             </div>
@@ -330,7 +333,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-            <h3 className="text-3xl md:text-4xl font-bold mb-8 text-center">Quem pede mais desculpas? 🙏🏻</h3>
+            <h3 className="text-3xl md:text-4xl font-bold mb-8 text-center">{t('retrospective.stories.apologies.title')} 🙏🏻</h3>
 
             <div className="w-full space-y-6 max-w-md">
               <div>
@@ -372,7 +375,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
 
             <div className="mt-10 text-center">
               <span className="text-2xl md:text-3xl font-extrabold text-white">
-                {apologyWinner} não tem medo de reconhecer!
+                {apologyWinner} {t('retrospective.stories.apologies.winner')}
               </span>
             </div>
           </div>
@@ -387,8 +390,8 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">Vamos voltar no tempo...</h2>
-            <p className="text-xl md:text-2xl font-medium">Quando tudo começou? 📅</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">{t('retrospective.transition.firstMessage.title')}</h2>
+            <p className="text-xl md:text-2xl font-medium">{t('retrospective.transition.firstMessage.subtitle')}</p>
             <div className="mt-10 animate-spin">
               <span className="text-5xl md:text-6xl">⏰</span>
             </div>
@@ -406,7 +409,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-            <h3 className="text-3xl md:text-4xl font-bold mb-8 text-center">Quando tudo começou?</h3>
+            <h3 className="text-3xl md:text-4xl font-bold mb-8 text-center">{t('retrospective.stories.firstMessage.title')}</h3>
 
             <div className="flex items-center justify-center mb-6">
               <div className="bg-white/20 rounded-2xl px-8 py-4 backdrop-blur-sm">
@@ -414,10 +417,10 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
               </div>
             </div>
 
-            <p className="text-xl md:text-2xl font-medium mb-8 text-center">Uma data especial! 🌟</p>
+            <p className="text-xl md:text-2xl font-medium mb-8 text-center">{t('retrospective.stories.firstMessage.special')}</p>
 
             <div className="text-center">
-              <span className="text-2xl md:text-3xl font-bold text-white">Há {diffDays} dias atrás</span>
+              <span className="text-2xl md:text-3xl font-bold text-white">{t('retrospective.stories.firstMessage.daysAgo', { days: diffDays })}</span>
             </div>
           </div>
         </div>
@@ -431,8 +434,8 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">Quem será que começa mais as conversas?</h2>
-            <p className="text-xl md:text-2xl font-medium">Vamos descobrir quem é mais ansioso... 📱</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">{t('retrospective.transition.conversationStarter.title')}</h2>
+            <p className="text-xl md:text-2xl font-medium">{t('retrospective.transition.conversationStarter.subtitle')}</p>
             <div className="mt-10 animate-pulse">
               <span className="text-5xl md:text-6xl">📱</span>
             </div>
@@ -450,7 +453,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-            <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center">Quem começa mais as conversas?</h3>
+            <h3 className="text-2xl md:text-4xl font-bold mb-6 text-center">{t('retrospective.stories.conversationStarter.title')}</h3>
 
             <div className="w-full max-w-md mb-6">
               <div className="relative h-16 md:h-24 w-full rounded-full bg-white/20 overflow-hidden mb-2">
@@ -488,7 +491,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
             <div className="bg-white/20 rounded-lg p-4 md:p-6 text-center mb-6 max-w-xs md:max-w-md">
               <h3 className="text-xl md:text-3xl font-bold mb-2">Curiosidade:</h3>
               <p className="text-lg md:text-2xl">
-                {whoStartsMore} inicia as conversas {Math.round(startPercentage)}% das vezes! 📱
+                {whoStartsMore} {t('retrospective.stories.conversationStarter.winner')} {Math.round(startPercentage)}% das vezes! 📱
               </p>
             </div>
 
@@ -513,7 +516,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
               <span className="text-5xl md:text-6xl">💌</span>
             </div>
             <h3 className="text-2xl md:text-3xl font-bold mb-8 bg-gradient-to-r from-white to-pink-200 text-transparent bg-clip-text">
-              Um recado especial para você...
+              {t('retrospective.stories.loveMessage.title')}
             </h3>
 
             <div className="bg-white/20 rounded-xl p-6 md:p-8 backdrop-blur-sm mb-8 relative overflow-y-auto max-h-[40vh]">
@@ -521,7 +524,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
               <div className="absolute -bottom-3 -right-3 text-3xl">❞</div>
               <p className={`${getMessageFontSize(loveMessage)} italic leading-relaxed text-center break-words`}>
                 {loveMessage ||
-                  "Obrigado por compartilhar essa jornada comigo. Cada mensagem é especial e cada momento que passamos juntos é um tesouro que guardo no coração."}
+                  t('retrospective.stories.loveMessage.default')}
               </p>
             </div>
 
@@ -545,10 +548,10 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
             <div className="absolute -top-20 -left-20 w-40 h-40 bg-pink-500/30 rounded-full blur-xl animate-pulse"></div>
             <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-red-500/30 rounded-full blur-xl animate-pulse"></div>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-8 text-center">
-              E muito mais! <br /> 
+              {t('retrospective.stories.outro.title')} <br /> 
             </h1>
             <p className="text-2xl md:text-3xl text-white/90 text-center mb-8">
-              Obtenha seu site personalizado!
+              {t('retrospective.stories.outro.subtitle')}
             </p>
             <div className="flex items-center justify-center gap-6">
               <span className="text-4xl md:text-5xl">❤️</span>
@@ -560,7 +563,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
             {typeof window !== "undefined" && window.location.href.includes("/wrapped/") && (
               <div className="mt-8 bg-white/20 backdrop-blur-sm rounded-lg p-4 max-w-xs mx-auto">
                 <p className="text-sm text-center">
-                  Crie sua própria retrospectiva em{" "}
+                  {t('retrospective.stories.outro.createOwn')}{" "}
                   <a href="/" className="underline font-bold">
                     zaplove.vercel.app
                   </a>

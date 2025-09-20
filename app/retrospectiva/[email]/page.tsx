@@ -7,6 +7,8 @@ import { ArrowLeft, Loader2 } from "lucide-react"
 import { StoriesCarousel } from "@/components/stories-carousel"
 import { ShareButton } from "@/components/share-button"
 import { toast } from "@/components/ui/use-toast"
+import { useTranslations } from 'next-intl';
+import { useLocaleLink } from '@/hooks/use-locale-link';
 
 export default function RetrospectivaPorEmailPage({ params }: { params: { email: string } }) {
   const [isLoading, setIsLoading] = useState(true)
@@ -14,6 +16,9 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
   const [loveMessage, setLoveMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isBrowser, setIsBrowser] = useState<boolean>(false)
+  
+  const t = useTranslations();
+  const { createLink } = useLocaleLink();
 
   // Decodificar o email da URL
   const email = decodeURIComponent(params.email)
@@ -91,10 +96,10 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
           <p className="mb-6">{error}</p>
           <div className="flex flex-col gap-4">
             <Button asChild>
-              <Link href="/">Voltar para o início</Link>
+              <Link href={createLink('/')}>{t('retrospective.buttons.backToHome')}</Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/comece-agora">Criar nova retrospectiva</Link>
+              <Link href={createLink('/comece-agora')}>{t('retrospective.buttons.createNew')}</Link>
             </Button>
           </div>
         </div>
@@ -128,7 +133,7 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
             <ShareButton
               url={window.location.href}
               title={getPageTitle()}
-              text="Confira nossa retrospectiva de conversas!"
+              text={t('retrospective.share.text')}
               variant="outline"
               size="sm"
             />
@@ -139,7 +144,7 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
           {isLoading ? (
             <div className="aspect-[9/16] rounded-xl bg-card flex flex-col items-center justify-center">
               <Loader2 className="w-20 h-20 text-primary animate-spin mb-6" />
-              <p className="text-2xl font-medium">Carregando sua retrospectiva...</p>
+              <p className="text-2xl font-medium">{t('retrospective.loading')}</p>
             </div>
           ) : (
             <>
@@ -163,7 +168,7 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
                 <ShareButton
                   url={window.location.href}
                   title={getPageTitle()}
-                  text="Confira nossa retrospectiva de conversas!"
+                  text={t('retrospective.share.text')}
                   className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-6 px-8"
                   variant="default"
                   size="lg"
@@ -174,18 +179,18 @@ export default function RetrospectivaPorEmailPage({ params }: { params: { email:
         </div>
       </div>
       <footer className="mt-12 text-center text-muted-foreground text-sm pb-8">
-  <p>
-    Precisa de ajuda? Entre em contato conosco:{" "}
-    <a
-      href="https://wa.me/5583999359977"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="underline"
-    >
-      Clique aqui!
-    </a>
-  </p>
-</footer>
+        <p>
+          {t('retrospective.footer.help')}{" "}
+          <a
+            href="https://wa.me/5583999359977"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            {t('retrospective.footer.contact')}
+          </a>
+        </p>
+      </footer>
     </div>
   )
 }

@@ -8,14 +8,14 @@
   "navigation": {
     "metrics": "Métricas",
     "howItWorks": "Cómo Funciona",
-    "pricing": "Precio"
+    "pricing": "Precios"
   },
   "hero": {
-    "title": "Sorprende a tu amor con una retrospectiva personalizada",
+    "title": "Sorprende a tu ser querido con una retrospectiva personalizada",
     "subtitle": "Sube tu respaldo y recibe un resumen visual con datos sobre tus mensajes, emociones, frases favoritas y mucho más."
   },
   "pricing": {
-    "title": "Precio Único y Accesible",
+    "title": "Precio Único y Asequible",
     "subtitle": "Crea tu ZapLove personalizado por un precio único",
     "promotionTag": "💘 Promoción Día de San Valentín",
     "createAndSurprise": "¡Crea tu sitio y sorprende!",
@@ -36,19 +36,19 @@
         "description": "No tenemos acceso al contenido de tus conversaciones. Todo el procesamiento se hace localmente y tus datos nunca se almacenan."
       },
       "aiAnalysis": {
-        "title": "Análisis 100% por IA",
+        "title": "100% Análisis por IA",
         "description": "Todo el análisis es realizado por Inteligencia Artificial avanzada, sin intervención humana, garantizando total privacidad de tus datos."
       }
     }
   },
   "metadata": {
-    "title": "ZapLove - Sorprende a tu amor con una retrospectiva personalizada",
+    "title": "ZapLove - Sorprende a tu ser querido con una retrospectiva personalizada",
     "description": "Sube tu respaldo y recibe un resumen visual con datos sobre tus mensajes, emociones, frases favoritas y mucho más."
   },
   "flow": {
     "title": "¡Vamos a crear tu ZapLove! 🎉",
     "loading": "Preparando tu retrospectiva...",
-    "waiting": "Espera un momento",
+    "waiting": "Por favor espera un momento",
     "paymentConfirmed": "¡Pago Confirmado!",
     "zapLoveReady": "¡Tu ZapLove está listo!",
     "viewRetrospective": "Tu retrospectiva personalizada ha sido creada exitosamente. ¡Haz clic en el botón de abajo para ver tu ZapLove!",
@@ -58,11 +58,190 @@
       "detailedStats": "Estadísticas detalladas de tus conversaciones",
       "specialMoments": "Momentos especiales compartidos",
       "personalizedAnalysis": "Análisis personalizado de tu relación",
-      "organizedHistory": "Historial de mensajes organizado"
+      "organizedHistory": "Historial organizado de mensajes"
     },
     "dataSecurity": "Tus datos están seguros",
-    "dataSecurityDescription": "Tus datos personales se utilizan únicamente para el procesamiento del pago y la emisión de facturas. No compartimos tu información con terceros.",
+    "dataSecurityDescription": "Tus datos personales se usan solo para procesamiento de pagos y emisión de facturas. No compartimos tu información con terceros.",
     "plan": "Plan",
     "email": "Email"
+  },
+  "cta": {
+    "title": "¿Listo para descubrir lo que tus conversaciones dicen sobre ti?",
+    "subtitle": "¡Crea tu ZapLove ahora y compártelo con tus amigos!",
+    "button": "Comenzar Ahora",
+    "privacy": "¡Tus datos se procesan localmente y nunca se almacenan!"
+  },
+  "form": {
+    "title": "Completa tus datos y sube el archivo",
+    "loveMessage": {
+      "label": "❤️ Mensaje de amor sorpresa ❤️",
+      "special": "¡Especial!",
+      "placeholder": "Querido(a), cada mensaje que intercambiamos es una pieza de nuestra historia. Gracias por ser parte de mi vida y por todos los momentos que hemos compartido a través de estas conversaciones...",
+      "description": "Este mensaje especial se mostrará como una sorpresa romántica al final del WhatsWrapped, creando un momento inolvidable para quien lo reciba."
+    },
+    "fields": {
+      "name": "Nombre completo",
+      "namePlaceholder": "Tu nombre completo",
+      "email": "Email",
+      "emailPlaceholder": "tu@email.com",
+      "cpf": "CPF",
+      "cpfPlaceholder": "000.000.000-00",
+      "cellphone": "Celular",
+      "cellphonePlaceholder": "(00) 00000-0000"
+    }
+  },
+  "carousel": {
+    "intro": {
+      "title": "¡Hola amor!❤️ ¿Qué tal una retrospectiva de nuestra historia?",
+      "subtitle": "Descubre lo que tus conversaciones dicen sobre ti"
+    },
+    "transition": {
+      "title": "Es hora de saber quién ama más al otro...",
+      "subtitle": "¡Redoblen los tambores! 🥁"
+    }
+  },
+  "metrics": {
+    "title": "Descubre Métricas Fascinantes",
+    "subtitle": "Ve ejemplos de lo que descubrirás sobre tus conversaciones",
+    "cards": {
+      "totalLove": {
+        "title": "Total de Te Amo",
+        "description": "Cuántas veces dijiste esta frase especial"
+      },
+      "totalApologies": {
+        "title": "Total de Disculpas",
+        "description": "Cuántas veces pediste disculpas"
+      },
+      "consecutiveDays": {
+        "title": "Días Consecutivos",
+        "description": "Tu récord de días consecutivos chateando"
+      },
+      "firstMessage": {
+        "title": "Primer Mensaje",
+        "description": "Cuando todo comenzó"
+      },
+      "totalDays": {
+        "title": "Días Totales",
+        "description": "Tiempo total de conversación"
+      },
+      "conversationStarter": {
+        "title": "Inició Conversaciones",
+        "description": "Quién envía mensajes primero"
+      },
+      "mostUsedWord": {
+        "title": "Palabra Más Usada",
+        "description": "La palabra que más usas"
+      },
+      "totalMessages": {
+        "title": "Total de Mensajes",
+        "description": "Cantidad de mensajes enviados"
+      },
+      "andMore": {
+        "title": "¡Y mucho más!",
+        "description": "Descubre todas las estadísticas y curiosidades sobre tus conversaciones"
+      }
+    }
+  },
+  "howItWorks": {
+    "title": "Cómo Funciona",
+    "subtitle": "Tres pasos simples para descubrir lo que tus conversaciones dicen sobre ti",
+    "steps": {
+      "step1": {
+        "title": "Abre la conversación",
+        "description": "Selecciona la conversación o grupo que quieres analizar."
+      },
+      "step2": {
+        "title": "Haz clic en exportar chat",
+        "description": "Toca los tres puntos en la esquina superior derecha, desplázate hacia abajo y selecciona 'Exportar conversación'."
+      },
+      "step3": {
+        "title": "Elige 'Sin medios'",
+        "description": "Selecciona la opción 'Sin medios' para exportar solo el texto de las conversaciones, creando un archivo más pequeño y fácil de procesar."
+      }
+    },
+    "startNow": "Comenzar ahora"
+  },
+  "retrospective": {
+    "error": "¡Ups! Algo salió mal con tu retrospectiva! Contacta soporte, ¡te ayudaremos!",
+    "loading": "Cargando tu retrospectiva...",
+    "intro": {
+      "title": "¿Qué tal una retrospectiva de nuestra historia?",
+      "subtitle": "Descubre lo que tus conversaciones dicen sobre ti"
+    },
+    "transition": {
+      "love": {
+        "title": "Es hora de saber quién ama más al otro...",
+        "subtitle": "¡Redoblen los tambores! 🥁"
+      },
+      "messages": {
+        "title": "Intercambiaron muchos mensajes...",
+        "subtitle": "¿Vamos a ver exactamente cuántos? 👀"
+      },
+      "streak": {
+        "title": "Son muy consistentes...",
+        "subtitle": "¡Vamos a ver por cuántos días seguidos chatearon! 🔥"
+      },
+      "apologies": {
+        "title": "¿Quién pide más disculpas?",
+        "subtitle": "Vamos a descubrirlo... 🙏"
+      },
+      "firstMessage": {
+        "title": "Vamos a viajar en el tiempo...",
+        "subtitle": "¿Cuándo comenzó todo? 📅"
+      },
+      "conversationStarter": {
+        "title": "¿Quién inicia más conversaciones?",
+        "subtitle": "Vamos a descubrir quién es más ansioso... 📱"
+      }
+    },
+    "stories": {
+      "love": {
+        "title": "¿Quién dijo más te amo?",
+        "winner": "¡ama más! ❤️"
+      },
+      "messages": {
+        "title": "¿Cuántos mensajes intercambiaron?",
+        "winner": "¡envía más mensajes!"
+      },
+      "streak": {
+        "title": "¿Cuántos días seguidos chatearon?",
+        "label": "DÍAS CONSECUTIVOS",
+        "impressive": "¡IMPRESIONANTE!",
+        "veryLong": "¡ES MUCHO TIEMPO!"
+      },
+      "apologies": {
+        "title": "¿Quién pide más disculpas?",
+        "winner": "¡pide más disculpas!"
+      },
+      "firstMessage": {
+        "title": "¿Cuándo comenzó todo?",
+        "special": "¡Una fecha especial! 🌟",
+        "daysAgo": "Hace {days} días"
+      },
+      "conversationStarter": {
+        "title": "¿Quién inicia más conversaciones?",
+        "winner": "¡inicia más conversaciones!"
+      },
+      "loveMessage": {
+        "title": "Un mensaje especial para ti...",
+        "default": "Gracias por compartir este viaje conmigo. Cada mensaje es especial y cada momento que pasamos juntos es un tesoro que guardo en mi corazón."
+      },
+      "outro": {
+        "title": "¡Y mucho más!",
+        "subtitle": "¡Obtén tu sitio personalizado!",
+        "createOwn": "Crea tu propia retrospectiva en"
+      }
+    },
+    "share": {
+      "text": "¡Mira nuestra retrospectiva de conversaciones!"
+    },
+    "footer": {
+      "help": "¿Necesitas ayuda? Contáctanos:",
+      "contact": "¡Haz clic aquí!"
+    },
+    "buttons": {
+      "backToHome": "Volver al inicio",
+      "createNew": "Crear nueva retrospectiva"
+    }
   }
 }

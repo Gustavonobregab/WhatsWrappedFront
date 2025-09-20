@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { useTranslations } from 'next-intl';
 
 type MetricsData = {
   sender: string
@@ -31,6 +32,8 @@ export function StoriesCarousel({
   const [isPaused, setIsPaused] = React.useState(false)
   const [senderName, setSenderName] = React.useState<string>("")
   const [messageLove, setMessageLove] = React.useState<string | null>(null)
+  
+  const t = useTranslations();
 
   React.useEffect(() => {
     if (metricsData && metricsData.length > 0) {
@@ -43,7 +46,7 @@ export function StoriesCarousel({
   }, [metricsData, loveMessage])
 
   if (!metricsData || metricsData.length < 2) {
-    return <p>Ops! Algo deu errado na sua retrospectiva! Contate o suporte, vamos te ajudar!  </p>
+    return <p>{t('retrospective.error')}</p>
   }
 
   const user1 = metricsData[0]
@@ -93,10 +96,10 @@ export function StoriesCarousel({
             <div className="absolute -top-20 -left-20 w-40 h-40 bg-pink-500/30 rounded-full blur-xl animate-pulse"></div>
             <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-blue-500/30 rounded-full blur-xl animate-pulse"></div>
             <h1 className="text-4xl md:text-4xl font-extrabold mb-8 text-center select-none">
-              Que tal uma retrospectiva da nossa história?
+              {t('retrospective.intro.title')}
             </h1>
             <p className="text-xl md:text-xl text-white/90 text-center">
-              Descubra o que suas conversas dizem sobre você
+              {t('retrospective.intro.subtitle')}
             </p>
           </div>
         </div>
@@ -110,8 +113,8 @@ export function StoriesCarousel({
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-            <h2 className="text-3xl md:text-3xl font-bold mb-8 select-none">Tá na hora de saber quem ama mais o outro...</h2>
-            <p className="text-xl md:text-xl font-medium select-none">Rufem os tambores! 🥁</p>
+            <h2 className="text-3xl md:text-3xl font-bold mb-8 select-none">{t('retrospective.transition.love.title')}</h2>
+            <p className="text-xl md:text-xl font-medium select-none">{t('retrospective.transition.love.subtitle')}</p>
             <div className="mt-10 flex justify-center">
               <div className="animate-ping">
                 <span className="text-5xl md:text-5xl select-none">❤️</span>
@@ -131,7 +134,7 @@ export function StoriesCarousel({
       content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-            <h3 className="text-3xl md:text-3xl font-bold mb-8 text-center">Quem mandou mais te amo?</h3>
+            <h3 className="text-3xl md:text-3xl font-bold mb-8 text-center">{t('retrospective.stories.love.title')}</h3>
     
             <div className="flex items-center justify-center mb-8">
               <span className="text-4xl md:text-4xl">❤️</span>
@@ -174,7 +177,7 @@ export function StoriesCarousel({
             </div>
     
             <div className="mt-10 text-center">
-              <span className="text-2xl md:text-2xl font-extrabold text-white">{loveWinner} ama mais! ❤️</span>
+              <span className="text-2xl md:text-2xl font-extrabold text-white">{loveWinner} {t('retrospective.stories.love.winner')}</span>
             </div>
           </div>
         </div>
@@ -187,8 +190,8 @@ export function StoriesCarousel({
   content: (
   <div className="absolute inset-0 flex flex-col items-center justify-center px-6 select-none story-container">
   <div className="text-center max-w-[90%]">
-        <h2 className="text-3xl md:text-3xl font-bold mb-8">Vocês trocaram muitas mensagens...</h2>
-        <p className="text-xl md:text-xl font-medium">Vamos ver quantas exatamente? 👀</p>
+        <h2 className="text-3xl md:text-3xl font-bold mb-8">{t('retrospective.transition.messages.title')}</h2>
+        <p className="text-xl md:text-xl font-medium">{t('retrospective.transition.messages.subtitle')}</p>
         <div className="mt-10 animate-bounce">
           <span className="text-4xl md:text-4xl">⬇️</span>
         </div>
@@ -206,7 +209,7 @@ export function StoriesCarousel({
   content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-        <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">Quantas mensagens vocês trocaram?</h3>
+        <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">{t('retrospective.stories.messages.title')}</h3>
 
         <div className="bg-white/20 rounded-2xl px-6 py-3 backdrop-blur-sm text-center mb-6">
           <span className="text-4xl md:text-5xl font-black">
@@ -243,7 +246,7 @@ export function StoriesCarousel({
         </div>
 
         <div className="mt-8 text-center">
-          <span className="text-xl md:text-2xl font-bold text-white">{messageWinner} envia mais mensagens!</span>
+          <span className="text-xl md:text-2xl font-bold text-white">{messageWinner} {t('retrospective.stories.messages.winner')}</span>
         </div>
       </div>
     </div>

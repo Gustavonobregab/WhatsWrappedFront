@@ -8,19 +8,19 @@
   "navigation": {
     "metrics": "Métricas",
     "howItWorks": "Como Funciona",
-    "pricing": "Preço"
+    "pricing": "Preços"
   },
   "hero": {
     "title": "Surpreenda seu amor com uma retrospectiva personalizada",
-    "subtitle": "Carregue seu backup e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais."
+    "subtitle": "Faça upload do seu backup e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais."
   },
   "pricing": {
     "title": "Preço Único e Acessível",
-    "subtitle": "Crie seu ZapLove personalizado por um valor único",
+    "subtitle": "Crie seu ZapLove personalizado por um preço único",
     "promotionTag": "💘 Promoção Dia dos Namorados",
     "createAndSurprise": "Crie seu site e surpreenda!",
     "oneTimePayment": "Pagamento único",
-    "whatsIncluded": "O que está incluso:",
+    "whatsIncluded": "O que está incluído:",
     "features": {
       "exclusiveSite": "Site exclusivo e personalizado com sua URL",
       "completeAnalysis": "Análise completa das suas conversas",
@@ -33,17 +33,17 @@
       "title": "Privacidade e Segurança",
       "noAccess": {
         "title": "Sem acesso às suas conversas",
-        "description": "Não temos acesso ao conteúdo das suas conversas. Todo o processamento é feito localmente e seus dados nunca são armazenados."
+        "description": "Não temos acesso ao conteúdo das suas conversas. Todo processamento é feito localmente e seus dados nunca são armazenados."
       },
       "aiAnalysis": {
-        "title": "Análise 100% por IA",
-        "description": "Toda a análise é realizada por Inteligência Artificial avançada, sem intervenção humana, garantindo total privacidade dos seus dados."
+        "title": "100% Análise por IA",
+        "description": "Toda análise é realizada por Inteligência Artificial avançada, sem intervenção humana, garantindo total privacidade dos seus dados."
       }
     }
   },
   "metadata": {
     "title": "ZapLove - Surpreenda seu amor com uma retrospectiva personalizada",
-    "description": "Carregue seu backup e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais."
+    "description": "Faça upload do seu backup e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais."
   },
   "flow": {
     "title": "Vamos criar seu ZapLove! 🎉",
@@ -53,16 +53,195 @@
     "zapLoveReady": "Seu ZapLove está pronto!",
     "viewRetrospective": "Sua retrospectiva personalizada foi criada com sucesso. Clique no botão abaixo para visualizar seu ZapLove!",
     "viewMyZapLove": "Ver meu ZapLove",
-    "whatYouWillFind": "✨ O que você vai encontrar:",
+    "whatYouWillFind": "✨ O que você encontrará:",
     "features": {
       "detailedStats": "Estatísticas detalhadas das suas conversas",
       "specialMoments": "Momentos especiais compartilhados",
       "personalizedAnalysis": "Análise personalizada do seu relacionamento",
-      "organizedHistory": "Histórico de mensagens organizado"
+      "organizedHistory": "Histórico organizado de mensagens"
     },
     "dataSecurity": "Seus dados estão seguros",
-    "dataSecurityDescription": "Seus dados pessoais são utilizados apenas para o processamento do pagamento e emissão de nota fiscal. Não compartilhamos suas informações com terceiros.",
+    "dataSecurityDescription": "Seus dados pessoais são usados apenas para processamento de pagamento e emissão de nota fiscal. Não compartilhamos suas informações com terceiros.",
     "plan": "Plano",
     "email": "Email"
+  },
+  "cta": {
+    "title": "Pronto para descobrir o que suas conversas dizem sobre você?",
+    "subtitle": "Crie seu ZapLove agora e compartilhe com seus amigos!",
+    "button": "Comece Agora",
+    "privacy": "Seus dados são processados localmente e nunca armazenados!"
+  },
+  "form": {
+    "title": "Preencha seus dados e faça upload do arquivo",
+    "loveMessage": {
+      "label": "❤️ Mensagem de amor surpresa ❤️",
+      "special": "Especial!",
+      "placeholder": "Querido(a), cada mensagem que trocamos é um pedacinho da nossa história. Obrigado(a) por fazer parte da minha vida e por todos os momentos que compartilhamos através dessas conversas...",
+      "description": "Esta mensagem especial será exibida como uma surpresa romântica no final do WhatsWrapped, criando um momento inesquecível para quem receber."
+    },
+    "fields": {
+      "name": "Nome completo",
+      "namePlaceholder": "Seu nome completo",
+      "email": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "cpf": "CPF",
+      "cpfPlaceholder": "000.000.000-00",
+      "cellphone": "Celular",
+      "cellphonePlaceholder": "(00) 00000-0000"
+    }
+  },
+  "carousel": {
+    "intro": {
+      "title": "Oi amor!❤️ Que tal uma retrospectiva da nossa história?",
+      "subtitle": "Descubra o que suas conversas dizem sobre você"
+    },
+    "transition": {
+      "title": "Tá na hora de saber quem ama mais o outro...",
+      "subtitle": "Rufem os tambores! 🥁"
+    }
+  },
+  "metrics": {
+    "title": "Descubra Métricas Fascinantes",
+    "subtitle": "Veja exemplos do que você vai descobrir sobre suas conversas",
+    "cards": {
+      "totalLove": {
+        "title": "Total de Te Amo",
+        "description": "Quantas vezes você disse essa frase especial"
+      },
+      "totalApologies": {
+        "title": "Total de Desculpas",
+        "description": "Quantas vezes você pediu desculpas"
+      },
+      "consecutiveDays": {
+        "title": "Dias Consecutivos",
+        "description": "Seu recorde de dias consecutivos conversando"
+      },
+      "firstMessage": {
+        "title": "Primeira Mensagem",
+        "description": "Quando tudo começou"
+      },
+      "totalDays": {
+        "title": "Dias Totais",
+        "description": "Tempo total de conversa"
+      },
+      "conversationStarter": {
+        "title": "Iniciou Conversas",
+        "description": "Quem manda mensagem primeiro"
+      },
+      "mostUsedWord": {
+        "title": "Palavra Mais Usada",
+        "description": "A palavra que você mais usa"
+      },
+      "totalMessages": {
+        "title": "Total de Mensagens",
+        "description": "Quantidade de mensagens enviadas"
+      },
+      "andMore": {
+        "title": "E muito mais!",
+        "description": "Descubra todas as estatísticas e curiosidades sobre suas conversas"
+      }
+    }
+  },
+  "howItWorks": {
+    "title": "Como Funciona",
+    "subtitle": "Três passos simples para descobrir o que suas conversas dizem sobre você",
+    "steps": {
+      "step1": {
+        "title": "Abra a conversa",
+        "description": "Selecione a conversa ou grupo que você deseja analisar."
+      },
+      "step2": {
+        "title": "Clique em exportar chat",
+        "description": "Toque nos três pontos no canto superior direito, role para baixo e selecione 'Exportar conversa'."
+      },
+      "step3": {
+        "title": "Escolha 'Sem mídia'",
+        "description": "Selecione a opção 'Sem mídia' para exportar apenas o texto das conversas, criando um arquivo menor e mais fácil de processar."
+      }
+    },
+    "startNow": "Comece agora"
+  },
+  "retrospective": {
+    "error": "Ops! Algo deu errado na sua retrospectiva! Contate o suporte, vamos te ajudar!",
+    "loading": "Carregando sua retrospectiva...",
+    "intro": {
+      "title": "Que tal uma retrospectiva da nossa história?",
+      "subtitle": "Descubra o que suas conversas dizem sobre você"
+    },
+    "transition": {
+      "love": {
+        "title": "Tá na hora de saber quem ama mais o outro...",
+        "subtitle": "Rufem os tambores! 🥁"
+      },
+      "messages": {
+        "title": "Vocês trocaram muitas mensagens...",
+        "subtitle": "Vamos ver quantas exatamente? 👀"
+      },
+      "streak": {
+        "title": "Vocês são muito consistentes...",
+        "subtitle": "Vamos ver por quantos dias seguidos vocês conversaram! 🔥"
+      },
+      "apologies": {
+        "title": "Quem será que pede mais desculpas?",
+        "subtitle": "Vamos descobrir... 🙏"
+      },
+      "firstMessage": {
+        "title": "Vamos voltar no tempo...",
+        "subtitle": "Quando tudo começou? 📅"
+      },
+      "conversationStarter": {
+        "title": "Quem será que começa mais as conversas?",
+        "subtitle": "Vamos descobrir quem é mais ansioso... 📱"
+      }
+    },
+    "stories": {
+      "love": {
+        "title": "Quem mandou mais te amo?",
+        "winner": "ama mais! ❤️"
+      },
+      "messages": {
+        "title": "Quantas mensagens vocês trocaram?",
+        "winner": "envia mais mensagens!"
+      },
+      "streak": {
+        "title": "Quantos dias seguidos vocês conversaram?",
+        "label": "DIAS CONSECUTIVOS",
+        "impressive": "IMPRESSIONANTE!",
+        "veryLong": "É MUITO TEMPO GENTE!"
+      },
+      "apologies": {
+        "title": "Quem pede mais desculpas?",
+        "winner": "pede mais desculpas!"
+      },
+      "firstMessage": {
+        "title": "Quando tudo começou?",
+        "special": "Uma data especial! 🌟",
+        "daysAgo": "Há {days} dias atrás"
+      },
+      "conversationStarter": {
+        "title": "Quem começa mais as conversas?",
+        "winner": "começa mais as conversas!"
+      },
+      "loveMessage": {
+        "title": "Um recado especial para você...",
+        "default": "Obrigado por compartilhar essa jornada comigo. Cada mensagem é especial e cada momento que passamos juntos é um tesouro que guardo no coração."
+      },
+      "outro": {
+        "title": "E muito mais!",
+        "subtitle": "Obtenha seu site personalizado!",
+        "createOwn": "Crie sua própria retrospectiva em"
+      }
+    },
+    "share": {
+      "text": "Confira nossa retrospectiva de conversas!"
+    },
+    "footer": {
+      "help": "Precisa de ajuda? Entre em contato conosco:",
+      "contact": "Clique aqui!"
+    },
+    "buttons": {
+      "backToHome": "Voltar para o início",
+      "createNew": "Criar nova retrospectiva"
+    }
   }
 }
