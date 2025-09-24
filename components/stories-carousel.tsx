@@ -128,7 +128,7 @@ export function StoriesCarousel({
     // Total de 'Te Amo'
     {
       type: "data",
-      title: "Quem mandou mais te amo?",
+      title: t('retrospective.stories.love.title'),
       subtitle: "",
       bgColor: "from-rose-500 via-red-500 to-pink-600",
       content: (
@@ -138,7 +138,7 @@ export function StoriesCarousel({
     
             <div className="flex items-center justify-center mb-8">
               <span className="text-4xl md:text-4xl">❤️</span>
-              <h2 className="text-4xl md:text-4xl font-bold mx-3">TE AMO</h2>
+              <h2 className="text-4xl md:text-4xl font-bold mx-3">{t('retrospective.stories.love.phrase')}</h2>
               <span className="text-4xl md:text-4xl">❤️</span>
             </div>
     
@@ -260,8 +260,8 @@ export function StoriesCarousel({
   content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-        <h2 className="text-3xl md:text-3xl font-bold mb-8">Vocês são muito consistentes...</h2>
-        <p className="text-xl md:text-xl font-medium">Vamos ver por quantos dias seguidos vocês conversaram! 🔥</p>
+        <h2 className="text-3xl md:text-3xl font-bold mb-8">{t('retrospective.transition.streak.title')}</h2>
+        <p className="text-xl md:text-xl font-medium">{t('retrospective.transition.streak.subtitle')}</p>
         <div className="mt-10 animate-pulse">
           <span className="text-5xl md:text-5xl">🔥</span>
         </div>
@@ -273,14 +273,14 @@ export function StoriesCarousel({
 // Dias Consecutivos
 {
   type: "data",
-  title: "Quantos dias seguidos vocês conversaram?",
+  title: t('retrospective.stories.streak.title'),
   subtitle: "",
   bgColor: "from-purple-600 via-indigo-600 to-blue-600",
   content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
         <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">
-          Quantos dias seguidos vocês conversaram?
+          {t('retrospective.stories.streak.title')}
         </h3>
 
         <div className="flex items-center justify-center gap-3 mb-6">
@@ -292,7 +292,7 @@ export function StoriesCarousel({
         </div>
 
         <p className="text-xl md:text-2xl font-bold bg-white/20 px-5 py-2 rounded-full mb-6 text-center">
-          DIAS CONSECUTIVOS
+          {t('retrospective.stories.streak.label')}
         </p>
 
         <div className="grid grid-cols-7 gap-1 md:gap-2 mb-6 max-w-xs md:max-w-md mx-auto">
@@ -306,7 +306,7 @@ export function StoriesCarousel({
         </div>
 
         <p className="text-xl md:text-2xl font-extrabold bg-gradient-to-r from-yellow-400 to-orange-400 text-transparent bg-clip-text text-center">
-          {user1.messageStreak > 300 ? "É MUITO TEMPO GENTE!" : "IMPRESSIONANTE!"}
+          {user1.messageStreak > 300 ? t('retrospective.stories.streak.veryLong') : t('retrospective.stories.streak.impressive')}
         </p>
       </div>
     </div>
@@ -320,8 +320,8 @@ export function StoriesCarousel({
   content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-        <h2 className="text-3xl md:text-3xl font-bold mb-8">Quem será que pede mais desculpas?</h2>
-        <p className="text-xl md:text-xl font-medium">Vamos descobrir... 🙏</p>
+        <h2 className="text-3xl md:text-3xl font-bold mb-8">{t('retrospective.transition.apologies.title')}</h2>
+        <p className="text-xl md:text-xl font-medium">{t('retrospective.transition.apologies.subtitle')}</p>
         <div className="mt-10 animate-bounce">
           <span className="text-4xl md:text-4xl">🙏</span>
         </div>
@@ -333,13 +333,13 @@ export function StoriesCarousel({
 // Total de Desculpas
 {
   type: "data",
-  title: "Quem pede mais desculpas?",
+  title: t('retrospective.stories.apologies.title'),
   subtitle: "",
   bgColor: "from-teal-500 via-emerald-500 to-green-500",
   content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-        <h3 className="text-3xl md:text-3xl font-bold mb-8 text-center">Quem pede mais desculpas?</h3>
+        <h3 className="text-3xl md:text-3xl font-bold mb-8 text-center">{t('retrospective.stories.apologies.title')}</h3>
 
         <div className="flex items-center justify-center mb-8">
           <span className="text-3xl md:text-3xl">🙏</span>
@@ -387,7 +387,7 @@ export function StoriesCarousel({
 
         <div className="mt-10 text-center">
           <span className="text-2xl md:text-2xl font-extrabold text-white">
-            {apologyWinner} pede mais desculpas!
+            {apologyWinner} {t('retrospective.stories.apologies.winner')}
           </span>
         </div>
       </div>
@@ -402,8 +402,8 @@ export function StoriesCarousel({
   content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-        <h2 className="text-3xl md:text-3xl font-bold mb-8">Vamos voltar no tempo...</h2>
-        <p className="text-xl md:text-xl font-medium">Quando tudo começou? 📅</p>
+        <h2 className="text-3xl md:text-3xl font-bold mb-8">{t('retrospective.transition.firstMessage.title')}</h2>
+        <p className="text-xl md:text-xl font-medium">{t('retrospective.transition.firstMessage.subtitle')}</p>
         <div className="mt-10 animate-spin">
           <span className="text-5xl md:text-5xl">⏰</span>
         </div>
@@ -415,13 +415,13 @@ export function StoriesCarousel({
 // Dia da Primeira Mensagem
 {
   type: "data",
-  title: "Quando tudo começou?",
+  title: t('retrospective.stories.firstMessage.title'),
   subtitle: "",
   bgColor: "from-amber-500 via-orange-500 to-yellow-500",
   content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-        <h3 className="text-3xl md:text-3xl font-bold mb-8 text-center">Quando tudo começou?</h3>
+        <h3 className="text-3xl md:text-3xl font-bold mb-8 text-center">{t('retrospective.stories.firstMessage.title')}</h3>
 
         <div className="flex items-center justify-center mb-6">
           <div className="bg-white/20 rounded-2xl px-8 py-4 backdrop-blur-sm">
@@ -429,10 +429,10 @@ export function StoriesCarousel({
           </div>
         </div>
 
-        <p className="text-xl md:text-xl font-medium mb-8 text-center">Uma data especial! 🌟</p>
+        <p className="text-xl md:text-xl font-medium mb-8 text-center">{t('retrospective.stories.firstMessage.special')}</p>
 
         <div className="text-center">
-          <span className="text-2xl md:text-2xl font-bold text-white">Há {diffDays} dias atrás</span>
+          <span className="text-2xl md:text-2xl font-bold text-white">{t('retrospective.stories.firstMessage.daysAgo', { days: diffDays })}</span>
         </div>
       </div>
     </div>
@@ -446,8 +446,8 @@ export function StoriesCarousel({
   content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="text-center max-w-[90%]">
-        <h2 className="text-3xl md:text-3xl font-bold mb-8">Quem será que começa mais as conversas?</h2>
-        <p className="text-xl md:text-xl font-medium">Vamos descobrir quem é mais ansioso... 📱</p>
+        <h2 className="text-3xl md:text-3xl font-bold mb-8">{t('retrospective.transition.conversationStarter.title')}</h2>
+        <p className="text-xl md:text-xl font-medium">{t('retrospective.transition.conversationStarter.subtitle')}</p>
         <div className="mt-10 animate-pulse">
           <span className="text-5xl md:text-5xl">📱</span>
         </div>
@@ -458,13 +458,13 @@ export function StoriesCarousel({
 
 {
   type: "data",
-  title: "Quem começa mais as conversas?",
+  title: t('retrospective.stories.conversationStarter.title'),
   subtitle: "",
   bgColor: "from-fuchsia-500 via-purple-500 to-violet-500",
   content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
 <div className="w-full max-w-[90%] flex flex-col items-center">
-        <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">Quem começa mais as conversas?</h3>
+        <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">{t('retrospective.stories.conversationStarter.title')}</h3>
 
         <div className="w-full max-w-md mb-6">
           <div className="relative h-16 md:h-24 w-full rounded-full bg-white/20 overflow-hidden mb-2">
@@ -500,15 +500,15 @@ export function StoriesCarousel({
         </div>
 
         <div className="bg-white/20 rounded-lg p-4 md:p-6 text-center mb-6 max-w-xs md:max-w-md">
-          <h3 className="text-xl md:text-2xl font-bold mb-2">Curiosidade:</h3>
+          <h3 className="text-xl md:text-2xl font-bold mb-2">{t('retrospective.stories.conversationStarter.curiosityLabel')}</h3>
           <p className="text-lg md:text-xl">
-            {whoStartsMore} inicia as conversas {Math.round(startPercentage)}% das vezes! 📱
+            {whoStartsMore} {t('retrospective.stories.conversationStarter.curiosity', { percentage: Math.round(startPercentage) })}
           </p>
         </div>
 
         <div className="text-center">
           <span className="text-xl md:text-2xl font-bold text-white">
-            {user1.daysStartedConversation + user2.daysStartedConversation} conversas iniciadas
+            {user1.daysStartedConversation + user2.daysStartedConversation} {t('retrospective.stories.conversationStarter.totalConversations')}
           </span>
         </div>
       </div>
@@ -518,12 +518,12 @@ export function StoriesCarousel({
 // Mensagem personalizada (sem alteração pois usa função dinâmica)
 {
   type: "data",
-  title: "Quem envia mais fotos?",
+  title: t('retrospective.stories.photos.title'),
   subtitle: "",
   bgColor: "from-yellow-400 via-orange-400 to-pink-500",
   content: (
 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
-<h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">Quem manda mais fotos?</h3>
+<h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">{t('retrospective.stories.photos.title')}</h3>
 
       <div className="w-full max-w-md mb-6">
         <div className="relative h-16 md:h-24 w-full rounded-full bg-white/20 overflow-hidden mb-2">
@@ -552,7 +552,7 @@ export function StoriesCarousel({
 
       <div className="text-center mt-6">
         <span className="text-xl md:text-2xl font-bold text-white">
-          Foram enviadas {user1.totalPhotos + user2.totalPhotos} fotos no total! 📸
+          {t('retrospective.stories.photos.totalPhotos', { total: user1.totalPhotos + user2.totalPhotos })}
         </span>
       </div>
     </div>
@@ -566,8 +566,8 @@ export function StoriesCarousel({
   content: (
     <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
       <div className="text-center max-w-[90%]">
-        <h2 className="text-3xl md:text-3xl font-bold mb-8">Qual palavra vocês mais usam?</h2>
-        <p className="text-xl md:text-xl font-medium">Vamos descobrir... 📝</p>
+        <h2 className="text-3xl md:text-3xl font-bold mb-8">{t('retrospective.transition.words.title')}</h2>
+        <p className="text-xl md:text-xl font-medium">{t('retrospective.transition.words.subtitle')}</p>
         <div className="mt-10 animate-bounce">
           <span className="text-5xl md:text-5xl">📝</span>
         </div>
@@ -579,13 +579,13 @@ export function StoriesCarousel({
 // Palavra Mais Usada
 {
   type: "data",
-  title: "Qual palavra vocês mais usam?",
+  title: t('retrospective.stories.words.title'),
   subtitle: "",
   bgColor: "from-cyan-500 via-blue-500 to-indigo-500",
   content: (
     <div className="absolute inset-0 flex flex-col items-center justify-center px-6 story-container">
       <div className="w-full max-w-[90%] flex flex-col items-center">
-        <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">Qual palavra vocês mais usam?</h3>
+        <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center">{t('retrospective.stories.words.title')}</h3>
 
         <div className="w-full space-y-6 max-w-md">
           <div>
@@ -611,7 +611,7 @@ export function StoriesCarousel({
 
         <div className="mt-8 text-center">
           <span className="text-xl md:text-2xl font-bold text-white">
-            {user1.mostUsedWordCount > user2.mostUsedWordCount ? user1.sender : user2.sender} usa mais a palavra "{user1.mostUsedWordCount > user2.mostUsedWordCount ? user1.mostUsedWord : user2.mostUsedWord}"!
+            {user1.mostUsedWordCount > user2.mostUsedWordCount ? user1.sender : user2.sender} {t('retrospective.stories.words.winner', { word: user1.mostUsedWordCount > user2.mostUsedWordCount ? user1.mostUsedWord : user2.mostUsedWord })}
           </span>
         </div>
       </div>
@@ -629,15 +629,14 @@ export function StoriesCarousel({
           <span className="text-5xl md:text-5xl">💌</span>
         </div>
         <h3 className="text-2xl md:text-2xl font-bold mb-8 bg-gradient-to-r from-white to-pink-200 text-transparent bg-clip-text">
-          Um recado especial para você...
+          {t('retrospective.stories.loveMessage.title')}
         </h3>
 
         <div className="bg-white/20 rounded-xl p-6 md:p-8 backdrop-blur-sm mb-8 relative overflow-y-auto max-h-[40vh]">
           <div className="absolute -top-3 -left-3 text-3xl">❝</div>
           <div className="absolute -bottom-3 -right-3 text-3xl">❞</div>
           <p className={`${getMessageFontSize(messageLove)} italic leading-relaxed text-center break-words`}>
-            {messageLove ||
-              "Obrigado por compartilhar essa jornada comigo. Cada mensagem é especial e cada momento que passamos juntos é um tesouro que guardo no coração."}
+            {messageLove || t('retrospective.stories.loveMessage.default')}
           </p>
         </div>
 
@@ -661,10 +660,10 @@ export function StoriesCarousel({
         <div className="absolute -top-20 -left-20 w-40 h-40 bg-pink-500/30 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-red-500/30 rounded-full blur-xl animate-pulse"></div>
         <h1 className="text-4xl md:text-4xl font-extrabold mb-8 text-center">
-          Surpreenda seu amor <br /> 2025
+          {t('retrospective.stories.outro.title')} <br /> 2025
         </h1>
         <p className="text-2xl md:text-2xl text-white/90 text-center mb-8">
-          Obrigado por compartilhar suas conversas conosco!
+          {t('retrospective.stories.outro.subtitle')}
         </p>
         <div className="flex items-center justify-center gap-6">
           <span className="text-4xl md:text-4xl">❤️</span>
@@ -675,7 +674,7 @@ export function StoriesCarousel({
         {typeof window !== "undefined" && window.location.href.includes("/wrapped/") && (
           <div className="mt-8 bg-white/20 backdrop-blur-sm rounded-lg p-4 max-w-xs mx-auto">
             <p className="text-sm text-center">
-              Crie sua própria retrospectiva em{" "}
+              {t('retrospective.stories.outro.createOwn')}{" "}
               <a href="/" className="underline font-bold">
                 zaplove.vercel.app
               </a>

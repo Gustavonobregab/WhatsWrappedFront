@@ -63,7 +63,13 @@
     "dataSecurity": "Tus datos están seguros",
     "dataSecurityDescription": "Tus datos personales se usan solo para procesamiento de pagos y emisión de facturas. No compartimos tu información con terceros.",
     "plan": "Plan",
-    "email": "Email"
+    "email": "Email",
+    "steps": {
+      "instructions": "Instrucciones",
+      "upload": "Subida",
+      "plan": "Plan",
+      "payment": "Pago"
+    }
   },
   "cta": {
     "title": "¿Listo para descubrir lo que tus conversaciones dicen sobre ti?",
@@ -97,7 +103,23 @@
       "fileInfo": "Archivo seleccionado: {name} ({size} MB)"
     },
     "processing": "Procesando...",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "errors": {
+      "nameRequired": "El nombre es obligatorio",
+      "invalidEmail": "Email inválido",
+      "invalidCpf": "CPF inválido",
+      "invalidCellphone": "Celular inválido",
+      "fileRequired": "El archivo es obligatorio",
+      "invalidFile": "El archivo debe ser un ZIP",
+      "fileTooLarge": "Archivo muy grande (máx. 30MB)",
+      "invalidWhatsAppFile": "Archivo de WhatsApp inválido",
+      "invalidApiResponse": "Respuesta inválida de la API",
+      "processingError": "Error al procesar archivo",
+      "errorTitle": "Error",
+      "unknownError": "Error desconocido",
+      "paymentRedirectError": "Error al redirigir al pago",
+      "paymentStartError": "Error al iniciar pago"
+    }
   },
   "carousel": {
     "intro": {
@@ -201,12 +223,17 @@
       "conversationStarter": {
         "title": "¿Quién inicia más conversaciones?",
         "subtitle": "Vamos a descubrir quién es más ansioso... 📱"
+      },
+      "words": {
+        "title": "¿Qué palabra usan más?",
+        "subtitle": "Vamos a descubrirlo... 📝"
       }
     },
     "stories": {
       "love": {
         "title": "¿Quién dijo más te amo?",
-        "winner": "¡ama más! ❤️"
+        "winner": "¡ama más! ❤️",
+        "phrase": "TE AMO"
       },
       "messages": {
         "title": "¿Cuántos mensajes intercambiaron?",
@@ -229,15 +256,22 @@
       },
       "conversationStarter": {
         "title": "¿Quién inicia más conversaciones?",
-        "winner": "¡inicia más conversaciones!"
+        "winner": "¡inicia más conversaciones!",
+        "curiosity": "inicia las conversaciones {percentage}% de las veces! 📱",
+        "curiosityLabel": "Curiosidad:",
+        "totalConversations": "conversaciones iniciadas"
       },
-      "loveMessage": {
-        "title": "Un mensaje especial para ti...",
-        "default": "Gracias por compartir este viaje conmigo. Cada mensaje es especial y cada momento que pasamos juntos es un tesoro que guardo en mi corazón."
+      "photos": {
+        "title": "¿Quién envía más fotos?",
+        "totalPhotos": "¡Se enviaron un total de {total} fotos! 📸"
+      },
+      "words": {
+        "title": "¿Qué palabra usan más?",
+        "winner": "¡usa más la palabra \"{word}\"!"
       },
       "outro": {
-        "title": "¡Y mucho más!",
-        "subtitle": "¡Obtén tu sitio personalizado!",
+        "title": "Sorprende a tu amor",
+        "subtitle": "¡Gracias por compartir tus conversaciones con nosotros!",
         "createOwn": "Crea tu propia retrospectiva en"
       }
     },
@@ -251,6 +285,68 @@
     "buttons": {
       "backToHome": "Volver al inicio",
       "createNew": "Crear nueva retrospectiva"
+    }
+  },
+  "plan": {
+    "title": "Elige tu ZapLove",
+    "premium": {
+      "name": "PREMIUM",
+      "description": "¡Página personalizada + QR Code exclusivo para sorprender aún más!",
+      "feature": "Recibe un QR Code único para compartir tu retrospectiva de forma mágica."
+    },
+    "basic": {
+      "name": "BÁSICO",
+      "description": "¡Transforma tu conversación en una página personalizada e inolvidable!",
+      "feature": "Ideal para quienes quieren inmortalizar el momento de forma simple y especial."
+    },
+    "continue": "Continuar"
+  },
+  "payment": {
+    "title": "¡Solo falta finalizar!",
+    "subtitle": "Selecciona cómo prefieres finalizar tu compra",
+    "creditCard": {
+      "title": "Tarjeta de Crédito",
+      "description": "Paga con tu tarjeta de crédito"
+    },
+    "pix": {
+      "title": "PIX",
+      "description": "Paga instantáneamente con PIX"
+    },
+    "pixPayment": {
+      "title": "Finaliza tu pago",
+      "promotion": "💘 Promoción Día de San Valentín",
+      "qrCode": "QR Code PIX",
+      "pixCode": "Código PIX",
+      "timeRemaining": "Tiempo restante:",
+      "expirationWarning": "El pago expira automáticamente después de este tiempo.",
+      "confirmed": "¡Pago confirmado!",
+      "redirecting": "Redirigiendo a tu retrospectiva...",
+      "copied": "¡Código PIX copiado!",
+      "timeExpired": "Tiempo expirado",
+      "timeExpiredDescription": "No completaste el pago a tiempo.",
+      "planChanged": "Plan cambiado",
+      "planChangedDescription": "Generando nuevo pago con el plan seleccionado.",
+      "error": "Error",
+      "paymentError": "Error al iniciar pago."
+    },
+    "discount": {
+      "title": "Finaliza tu pago",
+      "promotion": "💘 Oferta Especial con Descuento",
+      "price": "R$ 13,45",
+      "discount": "50% OFF",
+      "originalPrice": "R$ 26,90",
+      "limitedTime": "Oferta por tiempo limitado",
+      "qrCode": "QR Code PIX",
+      "pixCode": "Código PIX",
+      "timeRemaining": "Tiempo restante:",
+      "expirationWarning": "El pago expira automáticamente después de este tiempo.",
+      "confirmed": "¡Pago confirmado!",
+      "redirecting": "Redirigiendo...",
+      "copied": "¡Código PIX copiado!",
+      "timeExpired": "Tiempo expirado",
+      "timeExpiredDescription": "No completaste el pago a tiempo.",
+      "error": "Error",
+      "noPaymentData": "Datos de pago no encontrados."
     }
   }
 }

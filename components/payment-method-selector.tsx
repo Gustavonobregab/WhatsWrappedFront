@@ -1,4 +1,5 @@
 import { CreditCard, QrCode } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 interface PaymentMethodSelectorProps {
   onSelectPix: () => void;
@@ -6,11 +7,13 @@ interface PaymentMethodSelectorProps {
 }
 
 export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: PaymentMethodSelectorProps) {
+  const t = useTranslations();
+  
   return (
     <div className="space-y-8 flex flex-col items-center justify-center min-h-[500px]">
       <div className="text-center">
-        <h1 className="text-4xl font-extrabold mb-4 text-pink-600">Agora só finalizar!</h1>
-        <p className="text-lg text-muted-foreground">Selecione como você prefere finalizar sua compra</p>
+        <h1 className="text-4xl font-extrabold mb-4 text-pink-600">{t('payment.title')}</h1>
+        <p className="text-lg text-muted-foreground">{t('payment.subtitle')}</p>
       </div>
 
       <div className="grid gap-6 w-full max-w-md">
@@ -40,9 +43,9 @@ export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: Payme
     </div>
     <div className="text-left">
       <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
-        Cartão de Crédito
+        {t('payment.creditCard.title')}
       </h3>
-      <p className="text-base text-gray-600">Pague com seu cartão de crédito</p>
+      <p className="text-base text-gray-600">{t('payment.creditCard.description')}</p>
     </div>
   </div>
 </button>
@@ -74,9 +77,9 @@ export function PaymentMethodSelector({ onSelectPix, onSelectCreditCard }: Payme
     </div>
     <div className="text-left">
       <h3 className="text-xl font-semibold text-gray-900 group-hover:text-green-700 transition-colors">
-        PIX
+        {t('payment.pix.title')}
       </h3>
-      <p className="text-base text-gray-600">Pague instantaneamente com PIX</p>
+      <p className="text-base text-gray-600">{t('payment.pix.description')}</p>
     </div>
   </div>
 </button>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { useTranslations } from 'next-intl';
 
 interface PageProps {
   params: {
@@ -13,6 +14,7 @@ interface PageProps {
 }
 
 export default function PagamentoDescontoPage({ params }: PageProps) {
+  const t = useTranslations();
   const [paymentData, setPaymentData] = useState<any>(null);
   const [paymentStatus, setPaymentStatus] = useState("PENDING");
   const [copied, setCopied] = useState(false);
@@ -25,7 +27,7 @@ export default function PagamentoDescontoPage({ params }: PageProps) {
   useEffect(() => {
     const existingPaymentData = sessionStorage.getItem("paymentData");
     if (!existingPaymentData) {
-      toast({ title: "Erro", description: "Dados de pagamento não encontrados." });
+      toast({ title: t('payment.discount.error'), description: t('payment.discount.noPaymentData') });
       router.push("/comece-agora");
       return;
     }
@@ -37,7 +39,7 @@ export default function PagamentoDescontoPage({ params }: PageProps) {
     const remaining = 300 - elapsed;
 
     if (remaining <= 0) {
-      toast({ title: "Tempo expirado", description: "Você não finalizou o pagamento a tempo." });
+      toast({ title: t('payment.discount.timeExpired'), description: t('payment.discount.timeExpiredDescription') });
       sessionStorage.removeItem("paymentData");
       sessionStorage.removeItem("paymentStart");
       sessionStorage.removeItem("cupomAplicado");
@@ -59,7 +61,7 @@ export default function PagamentoDescontoPage({ params }: PageProps) {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(countdown);
-          toast({ title: "Tempo expirado", description: "Você não finalizou o pagamento a tempo." });
+          toast({ title: t('payment.discount.timeExpired'), description: t('payment.discount.timeExpiredDescription') });
           sessionStorage.removeItem("paymentData");
           sessionStorage.removeItem("paymentStart");
           sessionStorage.removeItem("cupomAplicado");
@@ -92,7 +94,7 @@ export default function PagamentoDescontoPage({ params }: PageProps) {
           sessionStorage.removeItem("codigoCupom");
           setPaymentStatus("PAID");
 
-          toast({ title: "Pagamento confirmado!", description: "Redirecionando..." });
+          toast({ title: t('payment.discount.confirmed'), description: t('payment.discount.redirecting') });
 
           // Redirecionar para a página de sucesso
           setTimeout(() => {
@@ -110,7 +112,7 @@ export default function PagamentoDescontoPage({ params }: PageProps) {
     navigator.clipboard.writeText(paymentData.pixCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
-    toast({ title: "Código PIX copiado!" });
+    toast({ title: t('payment.discount.copied') });
   };
 
   const formatTime = (seconds: number) => {
@@ -132,30 +134,30 @@ export default function PagamentoDescontoPage({ params }: PageProps) {
       <div className="container max-w-md mx-auto bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-white/40">
         {paymentStatus === "PENDING" ? (
           <>
-            <h1 className="text-3xl font-extrabold text-center mb-4 text-pink-600">Finalize seu pagamento</h1>
+            <h1 className="text-3xl font-extrabold text-center mb-4 text-pink-600">{t('payment.discount.title')}</h1>
 
             <div className="text-center mb-4">
               <div className="inline-block bg-pink-100 text-pink-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-2 shadow-sm">
-                💘 Oferta Especial com Desconto
+                {t('payment.discount.promotion')}
               </div>
               
               <div className="flex items-center justify-center gap-2 mb-2">
-                <p className="text-2xl font-bold text-black">R$ 13,45</p>
+                <p className="text-2xl font-bold text-black">{t('payment.discount.price')}</p>
                 <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">
-                  50% OFF
+                  {t('payment.discount.discount')}
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground line-through">R$ 26,90</p>
-              <p className="text-sm text-muted-foreground">Oferta por tempo limitado</p>
+              <p className="text-sm text-muted-foreground line-through">{t('payment.discount.originalPrice')}</p>
+              <p className="text-sm text-muted-foreground">{t('payment.discount.limitedTime')}</p>
             </div>
 
             <div className="flex justify-center mb-6">
-              <img src={paymentData.pixQrCode} alt="QR Code PIX" className="w-72 h-72 rounded-md shadow" />
+              <img src={paymentData.pixQrCode} alt={t('payment.discount.qrCode')} className="w-72 h-72 rounded-md shadow" />
             </div>
 
             <div className="bg-white p-4 rounded mb-4 shadow-inner">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Código PIX</span>
+                <span className="text-sm font-medium">{t('payment.discount.pixCode')}</span>
                 <Button variant="ghost" size="sm" onClick={copyPixCode}>
                   {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                 </Button>
@@ -171,17 +173,17 @@ export default function PagamentoDescontoPage({ params }: PageProps) {
             </div>
 
             <p className="text-center text-sm text-pink-600 font-semibold mb-1">
-              Tempo restante: {formatTime(timeLeft)}
+              {t('payment.discount.timeRemaining')} {formatTime(timeLeft)}
             </p>
             <p className="text-center text-xs text-muted-foreground mb-4">
-              O pagamento expira automaticamente após esse tempo.
+              {t('payment.discount.expirationWarning')}
             </p>
           </>
         ) : (
           <div className="text-center py-16">
             <Check className="h-16 w-16 text-green-500 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold text-green-600">Pagamento confirmado!</h2>
-            <p className="mt-2 text-muted-foreground">Redirecionando para sua retrospectiva...</p>
+            <h2 className="text-2xl font-bold text-green-600">{t('payment.discount.confirmed')}</h2>
+            <p className="mt-2 text-muted-foreground">{t('payment.discount.redirecting')}</p>
           </div>
         )}
       </div>

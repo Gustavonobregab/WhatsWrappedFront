@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { useTranslations } from 'next-intl';
 
 export function PixPaymentScreen() {
+  const t = useTranslations();
   const [userData, setUserData] = useState<any>(null);
   const [paymentData, setPaymentData] = useState<any>(null);
   const [paymentStatus, setPaymentStatus] = useState("PENDING");
@@ -61,7 +63,7 @@ export function PixPaymentScreen() {
       startStatusPolling(result.data.paymentId);
     } catch (err) {
       console.error(err);
-      toast({ title: "Erro", description: "Erro ao iniciar pagamento." });
+      toast({ title: t('payment.pixPayment.error'), description: t('payment.pixPayment.paymentError') });
       router.push("/comece-agora");
     }
   };
@@ -93,8 +95,8 @@ export function PixPaymentScreen() {
       // Se plano mudou, mostrar toast
       if (storedPlan && currentPlan && storedPlan !== currentPlan) {
         toast({ 
-          title: "Plano alterado", 
-          description: "Gerando novo pagamento com o plano selecionado." 
+          title: t('payment.pixPayment.planChanged'), 
+          description: t('payment.pixPayment.planChangedDescription') 
         });
       }
       
@@ -112,7 +114,7 @@ export function PixPaymentScreen() {
       const remaining = 300 - elapsed;
 
       if (remaining <= 0) {
-        toast({ title: "Tempo expirado", description: "Você não finalizou o pagamento a tempo." });
+        toast({ title: t('payment.pixPayment.timeExpired'), description: t('payment.pixPayment.timeExpiredDescription') });
         sessionStorage.removeItem("paymentData");
         sessionStorage.removeItem("paymentStart");
         sessionStorage.removeItem("currentPlan");
@@ -133,7 +135,7 @@ export function PixPaymentScreen() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(countdown);
-          toast({ title: "Tempo expirado", description: "Você não finalizou o pagamento a tempo." });
+          toast({ title: t('payment.pixPayment.timeExpired'), description: t('payment.pixPayment.timeExpiredDescription') });
           sessionStorage.removeItem("paymentData");
           sessionStorage.removeItem("paymentStart");
           sessionStorage.removeItem("currentPlan");
@@ -162,7 +164,7 @@ export function PixPaymentScreen() {
           sessionStorage.removeItem("currentPlan");
           setPaymentStatus("PAID");
 
-          toast({ title: "Pagamento confirmado!", description: "Redirecionando..." });
+          toast({ title: t('payment.pixPayment.confirmed'), description: t('payment.pixPayment.redirecting') });
 
           // Redirecionar para a página de sucesso
           setTimeout(() => {
@@ -181,7 +183,7 @@ export function PixPaymentScreen() {
     navigator.clipboard.writeText(paymentData.pixCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
-    toast({ title: "Código PIX copiado!" });
+    toast({ title: t('payment.pixPayment.copied') });
   };
 
   const formatTime = (seconds: number) => {
@@ -202,29 +204,29 @@ export function PixPaymentScreen() {
     return (
       <div className="text-center py-16">
         <Check className="h-16 w-16 text-green-500 mx-auto mb-6" />
-        <h2 className="text-2xl font-bold text-green-600">Pagamento confirmado!</h2>
-        <p className="mt-2 text-muted-foreground">Redirecionando para sua retrospectiva...</p>
+        <h2 className="text-2xl font-bold text-green-600">{t('payment.pixPayment.confirmed')}</h2>
+        <p className="mt-2 text-muted-foreground">{t('payment.pixPayment.redirecting')}</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-extrabold text-center mb-4 text-pink-600">Finalize seu pagamento</h1>
+      <h1 className="text-3xl font-extrabold text-center mb-4 text-pink-600">{t('payment.pixPayment.title')}</h1>
 
       <div className="text-center mb-4">
         <div className="inline-block bg-pink-100 text-pink-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-2 shadow-sm">
-          💘 Promoção Dia dos Namorados
+          {t('payment.pixPayment.promotion')}
         </div>
       </div>
 
       <div className="flex justify-center mb-6">
-        <img src={paymentData.pixQrCode} alt="QR Code PIX" className="w-72 h-72 rounded-md shadow" />
+        <img src={paymentData.pixQrCode} alt={t('payment.pixPayment.qrCode')} className="w-72 h-72 rounded-md shadow" />
       </div>
 
       <div className="bg-white p-4 rounded mb-4 shadow-inner">
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium">Código PIX</span>
+          <span className="text-sm font-medium">{t('payment.pixPayment.pixCode')}</span>
           <Button variant="ghost" size="sm" onClick={copyPixCode}>
             {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
           </Button>
@@ -240,10 +242,10 @@ export function PixPaymentScreen() {
       </div>
 
       <p className="text-center text-sm text-pink-600 font-semibold mb-1">
-        Tempo restante: {formatTime(timeLeft)}
+        {t('payment.pixPayment.timeRemaining')} {formatTime(timeLeft)}
       </p>
       <p className="text-center text-xs text-muted-foreground mb-4">
-        O pagamento expira automaticamente após esse tempo.
+        {t('payment.pixPayment.expirationWarning')}
       </p>
     </div>
   );

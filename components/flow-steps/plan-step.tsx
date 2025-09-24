@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, CheckCircle } from "lucide-react"
+import { useTranslations } from 'next-intl'
 
 interface PlanStepProps {
   selectedPlan: "BASIC" | "PREMIUM" | null
@@ -11,6 +12,8 @@ interface PlanStepProps {
 }
 
 export function PlanStep({ selectedPlan, onPlanSelect, onContinue }: PlanStepProps) {
+  const t = useTranslations();
+  
   // Reset scroll to top when component mounts
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -18,7 +21,7 @@ export function PlanStep({ selectedPlan, onPlanSelect, onContinue }: PlanStepPro
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-      <h2 className="text-3xl font-bold text-center mb-8">Escolha seu ZapLove</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">{t('plan.title')}</h2>
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         {/* Plano PREMIUM */}
         <div className="flex flex-col items-center">
@@ -48,9 +51,9 @@ export function PlanStep({ selectedPlan, onPlanSelect, onContinue }: PlanStepPro
             </div>
           </div>
           <div className="mt-0 text-center px-2 pb-2">
-            <h3 className="text-2xl font-extrabold mb-2 bg-gradient-to-r from-pink-500 to-purple-500 text-transparent bg-clip-text uppercase tracking-wide">PREMIUM</h3>
-            <p className="text-lg font-semibold text-gray-800 mb-1">Página personalizada + QR Code exclusivo para surpreender ainda mais!</p>
-            <span className="text-purple-600 font-bold block">Receba um QR Code único para compartilhar sua retrospectiva de forma mágica.</span>
+            <h3 className="text-2xl font-extrabold mb-2 bg-gradient-to-r from-pink-500 to-purple-500 text-transparent bg-clip-text uppercase tracking-wide">{t('plan.premium.name')}</h3>
+            <p className="text-lg font-semibold text-gray-800 mb-1">{t('plan.premium.description')}</p>
+            <span className="text-purple-600 font-bold block">{t('plan.premium.feature')}</span>
           </div>
         </div>
 
@@ -82,9 +85,9 @@ export function PlanStep({ selectedPlan, onPlanSelect, onContinue }: PlanStepPro
             </div>
           </div>
           <div className="mt-0 text-center px-2 pb-2">
-            <h3 className="text-2xl font-extrabold mb-2 bg-gradient-to-r from-pink-500 to-purple-500 text-transparent bg-clip-text uppercase tracking-wide">BÁSICO</h3>
-            <p className="text-lg font-semibold text-gray-800 mb-1">Transforme sua conversa em uma página personalizada e inesquecível!</p>
-            <span className="text-pink-500 font-bold block">Ideal para quem quer eternizar o momento de forma simples e especial.</span>
+            <h3 className="text-2xl font-extrabold mb-2 bg-gradient-to-r from-pink-500 to-purple-500 text-transparent bg-clip-text uppercase tracking-wide">{t('plan.basic.name')}</h3>
+            <p className="text-lg font-semibold text-gray-800 mb-1">{t('plan.basic.description')}</p>
+            <span className="text-pink-500 font-bold block">{t('plan.basic.feature')}</span>
           </div>
         </div>
       </div>
@@ -113,7 +116,7 @@ export function PlanStep({ selectedPlan, onPlanSelect, onContinue }: PlanStepPro
   }}
 >
   <ArrowRight className="mr-2 h-5 w-5" />
-  Continuar
+  {t('plan.continue')}
 </Button>
 
       </div>

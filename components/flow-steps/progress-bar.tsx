@@ -1,11 +1,15 @@
 "use client"
 
+import { useTranslations } from 'next-intl'
+
 interface ProgressBarProps {
   currentStep: string
   totalSteps: number
 }
 
 export function ProgressBar({ currentStep, totalSteps }: ProgressBarProps) {
+  const t = useTranslations();
+  
   const getStepNumber = (step: string) => {
     switch (step) {
       case "INSTRUCTIONS": return 1;
@@ -118,25 +122,25 @@ export function ProgressBar({ currentStep, totalSteps }: ProgressBarProps) {
       <div className="flex text-xs content-center text-center">
         <div className="w-1/4">
           <span className={getStepNumber(step) >= 1 ? "text-pink-600 font-medium" : "text-gray-500"}>
-            Instruções
+            {t('flow.steps.instructions')}
           </span>
         </div>
 
         <div className="w-1/4">
           <span className={getStepNumber(step) >= 2 ? "text-pink-600 font-medium" : "text-gray-500"}>
-            Upload
+            {t('flow.steps.upload')}
           </span>
         </div>
 
         <div className="w-1/4">
           <span className={getStepNumber(step) >= 3 ? "text-pink-600 font-medium" : "text-gray-500"}>
-            Plano
+            {t('flow.steps.plan')}
           </span>
         </div>
 
         <div className="w-1/4">
           <span className={getStepNumber(step) >= 4 ? "text-pink-600 font-medium" : "text-gray-500"}>
-            Pagamento
+            {t('flow.steps.payment')}
           </span>
         </div>
       </div>

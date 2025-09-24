@@ -131,7 +131,7 @@ export function StoriesCarouselMocked({ showOnlyDataStories = false }: StoriesCa
 
             <div className="flex items-center justify-center mb-8">
               <span className="text-4xl md:text-5xl">❤️</span>
-              <h2 className="text-4xl md:text-5xl font-bold mx-3">TE AMO</h2>
+              <h2 className="text-4xl md:text-5xl font-bold mx-3">{t('retrospective.stories.love.phrase')}</h2>
               <span className="text-4xl md:text-5xl">❤️</span>
             </div>
 
