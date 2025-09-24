@@ -15,6 +15,9 @@ import {
   ProgressBar 
 } from "@/components/flow-steps"
 
+// Force dynamic rendering to avoid SSR issues
+export const dynamic = 'force-dynamic'
+
 type Step = "INSTRUCTIONS" | "FORM" | "PLAN" | "PAYMENT" | "PIX"
 
 export default function ComecePage() {
@@ -37,16 +40,24 @@ export default function ComecePage() {
     file: "",
   })
   const [userData, setUserData] = useState<any>(null)
+  const [isClient, setIsClient] = useState(false)
 
   const router = useRouter()
 
+  // Ensure client-side rendering
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   // Load userData from sessionStorage on component mount
   useEffect(() => {
-    const storedUserData = sessionStorage.getItem("userData");
-    if (storedUserData) {
-      const parsedUserData = JSON.parse(storedUserData);
-      setUserData(parsedUserData);
-      setSelectedPlan(parsedUserData.plan || "PREMIUM");
+    if (typeof window !== "undefined") {
+      const storedUserData = sessionStorage.getItem("userData");
+      if (storedUserData) {
+        const parsedUserData = JSON.parse(storedUserData);
+        setUserData(parsedUserData);
+        setSelectedPlan(parsedUserData.plan || "PREMIUM");
+      }
     }
   }, []);
 
@@ -114,10 +125,12 @@ export default function ComecePage() {
       plan: plan
     };
     setUserData(updatedUserData);
-    sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
+    }
     
     // Se estivermos na etapa PIX, limpar dados de pagamento para forçar novo pagamento
-    if (step === "PIX") {
+    if (step === "PIX" && typeof window !== "undefined") {
       sessionStorage.removeItem("paymentData");
       sessionStorage.removeItem("paymentStart");
       sessionStorage.removeItem("currentPlan");
@@ -270,7 +283,9 @@ export default function ComecePage() {
         plan: selectedPlan || "BASIC",
       };
 
-      sessionStorage.setItem("userData", JSON.stringify(userDataToStore));
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("userData", JSON.stringify(userDataToStore));
+      }
       setUserData(userDataToStore);
 
       if (responseData.metrics && responseData.metrics.participants) {
@@ -284,7 +299,9 @@ export default function ComecePage() {
         }
 
         console.log("Storing metrics data in sessionStorage");
-        sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));
+        }
       }
 
       console.log("Moving to plan step");
@@ -319,7 +336,9 @@ export default function ComecePage() {
   
         const data = await res.json();
         if (data?.data?.checkoutUrl) {
-          window.location.href = data.data.checkoutUrl;
+          if (typeof window !== "undefined") {
+            window.location.href = data.data.checkoutUrl;
+          }
         } else {
           toast({
             title: "Erro",
@@ -360,10 +379,12 @@ export default function ComecePage() {
         setUserData(null);
         setSelectedPlan("PREMIUM");
         // Limpar sessionStorage
-        sessionStorage.removeItem("userData");
-        sessionStorage.removeItem("metricsData");
-        sessionStorage.removeItem("paymentData");
-        sessionStorage.removeItem("paymentStart");
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem("userData");
+          sessionStorage.removeItem("metricsData");
+          sessionStorage.removeItem("paymentData");
+          sessionStorage.removeItem("paymentStart");
+        }
         break;
       case "PLAN":
         setStep("FORM");
@@ -388,6 +409,16 @@ export default function ComecePage() {
       default: return 1;
     }
   };
+
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-violet-600/10 to-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Carregando...</h1>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-violet-600/10 to-background">

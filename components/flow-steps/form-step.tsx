@@ -48,7 +48,9 @@ export function FormStep({
 
   // Reset scroll to top when component mounts
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, []);
 
   return (

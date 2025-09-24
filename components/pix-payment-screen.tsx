@@ -24,17 +24,19 @@ export function PixPaymentScreen() {
 
   // Carregar userData do sessionStorage
   useEffect(() => {
-    const storedUserData = sessionStorage.getItem("userData");
-    if (storedUserData) {
-      try {
-        const parsedUserData = JSON.parse(storedUserData);
-        setUserData(parsedUserData);
-      } catch (error) {
-        console.error("Erro ao carregar dados do usuário:", error);
+    if (typeof window !== "undefined") {
+      const storedUserData = sessionStorage.getItem("userData");
+      if (storedUserData) {
+        try {
+          const parsedUserData = JSON.parse(storedUserData);
+          setUserData(parsedUserData);
+        } catch (error) {
+          console.error("Erro ao carregar dados do usuário:", error);
+          router.push("/comece-agora");
+        }
+      } else {
         router.push("/comece-agora");
       }
-    } else {
-      router.push("/comece-agora");
     }
   }, [router]);
 
@@ -56,9 +58,11 @@ export function PixPaymentScreen() {
       if (!response.ok) throw new Error(result.message || "Erro ao criar pagamento");
 
       setPaymentData(result.data);
-      sessionStorage.setItem("paymentData", JSON.stringify(result.data));
-      sessionStorage.setItem("paymentStart", Date.now().toString());
-      sessionStorage.setItem("currentPlan", userData.plan);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("paymentData", JSON.stringify(result.data));
+        sessionStorage.setItem("paymentStart", Date.now().toString());
+        sessionStorage.setItem("currentPlan", userData.plan);
+      }
       setTimeLeft(300);
       startStatusPolling(result.data.paymentId);
     } catch (err) {
@@ -72,19 +76,19 @@ export function PixPaymentScreen() {
   useEffect(() => {
     if (!userData) return; // Aguarda userData estar disponível
 
-    const existingPaymentData = sessionStorage.getItem("paymentData");
-    const storedPlan = sessionStorage.getItem("currentPlan");
+    const existingPaymentData = typeof window !== "undefined" ? sessionStorage.getItem("paymentData") : null;
+    const storedPlan = typeof window !== "undefined" ? sessionStorage.getItem("currentPlan") : null;
     const currentPlan = userData.plan;
 
     // Se não existir pagamento OU se o plano mudou
     if (!existingPaymentData || (storedPlan && currentPlan && storedPlan !== currentPlan)) {
       // Limpar dados antigos
-      sessionStorage.removeItem("paymentData");
-      sessionStorage.removeItem("paymentStart");
-      sessionStorage.removeItem("currentPlan");
-      
-      // Salvar novo plano
-      sessionStorage.setItem("currentPlan", currentPlan);
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("paymentData");
+        sessionStorage.removeItem("paymentStart");
+        sessionStorage.removeItem("currentPlan");
+        sessionStorage.setItem("currentPlan", currentPlan);
+      }
       
       // Cancelar polling ativo
       if (pollIntervalRef.current) {
@@ -108,16 +112,18 @@ export function PixPaymentScreen() {
     // Se existir pagamento e tempo ainda válido, reaproveitar
     if (existingPaymentData) {
       const parsedData = JSON.parse(existingPaymentData);
-      const startTime = Number(sessionStorage.getItem("paymentStart"));
+      const startTime = typeof window !== "undefined" ? Number(sessionStorage.getItem("paymentStart")) : 0;
       const now = Date.now();
       const elapsed = Math.floor((now - startTime) / 1000);
       const remaining = 300 - elapsed;
 
       if (remaining <= 0) {
         toast({ title: t('payment.pixPayment.timeExpired'), description: t('payment.pixPayment.timeExpiredDescription') });
-        sessionStorage.removeItem("paymentData");
-        sessionStorage.removeItem("paymentStart");
-        sessionStorage.removeItem("currentPlan");
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem("paymentData");
+          sessionStorage.removeItem("paymentStart");
+          sessionStorage.removeItem("currentPlan");
+        }
         router.push("/comece-agora");
         return;
       }
@@ -136,9 +142,11 @@ export function PixPaymentScreen() {
         if (prev <= 1) {
           clearInterval(countdown);
           toast({ title: t('payment.pixPayment.timeExpired'), description: t('payment.pixPayment.timeExpiredDescription') });
-          sessionStorage.removeItem("paymentData");
-          sessionStorage.removeItem("paymentStart");
-          sessionStorage.removeItem("currentPlan");
+          if (typeof window !== "undefined") {
+            sessionStorage.removeItem("paymentData");
+            sessionStorage.removeItem("paymentStart");
+            sessionStorage.removeItem("currentPlan");
+          }
           router.push("/comece-agora");
           return 0;
         }
@@ -159,16 +167,18 @@ export function PixPaymentScreen() {
 
         if (data?.data?.status === "PAID") {
           clearInterval(pollIntervalRef.current!);
-          sessionStorage.removeItem("paymentData");
-          sessionStorage.removeItem("paymentStart");
-          sessionStorage.removeItem("currentPlan");
+          if (typeof window !== "undefined") {
+            sessionStorage.removeItem("paymentData");
+            sessionStorage.removeItem("paymentStart");
+            sessionStorage.removeItem("currentPlan");
+          }
           setPaymentStatus("PAID");
 
           toast({ title: t('payment.pixPayment.confirmed'), description: t('payment.pixPayment.redirecting') });
 
           // Redirecionar para a página de sucesso
           setTimeout(() => {
-            const email = userData?.email || JSON.parse(sessionStorage.getItem("userData") || "{}").email;
+            const email = userData?.email || (typeof window !== "undefined" ? JSON.parse(sessionStorage.getItem("userData") || "{}").email : "");
             router.push(`/success/${encodeURIComponent(email)}`);
           }, 2000);
         }
