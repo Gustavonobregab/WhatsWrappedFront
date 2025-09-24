@@ -343,7 +343,7 @@ export function StoriesCarousel({
 
         <div className="flex items-center justify-center mb-8">
           <span className="text-3xl md:text-3xl">🙏</span>
-          <span className="text-3xl md:text-3xl mx-3 font-bold">DESCULPA</span>
+          <span className="text-3xl md:text-3xl mx-3 font-bold">{t('retrospective.stories.apologies.word')}</span>
           <span className="text-3xl md:text-3xl">🙏</span>
         </div>
 

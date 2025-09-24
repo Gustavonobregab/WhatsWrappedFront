@@ -247,7 +247,8 @@
       },
       "apologies": {
         "title": "¿Quién pide más disculpas?",
-        "winner": "¡pide más disculpas!"
+        "winner": "¡pide más disculpas!",
+        "word": "PERDÓN"
       },
       "firstMessage": {
         "title": "¿Cuándo comenzó todo?",
@@ -268,6 +269,10 @@
       "words": {
         "title": "¿Qué palabra usan más?",
         "winner": "¡usa más la palabra \"{word}\"!"
+      },
+      "loveMessage": {
+        "title": "Un mensaje especial para ti...",
+        "default": "Gracias por compartir este viaje conmigo. Cada mensaje es especial y cada momento que pasamos juntos es un tesoro que guardo en mi corazón."
       },
       "outro": {
         "title": "Sorprende a tu amor",

@@ -247,7 +247,8 @@
       },
       "apologies": {
         "title": "Who apologizes more?",
-        "winner": "apologizes more!"
+        "winner": "apologizes more!",
+        "word": "SORRY"
       },
       "firstMessage": {
         "title": "When did it all begin?",
@@ -268,6 +269,10 @@
       "words": {
         "title": "What word do you use most?",
         "winner": "uses the word \"{word}\" more!"
+      },
+      "loveMessage": {
+        "title": "A special message for you...",
+        "default": "Thank you for sharing this journey with me. Every message is special and every moment we spend together is a treasure I keep in my heart."
       },
       "outro": {
         "title": "Surprise your love",
