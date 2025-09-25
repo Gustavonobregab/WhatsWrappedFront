@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { useTranslations } from 'next-intl';
 
 export function PixPaymentScreen() {
+  const t = useTranslations();
   const [userData, setUserData] = useState<any>(null);
   const [paymentData, setPaymentData] = useState<any>(null);
   const [paymentStatus, setPaymentStatus] = useState("PENDING");
@@ -22,17 +24,19 @@ export function PixPaymentScreen() {
 
   // Carregar userData do sessionStorage
   useEffect(() => {
-    const storedUserData = sessionStorage.getItem("userData");
-    if (storedUserData) {
-      try {
-        const parsedUserData = JSON.parse(storedUserData);
-        setUserData(parsedUserData);
-      } catch (error) {
-        console.error("Erro ao carregar dados do usuário:", error);
+    if (typeof window !== "undefined") {
+      const storedUserData = sessionStorage.getItem("userData");
+      if (storedUserData) {
+        try {
+          const parsedUserData = JSON.parse(storedUserData);
+          setUserData(parsedUserData);
+        } catch (error) {
+          console.error("Erro ao carregar dados do usuário:", error);
+          router.push("/comece-agora");
+        }
+      } else {
         router.push("/comece-agora");
       }
-    } else {
-      router.push("/comece-agora");
     }
   }, [router]);
 
@@ -54,14 +58,16 @@ export function PixPaymentScreen() {
       if (!response.ok) throw new Error(result.message || "Erro ao criar pagamento");
 
       setPaymentData(result.data);
-      sessionStorage.setItem("paymentData", JSON.stringify(result.data));
-      sessionStorage.setItem("paymentStart", Date.now().toString());
-      sessionStorage.setItem("currentPlan", userData.plan);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("paymentData", JSON.stringify(result.data));
+        sessionStorage.setItem("paymentStart", Date.now().toString());
+        sessionStorage.setItem("currentPlan", userData.plan);
+      }
       setTimeLeft(300);
       startStatusPolling(result.data.paymentId);
     } catch (err) {
       console.error(err);
-      toast({ title: "Erro", description: "Erro ao iniciar pagamento." });
+      toast({ title: t('payment.pixPayment.error'), description: t('payment.pixPayment.paymentError') });
       router.push("/comece-agora");
     }
   };
@@ -70,19 +76,19 @@ export function PixPaymentScreen() {
   useEffect(() => {
     if (!userData) return; // Aguarda userData estar disponível
 
-    const existingPaymentData = sessionStorage.getItem("paymentData");
-    const storedPlan = sessionStorage.getItem("currentPlan");
+    const existingPaymentData = typeof window !== "undefined" ? sessionStorage.getItem("paymentData") : null;
+    const storedPlan = typeof window !== "undefined" ? sessionStorage.getItem("currentPlan") : null;
     const currentPlan = userData.plan;
 
     // Se não existir pagamento OU se o plano mudou
     if (!existingPaymentData || (storedPlan && currentPlan && storedPlan !== currentPlan)) {
       // Limpar dados antigos
-      sessionStorage.removeItem("paymentData");
-      sessionStorage.removeItem("paymentStart");
-      sessionStorage.removeItem("currentPlan");
-      
-      // Salvar novo plano
-      sessionStorage.setItem("currentPlan", currentPlan);
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("paymentData");
+        sessionStorage.removeItem("paymentStart");
+        sessionStorage.removeItem("currentPlan");
+        sessionStorage.setItem("currentPlan", currentPlan);
+      }
       
       // Cancelar polling ativo
       if (pollIntervalRef.current) {
@@ -93,8 +99,8 @@ export function PixPaymentScreen() {
       // Se plano mudou, mostrar toast
       if (storedPlan && currentPlan && storedPlan !== currentPlan) {
         toast({ 
-          title: "Plano alterado", 
-          description: "Gerando novo pagamento com o plano selecionado." 
+          title: t('payment.pixPayment.planChanged'), 
+          description: t('payment.pixPayment.planChangedDescription') 
         });
       }
       
@@ -106,16 +112,18 @@ export function PixPaymentScreen() {
     // Se existir pagamento e tempo ainda válido, reaproveitar
     if (existingPaymentData) {
       const parsedData = JSON.parse(existingPaymentData);
-      const startTime = Number(sessionStorage.getItem("paymentStart"));
+      const startTime = typeof window !== "undefined" ? Number(sessionStorage.getItem("paymentStart")) : 0;
       const now = Date.now();
       const elapsed = Math.floor((now - startTime) / 1000);
       const remaining = 300 - elapsed;
 
       if (remaining <= 0) {
-        toast({ title: "Tempo expirado", description: "Você não finalizou o pagamento a tempo." });
-        sessionStorage.removeItem("paymentData");
-        sessionStorage.removeItem("paymentStart");
-        sessionStorage.removeItem("currentPlan");
+        toast({ title: t('payment.pixPayment.timeExpired'), description: t('payment.pixPayment.timeExpiredDescription') });
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem("paymentData");
+          sessionStorage.removeItem("paymentStart");
+          sessionStorage.removeItem("currentPlan");
+        }
         router.push("/comece-agora");
         return;
       }
@@ -133,10 +141,12 @@ export function PixPaymentScreen() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(countdown);
-          toast({ title: "Tempo expirado", description: "Você não finalizou o pagamento a tempo." });
-          sessionStorage.removeItem("paymentData");
-          sessionStorage.removeItem("paymentStart");
-          sessionStorage.removeItem("currentPlan");
+          toast({ title: t('payment.pixPayment.timeExpired'), description: t('payment.pixPayment.timeExpiredDescription') });
+          if (typeof window !== "undefined") {
+            sessionStorage.removeItem("paymentData");
+            sessionStorage.removeItem("paymentStart");
+            sessionStorage.removeItem("currentPlan");
+          }
           router.push("/comece-agora");
           return 0;
         }
@@ -157,16 +167,18 @@ export function PixPaymentScreen() {
 
         if (data?.data?.status === "PAID") {
           clearInterval(pollIntervalRef.current!);
-          sessionStorage.removeItem("paymentData");
-          sessionStorage.removeItem("paymentStart");
-          sessionStorage.removeItem("currentPlan");
+          if (typeof window !== "undefined") {
+            sessionStorage.removeItem("paymentData");
+            sessionStorage.removeItem("paymentStart");
+            sessionStorage.removeItem("currentPlan");
+          }
           setPaymentStatus("PAID");
 
-          toast({ title: "Pagamento confirmado!", description: "Redirecionando..." });
+          toast({ title: t('payment.pixPayment.confirmed'), description: t('payment.pixPayment.redirecting') });
 
           // Redirecionar para a página de sucesso
           setTimeout(() => {
-            const email = userData?.email || JSON.parse(sessionStorage.getItem("userData") || "{}").email;
+            const email = userData?.email || (typeof window !== "undefined" ? JSON.parse(sessionStorage.getItem("userData") || "{}").email : "");
             router.push(`/success/${encodeURIComponent(email)}`);
           }, 2000);
         }
@@ -181,7 +193,7 @@ export function PixPaymentScreen() {
     navigator.clipboard.writeText(paymentData.pixCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
-    toast({ title: "Código PIX copiado!" });
+    toast({ title: t('payment.pixPayment.copied') });
   };
 
   const formatTime = (seconds: number) => {
@@ -202,29 +214,29 @@ export function PixPaymentScreen() {
     return (
       <div className="text-center py-16">
         <Check className="h-16 w-16 text-green-500 mx-auto mb-6" />
-        <h2 className="text-2xl font-bold text-green-600">Pagamento confirmado!</h2>
-        <p className="mt-2 text-muted-foreground">Redirecionando para sua retrospectiva...</p>
+        <h2 className="text-2xl font-bold text-green-600">{t('payment.pixPayment.confirmed')}</h2>
+        <p className="mt-2 text-muted-foreground">{t('payment.pixPayment.redirecting')}</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-extrabold text-center mb-4 text-pink-600">Finalize seu pagamento</h1>
+      <h1 className="text-3xl font-extrabold text-center mb-4 text-pink-600">{t('payment.pixPayment.title')}</h1>
 
       <div className="text-center mb-4">
         <div className="inline-block bg-pink-100 text-pink-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-2 shadow-sm">
-          💘 Promoção Dia dos Namorados
+          {t('payment.pixPayment.promotion')}
         </div>
       </div>
 
       <div className="flex justify-center mb-6">
-        <img src={paymentData.pixQrCode} alt="QR Code PIX" className="w-72 h-72 rounded-md shadow" />
+        <img src={paymentData.pixQrCode} alt={t('payment.pixPayment.qrCode')} className="w-72 h-72 rounded-md shadow" />
       </div>
 
       <div className="bg-white p-4 rounded mb-4 shadow-inner">
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium">Código PIX</span>
+          <span className="text-sm font-medium">{t('payment.pixPayment.pixCode')}</span>
           <Button variant="ghost" size="sm" onClick={copyPixCode}>
             {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
           </Button>
@@ -240,10 +252,10 @@ export function PixPaymentScreen() {
       </div>
 
       <p className="text-center text-sm text-pink-600 font-semibold mb-1">
-        Tempo restante: {formatTime(timeLeft)}
+        {t('payment.pixPayment.timeRemaining')} {formatTime(timeLeft)}
       </p>
       <p className="text-center text-xs text-muted-foreground mb-4">
-        O pagamento expira automaticamente após esse tempo.
+        {t('payment.pixPayment.expirationWarning')}
       </p>
     </div>
   );

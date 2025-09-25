@@ -1,0 +1,357 @@
+{
+  "common": {
+    "brand": "ZapLove",
+    "startNow": "Start Now",
+    "createZapLove": "Create your ZapLove",
+    "createMyZapLove": "Create My ZapLove"
+  },
+  "navigation": {
+    "metrics": "Metrics",
+    "howItWorks": "How It Works",
+    "pricing": "Pricing"
+  },
+  "hero": {
+    "title": "Surprise your loved one with a personalized retrospective",
+    "subtitle": "Upload your backup and receive a visual summary with data about your messages, emotions, favorite phrases and much more."
+  },
+  "pricing": {
+    "title": "Single and Affordable Price",
+    "subtitle": "Create your personalized ZapLove for a single price",
+    "promotionTag": "💘 Valentine's Day Promotion",
+    "createAndSurprise": "Create your site and surprise!",
+    "oneTimePayment": "One-time payment",
+    "whatsIncluded": "What's included:",
+    "features": {
+      "exclusiveSite": "Exclusive and personalized site with your URL",
+      "completeAnalysis": "Complete analysis of your conversations",
+      "interactiveVisualizations": "Interactive visualizations in Spotify Wrapped style",
+      "easySharing": "Easy sharing with friends",
+      "permanentAccess": "Permanent access to your results",
+      "secureProcessing": "Secure and private processing"
+    },
+    "privacy": {
+      "title": "Privacy and Security",
+      "noAccess": {
+        "title": "No access to your conversations",
+        "description": "We don't have access to your conversation content. All processing is done locally and your data is never stored."
+      },
+      "aiAnalysis": {
+        "title": "100% AI Analysis",
+        "description": "All analysis is performed by advanced Artificial Intelligence, without human intervention, ensuring total privacy of your data."
+      }
+    }
+  },
+  "metadata": {
+    "title": "ZapLove - Surprise your loved one with a personalized retrospective",
+    "description": "Upload your backup and receive a visual summary with data about your messages, emotions, favorite phrases and much more."
+  },
+  "flow": {
+    "title": "Let's create your ZapLove! 🎉",
+    "loading": "Preparing your retrospective...",
+    "waiting": "Please wait a moment",
+    "paymentConfirmed": "Payment Confirmed!",
+    "zapLoveReady": "Your ZapLove is ready!",
+    "viewRetrospective": "Your personalized retrospective has been created successfully. Click the button below to view your ZapLove!",
+    "viewMyZapLove": "View my ZapLove",
+    "whatYouWillFind": "✨ What you'll find:",
+    "features": {
+      "detailedStats": "Detailed statistics of your conversations",
+      "specialMoments": "Special moments shared",
+      "personalizedAnalysis": "Personalized analysis of your relationship",
+      "organizedHistory": "Organized message history"
+    },
+    "dataSecurity": "Your data is secure",
+    "dataSecurityDescription": "Your personal data is used only for payment processing and invoice issuance. We do not share your information with third parties.",
+    "plan": "Plan",
+    "email": "Email",
+    "steps": {
+      "instructions": "Instructions",
+      "upload": "Upload",
+      "plan": "Plan",
+      "payment": "Payment"
+    }
+  },
+  "cta": {
+    "title": "Ready to discover what your conversations say about you?",
+    "subtitle": "Create your ZapLove now and share with your friends!",
+    "button": "Start Now",
+    "privacy": "Your data is processed locally and never stored!"
+  },
+  "form": {
+    "title": "Fill in your details and upload the file",
+    "loveMessage": {
+      "label": "❤️ Surprise love message ❤️",
+      "special": "Special!",
+      "placeholder": "Dear, every message we exchange is a piece of our story. Thank you for being part of my life and for all the moments we've shared through these conversations...",
+      "description": "This special message will be displayed as a romantic surprise at the end of WhatsWrapped, creating an unforgettable moment for whoever receives it."
+    },
+    "fields": {
+      "name": "Full name",
+      "namePlaceholder": "Your full name",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "cpf": "CPF",
+      "cpfPlaceholder": "000.000.000-00",
+      "cellphone": "Cell phone",
+      "cellphonePlaceholder": "(00) 00000-0000"
+    },
+    "upload": {
+      "title": "Drag your file here or click to select",
+      "description": ".zip files exported from your messaging app (max. 30MB)",
+      "selectFile": "Select File",
+      "fileSelected": "File selected: ",
+      "fileInfo": "File selected: {name} ({size} MB)"
+    },
+    "processing": "Processing...",
+    "continue": "Continue",
+    "errors": {
+      "nameRequired": "Name is required",
+      "invalidEmail": "Invalid email",
+      "invalidCpf": "Invalid CPF",
+      "invalidCellphone": "Invalid cell phone",
+      "fileRequired": "File is required",
+      "invalidFile": "File must be a ZIP",
+      "fileTooLarge": "File too large (max. 30MB)",
+      "invalidWhatsAppFile": "Invalid WhatsApp file",
+      "invalidApiResponse": "Invalid API response",
+      "processingError": "Error processing file",
+      "errorTitle": "Error",
+      "unknownError": "Unknown error",
+      "paymentRedirectError": "Error redirecting to payment",
+      "paymentStartError": "Error starting payment"
+    }
+  },
+  "carousel": {
+    "intro": {
+      "title": "Hi love!❤️ How about a retrospective of our story?",
+      "subtitle": "Discover what your conversations say about you"
+    },
+    "transition": {
+      "title": "Time to find out who loves the other more...",
+      "subtitle": "Roll the drums! 🥁"
+    }
+  },
+  "metrics": {
+    "title": "Discover Fascinating Metrics",
+    "subtitle": "See examples of what you'll discover about your conversations",
+    "cards": {
+      "totalLove": {
+        "title": "Total I Love You",
+        "description": "How many times you said this special phrase"
+      },
+      "totalApologies": {
+        "title": "Total Apologies",
+        "description": "How many times you apologized"
+      },
+      "consecutiveDays": {
+        "title": "Consecutive Days",
+        "description": "Your record of consecutive days chatting"
+      },
+      "firstMessage": {
+        "title": "First Message",
+        "description": "When it all began"
+      },
+      "totalDays": {
+        "title": "Total Days",
+        "description": "Total conversation time"
+      },
+      "conversationStarter": {
+        "title": "Started Conversations",
+        "description": "Who sends messages first"
+      },
+      "mostUsedWord": {
+        "title": "Most Used Word",
+        "description": "The word you use most"
+      },
+      "totalMessages": {
+        "title": "Total Messages",
+        "description": "Number of messages sent"
+      },
+      "andMore": {
+        "title": "And much more!",
+        "description": "Discover all the statistics and curiosities about your conversations"
+      }
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Three simple steps to discover what your conversations say about you",
+    "steps": {
+      "step1": {
+        "title": "Open the conversation",
+        "description": "Select the conversation or group you want to analyze."
+      },
+      "step2": {
+        "title": "Click export chat",
+        "description": "Tap the three dots in the top right corner, scroll down and select 'Export chat'."
+      },
+      "step3": {
+        "title": "Choose 'Without media'",
+        "description": "Select the 'Without media' option to export only the text of conversations, creating a smaller and easier file to process."
+      }
+    },
+    "startNow": "Start now"
+  },
+  "retrospective": {
+    "error": "Oops! Something went wrong with your retrospective! Contact support, we'll help you!",
+    "loading": "Loading your retrospective...",
+    "intro": {
+      "title": "How about a retrospective of our story?",
+      "subtitle": "Discover what your conversations say about you"
+    },
+    "transition": {
+      "love": {
+        "title": "Time to find out who loves the other more...",
+        "subtitle": "Roll the drums! 🥁"
+      },
+      "messages": {
+        "title": "You exchanged many messages...",
+        "subtitle": "Let's see exactly how many? 👀"
+      },
+      "streak": {
+        "title": "You are very consistent...",
+        "subtitle": "Let's see for how many consecutive days you chatted! 🔥"
+      },
+      "apologies": {
+        "title": "Who apologizes more?",
+        "subtitle": "Let's find out... 🙏"
+      },
+      "firstMessage": {
+        "title": "Let's go back in time...",
+        "subtitle": "When did it all begin? 📅"
+      },
+      "conversationStarter": {
+        "title": "Who starts more conversations?",
+        "subtitle": "Let's find out who is more anxious... 📱"
+      },
+      "words": {
+        "title": "What word do you use most?",
+        "subtitle": "Let's find out... 📝"
+      }
+    },
+    "stories": {
+      "love": {
+        "title": "Who said I love you more?",
+        "winner": "loves more! ❤️",
+        "phrase": "I LOVE YOU"
+      },
+      "messages": {
+        "title": "How many messages did you exchange?",
+        "winner": "sends more messages!"
+      },
+      "streak": {
+        "title": "How many consecutive days did you chat?",
+        "label": "CONSECUTIVE DAYS",
+        "impressive": "IMPRESSIVE!",
+        "veryLong": "THAT'S A LONG TIME!"
+      },
+      "apologies": {
+        "title": "Who apologizes more?",
+        "winner": "apologizes more!",
+        "word": "SORRY"
+      },
+      "firstMessage": {
+        "title": "When did it all begin?",
+        "special": "A special date! 🌟",
+        "daysAgo": "{days} days ago"
+      },
+      "conversationStarter": {
+        "title": "Who starts more conversations?",
+        "winner": "starts more conversations!",
+        "curiosity": "starts conversations {percentage}% of the time! 📱",
+        "curiosityLabel": "Curiosity:",
+        "totalConversations": "conversations started"
+      },
+      "photos": {
+        "title": "Who sends more photos?",
+        "totalPhotos": "A total of {total} photos were sent! 📸"
+      },
+      "words": {
+        "title": "What word do you use most?",
+        "winner": "uses the word \"{word}\" more!"
+      },
+      "loveMessage": {
+        "title": "A special message for you...",
+        "default": "Thank you for sharing this journey with me. Every message is special and every moment we spend together is a treasure I keep in my heart."
+      },
+      "outro": {
+        "title": "Surprise your love",
+        "subtitle": "Thank you for sharing your conversations with us!",
+        "createOwn": "Create your own retrospective at"
+      }
+    },
+    "share": {
+      "text": "Check out our conversation retrospective!"
+    },
+    "footer": {
+      "help": "Need help? Contact us:",
+      "contact": "Click here!"
+    },
+    "buttons": {
+      "backToHome": "Back to home",
+      "createNew": "Create new retrospective"
+    }
+  },
+  "plan": {
+    "title": "Choose your ZapLove",
+    "premium": {
+      "name": "PREMIUM",
+      "description": "Personalized page + exclusive QR Code to surprise even more!",
+      "feature": "Receive a unique QR Code to share your retrospective in a magical way."
+    },
+    "basic": {
+      "name": "BASIC",
+      "description": "Transform your conversation into a personalized and unforgettable page!",
+      "feature": "Ideal for those who want to immortalize the moment in a simple and special way."
+    },
+    "continue": "Continue"
+  },
+  "payment": {
+    "title": "Just finalize now!",
+    "subtitle": "Select how you prefer to finalize your purchase",
+    "creditCard": {
+      "title": "Credit Card",
+      "description": "Pay with your credit card"
+    },
+    "pix": {
+      "title": "PIX",
+      "description": "Pay instantly with PIX"
+    },
+    "pixPayment": {
+      "title": "Finalize your payment",
+      "promotion": "💘 Valentine's Day Promotion",
+      "qrCode": "PIX QR Code",
+      "pixCode": "PIX Code",
+      "timeRemaining": "Time remaining:",
+      "expirationWarning": "Payment expires automatically after this time.",
+      "confirmed": "Payment confirmed!",
+      "redirecting": "Redirecting to your retrospective...",
+      "copied": "PIX code copied!",
+      "timeExpired": "Time expired",
+      "timeExpiredDescription": "You didn't complete the payment in time.",
+      "planChanged": "Plan changed",
+      "planChangedDescription": "Generating new payment with selected plan.",
+      "error": "Error",
+      "paymentError": "Error starting payment."
+    },
+    "discount": {
+      "title": "Finalize your payment",
+      "promotion": "💘 Special Discount Offer",
+      "price": "R$ 13.45",
+      "discount": "50% OFF",
+      "originalPrice": "R$ 26.90",
+      "limitedTime": "Limited time offer",
+      "qrCode": "PIX QR Code",
+      "pixCode": "PIX Code",
+      "timeRemaining": "Time remaining:",
+      "expirationWarning": "Payment expires automatically after this time.",
+      "confirmed": "Payment confirmed!",
+      "redirecting": "Redirecting...",
+      "copied": "PIX code copied!",
+      "timeExpired": "Time expired",
+      "timeExpiredDescription": "You didn't complete the payment in time.",
+      "error": "Error",
+      "noPaymentData": "Payment data not found."
+    }
+  }
+}

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
 import { PaymentMethodSelector } from "@/components/payment-method-selector"
 import { PixPaymentScreen } from "@/components/pix-payment-screen"
+import { useTranslations } from 'next-intl';
 import { 
   InstructionsStep, 
   FormStep, 
@@ -15,12 +16,10 @@ import {
   ProgressBar 
 } from "@/components/flow-steps"
 
-// Force dynamic rendering to avoid SSR issues
-export const dynamic = 'force-dynamic'
-
 type Step = "INSTRUCTIONS" | "FORM" | "PLAN" | "PAYMENT" | "PIX"
 
 export default function ComecePage() {
+  const t = useTranslations();
   const [step, setStep] = useState<Step>("INSTRUCTIONS")
   const [isLoading, setIsLoading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -30,7 +29,7 @@ export default function ComecePage() {
     email: "",
     cpf: "",
     cellphone: "",
-    text: "Obrigado por compartilhar essa jornada comigo!",
+    text: t('form.loveMessage.placeholder'),
   })
   const [errors, setErrors] = useState({
     name: "",
@@ -40,24 +39,16 @@ export default function ComecePage() {
     file: "",
   })
   const [userData, setUserData] = useState<any>(null)
-  const [isClient, setIsClient] = useState(false)
 
   const router = useRouter()
 
-  // Ensure client-side rendering
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
   // Load userData from sessionStorage on component mount
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUserData = sessionStorage.getItem("userData");
-      if (storedUserData) {
-        const parsedUserData = JSON.parse(storedUserData);
-        setUserData(parsedUserData);
-        setSelectedPlan(parsedUserData.plan || "PREMIUM");
-      }
+    const storedUserData = sessionStorage.getItem("userData");
+    if (storedUserData) {
+      const parsedUserData = JSON.parse(storedUserData);
+      setUserData(parsedUserData);
+      setSelectedPlan(parsedUserData.plan || "PREMIUM");
     }
   }, []);
 
@@ -99,7 +90,7 @@ export default function ComecePage() {
 
     // Verificar se é um arquivo ZIP
     if (file.type !== "application/zip" && !file.name.endsWith(".zip")) {
-      setErrors({ ...errors, file: "Por favor, selecione um arquivo ZIP exportado do seu aplicativo de mensagens." })
+      setErrors({ ...errors, file: t('form.errors.invalidFile') })
       return
     }
 
@@ -108,7 +99,7 @@ export default function ComecePage() {
     if (file.size > MAX_FILE_SIZE) {
       setErrors({
         ...errors,
-        file: "O tamanho máximo permitido é de 30MB. Por favor, selecione um arquivo menor.",
+        file: t('form.errors.fileTooLarge'),
       })
       return
     }
@@ -125,12 +116,10 @@ export default function ComecePage() {
       plan: plan
     };
     setUserData(updatedUserData);
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
-    }
+    sessionStorage.setItem("userData", JSON.stringify(updatedUserData));
     
     // Se estivermos na etapa PIX, limpar dados de pagamento para forçar novo pagamento
-    if (step === "PIX" && typeof window !== "undefined") {
+    if (step === "PIX") {
       sessionStorage.removeItem("paymentData");
       sessionStorage.removeItem("paymentStart");
       sessionStorage.removeItem("currentPlan");
@@ -174,34 +163,34 @@ export default function ComecePage() {
 
     // Validação do nome
     if (!formData.name.trim()) {
-      newErrors.name = "Nome é obrigatório"
+      newErrors.name = t('form.errors.nameRequired')
       valid = false
     }
 
     // Validação do email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!formData.email.trim() || !emailRegex.test(formData.email)) {
-      newErrors.email = "Email inválido"
+      newErrors.email = t('form.errors.invalidEmail')
       valid = false
     }
 
     // Validação do CPF
     const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
     if (!formData.cpf.trim() || !cpfRegex.test(formData.cpf) || !isValidCPF(formData.cpf)) {
-      newErrors.cpf = "CPF inválido"
+      newErrors.cpf = t('form.errors.invalidCpf')
       valid = false
     }
 
     // Validação do arquivo
     if (!selectedFile) {
-      newErrors.file = "Por favor, selecione um arquivo de backup"
+      newErrors.file = t('form.errors.fileRequired')
       valid = false
     }
 
     const phoneDigits = formData.cellphone.replace(/\D/g, "");
     const cellphoneRegex = /^[1-9]{2}9\d{8}$/;
     if (phoneDigits.length !== 11 || !cellphoneRegex.test(phoneDigits)) {
-      newErrors.cellphone = "Celular inválido. Use o formato 11999999999";
+      newErrors.cellphone = t('form.errors.invalidCellphone');
       valid = false;
     }
 
@@ -223,7 +212,7 @@ export default function ComecePage() {
       formDataToSend.append("name", formData.name);
       formDataToSend.append("email", formData.email);
       formDataToSend.append("cpf", formData.cpf.replace(/\D/g, ""));
-      formDataToSend.append("text", formData.text.trim() || "Obrigado por compartilhar essa jornada comigo!");
+      formDataToSend.append("text", formData.text.trim() || t('form.loveMessage.placeholder'));
       formDataToSend.append("plan", selectedPlan || "BASIC");
       if (selectedFile) {
         formDataToSend.append("file", selectedFile);
@@ -241,7 +230,7 @@ export default function ComecePage() {
       try {
         responseData = JSON.parse(responseText);
       } catch (e) {
-        throw new Error("Formato de resposta inválido da API");
+        throw new Error(t('form.errors.invalidApiResponse'));
       }
 
       if (!response.ok) {
@@ -253,7 +242,7 @@ export default function ComecePage() {
           if (errorData?.message === "No TXT files found in the ZIP" || errorData?.error === "No TXT files found in the ZIP") {
             setErrors({
               ...errors,
-              file: "O arquivo enviado não é válido para o WhatsWrapped. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 99935-9977"
+              file: t('form.errors.invalidWhatsAppFile')
             });
             return;
           }
@@ -269,7 +258,7 @@ export default function ComecePage() {
         } catch (e) {
           setErrors({
             ...errors,
-            file: "Erro ao processar o arquivo. Por favor, tente novamente."
+            file: t('form.errors.processingError')
           });
         }
         return;
@@ -283,9 +272,7 @@ export default function ComecePage() {
         plan: selectedPlan || "BASIC",
       };
 
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("userData", JSON.stringify(userDataToStore));
-      }
+      sessionStorage.setItem("userData", JSON.stringify(userDataToStore));
       setUserData(userDataToStore);
 
       if (responseData.metrics && responseData.metrics.participants) {
@@ -293,15 +280,13 @@ export default function ComecePage() {
         if (!responseData.metrics.participants || responseData.metrics.participants.length !== 2) {
           setErrors({
             ...errors,
-            file: "O arquivo enviado não é válido para o WhatsWrapped. Por favor, entre em contato com nosso suporte através do WhatsApp: (83) 99935-9977"
+            file: t('form.errors.invalidWhatsAppFile')
           });
           return;
         }
 
         console.log("Storing metrics data in sessionStorage");
-        if (typeof window !== "undefined") {
-          sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));
-        }
+        sessionStorage.setItem("metricsData", JSON.stringify(responseData.metrics.participants));
       }
 
       console.log("Moving to plan step");
@@ -310,8 +295,8 @@ export default function ComecePage() {
     } catch (error: any) {
       console.error("Erro ao processar:", error);
       toast({
-        title: "Erro",
-        description: error.message || "Erro desconhecido",
+        title: t('form.errors.errorTitle'),
+        description: error.message || t('form.errors.unknownError'),
         variant: "destructive",
       });
     } finally {
@@ -336,20 +321,18 @@ export default function ComecePage() {
   
         const data = await res.json();
         if (data?.data?.checkoutUrl) {
-          if (typeof window !== "undefined") {
-            window.location.href = data.data.checkoutUrl;
-          }
+          window.location.href = data.data.checkoutUrl;
         } else {
           toast({
-            title: "Erro",
-            description: "Erro ao redirecionar para pagamento.",
+            title: t('form.errors.errorTitle'),
+            description: t('form.errors.paymentRedirectError'),
             variant: "destructive",
           });
         }
       } catch (err) {
         toast({
-          title: "Erro",
-          description: "Erro ao iniciar pagamento.",
+          title: t('form.errors.errorTitle'),
+          description: t('form.errors.paymentStartError'),
           variant: "destructive",
         });
       }
@@ -367,7 +350,7 @@ export default function ComecePage() {
           email: "",
           cpf: "",
           cellphone: "",
-          text: "Obrigado por compartilhar essa jornada comigo!",
+          text: t('form.loveMessage.placeholder'),
         });
         setErrors({
           name: "",
@@ -379,12 +362,10 @@ export default function ComecePage() {
         setUserData(null);
         setSelectedPlan("PREMIUM");
         // Limpar sessionStorage
-        if (typeof window !== "undefined") {
-          sessionStorage.removeItem("userData");
-          sessionStorage.removeItem("metricsData");
-          sessionStorage.removeItem("paymentData");
-          sessionStorage.removeItem("paymentStart");
-        }
+        sessionStorage.removeItem("userData");
+        sessionStorage.removeItem("metricsData");
+        sessionStorage.removeItem("paymentData");
+        sessionStorage.removeItem("paymentStart");
         break;
       case "PLAN":
         setStep("FORM");
@@ -410,16 +391,6 @@ export default function ComecePage() {
     }
   };
 
-  if (!isClient) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-violet-600/10 to-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Carregando...</h1>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-violet-600/10 to-background">
       <div className="container py-8">
@@ -429,7 +400,7 @@ export default function ComecePage() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
           )}
-          <h1 className="text-2xl font-bold">Vamos criar seu ZapLove! 🎉</h1>
+          <h1 className="text-2xl font-bold">{t('flow.title')}</h1>
         </div>
 
         <div className="max-w-2xl mx-auto">
@@ -479,11 +450,10 @@ export default function ComecePage() {
           <div className="bg-white/80 rounded-lg p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xl">🔒</span>
-              <h3 className="text-base font-medium">Seus dados estão seguros</h3>
+              <h3 className="text-base font-medium">{t('flow.dataSecurity')}</h3>
             </div>
             <p className="text-sm text-muted-foreground">
-              Seus dados pessoais são utilizados apenas para o processamento do pagamento e emissão de nota fiscal. Não
-              compartilhamos suas informações com terceiros.
+              {t('flow.dataSecurityDescription')}
             </p>
           </div>
         </div>

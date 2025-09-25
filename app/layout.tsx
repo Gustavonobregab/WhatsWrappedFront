@@ -6,15 +6,16 @@ import Script from "next/script"
 
 const inter = Inter({ subsets: ["latin"] })
 
-// Atualizar o metadata para incluir apenas o favicon fornecido
-export const metadata = {
-  title: "ZapLove - Surpreenda seu amor com uma retrospectiva personalizada",
-  description:
-    "Carregue seu backup e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais.",
-  generator: "v0.dev",
-  icons: {
-    icon: "/favicon.png",
-  },
+// Função para gerar metadata dinâmico
+export async function generateMetadata() {
+  return {
+    title: "ZapLove - Surpreenda seu amor com uma retrospectiva personalizada",
+    description: "Carregue seu backup e receba um resumo visual com dados sobre suas mensagens, emoções, frases favoritas e muito mais.",
+    generator: "v0.dev",
+    icons: {
+      icon: "/favicon.png",
+    },
+  };
 }
 
 export default function RootLayout({
@@ -23,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt">
       <body className={inter.className}>
         {/* 👉 TikTok Pixel */}
         <Script id="tiktok-pixel" strategy="afterInteractive">

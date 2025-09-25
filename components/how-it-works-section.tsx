@@ -1,37 +1,44 @@
+"use client"
+
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useTranslations } from 'next-intl';
+import { useLocaleLink } from '@/hooks/use-locale-link';
 
 export function HowItWorksSection() {
+  const t = useTranslations();
+  const { createLink } = useLocaleLink();
+  
   return (
     <section id="como-funciona" className="py-20">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Como Funciona</h2>
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">{t('howItWorks.title')}</h2>
           <p className="mt-4 text-xl text-muted-foreground">
-            Três passos simples para descobrir o que suas conversas dizem sobre você
+            {t('howItWorks.subtitle')}
           </p>
         </div>
 
         <div className="grid gap-16 md:gap-20">
           <Step
             number={1}
-            title="Abra a conversa"
-            description="Selecione a conversa ou grupo que você deseja analisar."
+            title={t('howItWorks.steps.step1.title')}
+            description={t('howItWorks.steps.step1.description')}
             image="/whatsapp-chat.png"
           />
 
           <Step
             number={2}
-            title="Clique em exportar chat"
-            description="Toque nos três pontos no canto superior direito, role para baixo e selecione 'Exportar conversa'."
+            title={t('howItWorks.steps.step2.title')}
+            description={t('howItWorks.steps.step2.description')}
             image="/whatsapp-export.png"
           />
 
           <Step
             number={3}
-            title="Escolha 'Sem mídia'"
-            description="Selecione a opção 'Sem mídia' para exportar apenas o texto das conversas, criando um arquivo menor e mais fácil de processar."
+            title={t('howItWorks.steps.step3.title')}
+            description={t('howItWorks.steps.step3.description')}
             image="/whatsapp-sem-midia.png"
           />
         </div>
@@ -42,8 +49,8 @@ export function HowItWorksSection() {
             className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
             asChild
           >
-            <Link href="/comece-agora">
-              Comece agora
+            <Link href={createLink('/comece-agora')}>
+              {t('howItWorks.startNow')}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>

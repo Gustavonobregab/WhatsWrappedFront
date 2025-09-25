@@ -1,4 +1,10 @@
+"use client"
+
+import { useTranslations } from 'next-intl';
+
 export function MetricsSection() {
+  const t = useTranslations();
+  
   return (
     <section
       id="metricas"
@@ -6,65 +12,65 @@ export function MetricsSection() {
     >
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Descubra Métricas Fascinantes</h2>
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">{t('metrics.title')}</h2>
           <p className="mt-4 text-xl text-muted-foreground">
-            Veja exemplos do que você vai descobrir sobre suas conversas
+            {t('metrics.subtitle')}
           </p>
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <MetricCard
-            title="Total de Te Amo"
+            title={t('metrics.cards.totalLove.title')}
             value="237"
-            description="Quantas vezes você disse essa frase especial"
+            description={t('metrics.cards.totalLove.description')}
             color="from-red-500 to-orange-500"
             emoji="❤️"
           />
           <MetricCard
-            title="Total de Desculpas"
+            title={t('metrics.cards.totalApologies.title')}
             value="562"
-            description="Quantas vezes você pediu desculpas"
+            description={t('metrics.cards.totalApologies.description')}
             color="from-green-500 to-emerald-500"
             emoji="🙏"
           />
           <MetricCard
-            title="Dias Consecutivos"
+            title={t('metrics.cards.consecutiveDays.title')}
             value="351 dias"
-            description="Seu recorde de dias consecutivos conversando"
+            description={t('metrics.cards.consecutiveDays.description')}
             color="from-purple-500 to-indigo-500"
             emoji="🔥"
           />
           <MetricCard
-            title="Primeira Mensagem"
+            title={t('metrics.cards.firstMessage.title')}
             value="12/03/2023"
-            description="Quando tudo começou"
+            description={t('metrics.cards.firstMessage.description')}
             color="from-amber-500 to-yellow-500"
             emoji="📅"
           />
           <MetricCard
-            title="Dias Totais"
+            title={t('metrics.cards.totalDays.title')}
             value="365 dias"
-            description="Tempo total de conversa"
+            description={t('metrics.cards.totalDays.description')}
             color="from-blue-500 to-cyan-500"
             emoji="📆"
           />
           <MetricCard
-            title="Iniciou Conversas"
+            title={t('metrics.cards.conversationStarter.title')}
             value="Letícia (65%)"
-            description="Quem manda mensagem primeiro"
+            description={t('metrics.cards.conversationStarter.description')}
             color="from-fuchsia-500 to-violet-500"
             emoji="💬"
           />
           <MetricCard
-            title="Palavra Mais Usada"
+            title={t('metrics.cards.mostUsedWord.title')}
             value="sim (543x)"
-            description="A palavra que você mais usa"
+            description={t('metrics.cards.mostUsedWord.description')}
             color="from-pink-500 to-rose-500"
             emoji="🔤"
           />
           <MetricCard
-            title="Total de Mensagens"
+            title={t('metrics.cards.totalMessages.title')}
             value="12.543"
-            description="Quantidade de mensagens enviadas"
+            description={t('metrics.cards.totalMessages.description')}
             color="from-indigo-500 to-blue-500"
             emoji="📱"
           />
@@ -84,9 +90,9 @@ export function MetricsSection() {
               </div>
               <div className="relative z-10">
                 <span className="text-4xl mb-4 block">✨</span>
-                <h3 className="text-2xl font-bold mb-2">E muito mais!</h3>
+                <h3 className="text-2xl font-bold mb-2">{t('metrics.cards.andMore.title')}</h3>
                 <p className="text-lg text-white/90">
-                  Descubra todas as estatísticas e curiosidades sobre suas conversas
+                  {t('metrics.cards.andMore.description')}
                 </p>
               </div>
             </div>
